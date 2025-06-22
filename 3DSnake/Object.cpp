@@ -8,6 +8,11 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\stb_image.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
+
+//Potential bugs:
+// - Objects using same VBO/VAO make their own modifications that don't carry over to other objects (ex. attribute start)
+//   * solved by making these attributes pointers
 
 //Things an Object object should have:
 // - VBO (vertices immediately stored in here and then disgarded)
@@ -18,38 +23,61 @@
 // - Draw function (could provide a function object (drawArrays() in default settings if NULL) )
 
 
-enum Attribute {
-    Vec3,
-    Color,
-    Texture
-};
-
-
-Object::Object(float vertices[]) {
-    glGenVertexArrays(1, &(this->VAO));
-    glBindVertexArray(this->VAO);
-
-    glGenBuffers(1, &(this->VBO));
-    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    this->EBO = -1;
+Object::Object() {
+    *(this->vertexAttributeLoc) = 0;
+    *(this->vertexAttributeStart) = 0;
 }
-Object::Object(unsigned int VBO, unsigned int VAO) {
-    this->VBO = VBO;
-    this->VAO = VAO;
-    this->EBO = -1;
+Object::Object(unsigned int VBO, unsigned int VAO, GLuint* vertexAttributeLoc, GLuint* vertexAttributeStart) {
+    *(this->VBO) = VBO;
+    *(this->VAO) = VAO;
+    this->vertexAttributeLoc = vertexAttributeLoc;
+    this->vertexAttributeStart = vertexAttributeStart;
+}
+
+void Object::generate_buffers(float vertices[], GLenum drawType) {
+    glGenVertexArrays(1, &*((this->VAO)));
+    glBindVertexArray(*(this->VAO));
+
+    glGenBuffers(1, &*((this->VBO)));
+    glBindBuffer(GL_ARRAY_BUFFER, *(this->VBO));
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, drawType);
 }
 
 void Object::set_EBO(unsigned int EBO) {
-	this->EBO = EBO;
+	*(this->EBO) = EBO;
 }
 
-void Object::add_vertex_attribute(Attribute attribute, GLuint location) {
-    GLint size;
-    GLenum type;
-    GLboolean isNormalized;
-    GLsizei attributeSize;
-    const void* attributeStart;
+void Object::set_VBO(unsigned int VBO) {
+    *(this->VBO) = VBO;
+}
+
+void Object::set_VAO(unsigned int VAO) {
+    *(this->VAO) = VAO;
+}
+unsigned int* Object::get_EBO() {
+    return this->EBO;
+}
+unsigned int* Object::get_VBO() {
+    return this->VBO;
+}
+unsigned int* Object::get_VAO() {
+    return this->VAO;
+}
+GLuint* Object::get_vertexAttributeLoc() {
+    return this->vertexAttributeLoc;
+}
+GLuint* Object::get_vertexAttributeStart() {
+    return this->vertexAttributeStart;
+}
+
+void Object::add_vertex_attribute(Attribute attribute) {
+    assert(is_object(*this));
+
+    GLint size = 0;
+    GLenum type = 0;
+    GLboolean isNormalized = GL_FALSE;
+    GLsizei attributeSize = 0;
+    const void* attributeStart = (void*)0;
 
     switch (attribute) {
         case Vec3: //0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0)
@@ -57,14 +85,26 @@ void Object::add_vertex_attribute(Attribute attribute, GLuint location) {
             type = GL_FLOAT;
             isNormalized = GL_FALSE;
             attributeSize = 5 * sizeof(float);
-            attributeStart = size of things before;
+            attributeStart = (void*)*(this->vertexAttributeStart);
             break;
-        case Color:
+        case Texture: //1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))
+            size = 2;
+            type = GL_FLOAT;
+            isNormalized = GL_FALSE;
+            attributeSize = 5 * sizeof(float);
+            attributeStart = (void*)*(this->vertexAttributeStart);
             break;
-        case Texture:
+        case Color: //1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))
+            size = 3;
+            type = GL_FLOAT;
+            isNormalized = GL_FALSE;
+            attributeSize = 8 * sizeof(float);
+            attributeStart = (void*)*(this->vertexAttributeStart);
             break;
     }
+    bind_object_buffers(*this);
+    glVertexAttribPointer(*(this->vertexAttributeLoc), size, type, isNormalized, attributeSize, attributeStart);
+    unbind_buffers();
+    *(this->vertexAttributeStart) += attributeSize;
+    *(this->vertexAttributeLoc) += 1;
 }
-
-
-

@@ -7,6 +7,7 @@
 #include <iostream>
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\stb_image.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -196,6 +197,15 @@ int main()
 
     glViewport(0, 0, 800, 600);
 
+
+    //Shaders
+    Shader ourShader("shader.vert", "shader.frag");
+    ourShader.use();
+
+    /*Object object = Object(6, ourShader);
+    object.generate_buffers(vertices, GL_STATIC_DRAW);
+    object.set_position(glm::vec3(1, 0, 0));*/
+
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -216,9 +226,6 @@ int main()
 
     stbi_set_flip_vertically_on_load(true);
 
-    //Shaders
-    Shader ourShader("shader.vert", "shader.frag");
-    ourShader.use();
     // either set it manually like so:
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
     // or set it via the texture class
@@ -273,7 +280,8 @@ int main()
         // pass them to the shaders (3 different ways)
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes 
+        // it's often best practice to set it outside the main loop only once.
         ourShader.setMat4("projection", projection);
 
         //Rendering commands
@@ -282,6 +290,7 @@ int main()
         glBindVertexArray(VAO);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        //object.draw_object();
 
         glBindVertexArray(0);
 

@@ -23,15 +23,22 @@
 // - Draw function (could provide a function object (drawArrays() in default settings if NULL) )
 
 
-Object::Object() {
+Object::Object(int vertexCount, Shader shader) {
     *(this->vertexAttributeLoc) = 0;
     *(this->vertexAttributeStart) = 0;
+    this->vertexCount = vertexCount;
+    this->shader = shader;
+    this->model = glm::mat4(1.0f);
 }
-Object::Object(unsigned int VBO, unsigned int VAO, GLuint* vertexAttributeLoc, GLuint* vertexAttributeStart) {
+
+Object::Object(unsigned int VBO, unsigned int VAO, GLuint* vertexAttributeLoc, GLuint* vertexAttributeStart, int vertexCount, Shader shader) {
     *(this->VBO) = VBO;
     *(this->VAO) = VAO;
     this->vertexAttributeLoc = vertexAttributeLoc;
     this->vertexAttributeStart = vertexAttributeStart;
+    this->vertexCount = vertexCount;
+    this->shader = shader;
+    this->model = glm::mat4(1.0f);
 }
 
 void Object::generate_buffers(float vertices[], GLenum drawType) {
@@ -107,4 +114,14 @@ void Object::add_vertex_attribute(Attribute attribute) {
     unbind_buffers();
     *(this->vertexAttributeStart) += attributeSize;
     *(this->vertexAttributeLoc) += 1;
+}
+void Object::set_position(glm::vec3 position) {
+    glm::translate(this->model, position);
+}
+
+void Object::draw_object() {
+    assert(is_object(*this));
+    bind_VAO(*this);
+    this->shader.setMat4("model", this->model);
+    glDrawArrays(GL_TRIANGLES, 0, this->vertexCount);
 }

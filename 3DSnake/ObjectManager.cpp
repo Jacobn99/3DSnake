@@ -28,3 +28,15 @@ void bind_object_buffers(Object object) {
     glBindBuffer(GL_ARRAY_BUFFER, *(object.get_VBO()));
     glBindVertexArray(*(object.get_VAO()));
 }
+void bind_VAO(Object object) {
+    assert(is_object(object));
+    glBindVertexArray(*(object.get_VAO()));
+}
+void bind_VBO(Object object) {
+    assert(is_object(object));
+    glBindBuffer(GL_ARRAY_BUFFER, *(object.get_VBO()));
+}
+void bind_EBO(Object object) {
+    assert(is_object(object));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *(object.get_EBO()));
+}

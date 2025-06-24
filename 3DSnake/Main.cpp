@@ -8,6 +8,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\stb_image.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -101,49 +102,7 @@ int main()
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
     };
-    //float vertices[] = {
-    //     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-    //     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-    //    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    //    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    //    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-    //    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    //    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    //    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    //};
+    
     unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,   // first triangle
     3, 2, 1    // second triangle

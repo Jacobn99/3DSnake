@@ -82,52 +82,7 @@ void Object::add_default_attributes() {
     glEnableVertexAttribArray(1);
     unbind_buffers();
 }
-//GLuint* Object::get_vertexAttributeStart() {
-//    return this->vertexAttributeStart;
-//}
 
-//void Object::add_vertex_attribute(Attribute attribute) {
-//    assert(is_object(*this));
-//
-//    GLint size = 0;
-//    GLenum type = 0;
-//    GLboolean isNormalized = GL_FALSE;
-//    GLsizei attributeSize = 0;
-//    int attributeStart = 0;
-//
-//    printf("loc: %d", *(this->vertexAttributeLoc));
-//    for (int i = 0; i < *(this->vertexAttributeLoc); i++) {
-//        attributeStart += this->vertexStrides.at(i);
-//    }
-//	//printf("attributeStart: %d, \n", attributeStart, );
-//
-//    switch (attribute) {
-//        case VEC3: //0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0)
-//            size = 3;
-//            type = GL_FLOAT;
-//            isNormalized = GL_FALSE;
-//            attributeSize = 5 * sizeof(float);
-//            break;
-//        case TEXTURE: //1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))
-//            size = 2;
-//            type = GL_FLOAT;
-//            isNormalized = GL_FALSE;
-//            attributeSize = 5 * sizeof(float);
-//            break;
-//        case COLOR: //1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))
-//            size = 3;
-//            type = GL_FLOAT;
-//            isNormalized = GL_FALSE;
-//            attributeSize = 8 * sizeof(float);
-//            break;
-//    }
-//    bind_object_buffers(*this);
-//    glVertexAttribPointer(*(this->vertexAttributeLoc), size, type, isNormalized, attributeSize, (void*)attributeStart);
-//    unbind_buffers();
-//    //*(this->vertexAttributeStart) += attributeSize;
-//    *(this->vertexAttributeLoc) += 1;
-//    this->vertexStrides.push_back(attributeSize);
-//}
 void Object::set_position(glm::vec3 position) {
     this->model = glm::translate(this->model, position);
 }

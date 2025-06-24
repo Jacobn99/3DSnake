@@ -87,6 +87,7 @@ int main()
     unsigned int VBO;
     unsigned int VAO;
     unsigned int EBO;
+
     //unsigned int vertexShader;
     //unsigned int fragmentShader;
     //unsigned int shaderProgram;
@@ -202,9 +203,10 @@ int main()
     Shader ourShader("shader.vert", "shader.frag");
     ourShader.use();
 
-    /*Object object = Object(6, ourShader);
-    object.generate_buffers(vertices, GL_STATIC_DRAW);
-    object.set_position(glm::vec3(1, 0, 0));*/
+    Object object = Object(6, ourShader);
+    object.generate_buffers(vertices, sizeof(vertices), GL_STATIC_DRAW);
+    object.set_position(glm::vec3(0, 0, 1));
+    object.add_default_attributes();
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -248,6 +250,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     while (!glfwWindowShouldClose(window))
     {
+        glBindVertexArray(VAO);
         // Pregame logic
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -290,7 +293,8 @@ int main()
         glBindVertexArray(VAO);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        //object.draw_object();
+
+        object.draw_object();
 
         glBindVertexArray(0);
 

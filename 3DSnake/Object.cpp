@@ -24,30 +24,31 @@
 
 
 Object::Object(int vertexCount, Shader shader) {
-    *(this->vertexAttributeLoc) = 0;
-    *(this->vertexAttributeStart) = 0;
+    this->VBO = new unsigned int;
+    this->VAO = new unsigned int;
+    this->EBO = new unsigned int;
+
     this->vertexCount = vertexCount;
     this->shader = shader;
     this->model = glm::mat4(1.0f);
 }
 
-Object::Object(unsigned int VBO, unsigned int VAO, GLuint* vertexAttributeLoc, GLuint* vertexAttributeStart, int vertexCount, Shader shader) {
+Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shader) {
     *(this->VBO) = VBO;
     *(this->VAO) = VAO;
-    this->vertexAttributeLoc = vertexAttributeLoc;
-    this->vertexAttributeStart = vertexAttributeStart;
+
     this->vertexCount = vertexCount;
     this->shader = shader;
     this->model = glm::mat4(1.0f);
 }
 
-void Object::generate_buffers(float vertices[], GLenum drawType) {
+void Object::generate_buffers(float vertices[], size_t size, GLenum drawType) {
     glGenVertexArrays(1, &*((this->VAO)));
     glBindVertexArray(*(this->VAO));
 
     glGenBuffers(1, &*((this->VBO)));
     glBindBuffer(GL_ARRAY_BUFFER, *(this->VBO));
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, drawType);
+    glBufferData(GL_ARRAY_BUFFER, size, vertices, drawType);
 }
 
 void Object::set_EBO(unsigned int EBO) {
@@ -70,57 +71,69 @@ unsigned int* Object::get_VBO() {
 unsigned int* Object::get_VAO() {
     return this->VAO;
 }
-GLuint* Object::get_vertexAttributeLoc() {
-    return this->vertexAttributeLoc;
-}
-GLuint* Object::get_vertexAttributeStart() {
-    return this->vertexAttributeStart;
-}
 
-void Object::add_vertex_attribute(Attribute attribute) {
-    assert(is_object(*this));
-
-    GLint size = 0;
-    GLenum type = 0;
-    GLboolean isNormalized = GL_FALSE;
-    GLsizei attributeSize = 0;
-    const void* attributeStart = (void*)0;
-
-    switch (attribute) {
-        case Vec3: //0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0)
-            size = 3;
-            type = GL_FLOAT;
-            isNormalized = GL_FALSE;
-            attributeSize = 5 * sizeof(float);
-            attributeStart = (void*)*(this->vertexAttributeStart);
-            break;
-        case Texture: //1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))
-            size = 2;
-            type = GL_FLOAT;
-            isNormalized = GL_FALSE;
-            attributeSize = 5 * sizeof(float);
-            attributeStart = (void*)*(this->vertexAttributeStart);
-            break;
-        case Color: //1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))
-            size = 3;
-            type = GL_FLOAT;
-            isNormalized = GL_FALSE;
-            attributeSize = 8 * sizeof(float);
-            attributeStart = (void*)*(this->vertexAttributeStart);
-            break;
-    }
-    bind_object_buffers(*this);
-    glVertexAttribPointer(*(this->vertexAttributeLoc), size, type, isNormalized, attributeSize, attributeStart);
+void Object::add_default_attributes() {
+    bind_VAO(*this);
+    //Add vec3 as attribute to vertex object (position attribute)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture coords attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     unbind_buffers();
-    *(this->vertexAttributeStart) += attributeSize;
-    *(this->vertexAttributeLoc) += 1;
 }
+//GLuint* Object::get_vertexAttributeStart() {
+//    return this->vertexAttributeStart;
+//}
+
+//void Object::add_vertex_attribute(Attribute attribute) {
+//    assert(is_object(*this));
+//
+//    GLint size = 0;
+//    GLenum type = 0;
+//    GLboolean isNormalized = GL_FALSE;
+//    GLsizei attributeSize = 0;
+//    int attributeStart = 0;
+//
+//    printf("loc: %d", *(this->vertexAttributeLoc));
+//    for (int i = 0; i < *(this->vertexAttributeLoc); i++) {
+//        attributeStart += this->vertexStrides.at(i);
+//    }
+//	//printf("attributeStart: %d, \n", attributeStart, );
+//
+//    switch (attribute) {
+//        case VEC3: //0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0)
+//            size = 3;
+//            type = GL_FLOAT;
+//            isNormalized = GL_FALSE;
+//            attributeSize = 5 * sizeof(float);
+//            break;
+//        case TEXTURE: //1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))
+//            size = 2;
+//            type = GL_FLOAT;
+//            isNormalized = GL_FALSE;
+//            attributeSize = 5 * sizeof(float);
+//            break;
+//        case COLOR: //1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))
+//            size = 3;
+//            type = GL_FLOAT;
+//            isNormalized = GL_FALSE;
+//            attributeSize = 8 * sizeof(float);
+//            break;
+//    }
+//    bind_object_buffers(*this);
+//    glVertexAttribPointer(*(this->vertexAttributeLoc), size, type, isNormalized, attributeSize, (void*)attributeStart);
+//    unbind_buffers();
+//    //*(this->vertexAttributeStart) += attributeSize;
+//    *(this->vertexAttributeLoc) += 1;
+//    this->vertexStrides.push_back(attributeSize);
+//}
 void Object::set_position(glm::vec3 position) {
-    glm::translate(this->model, position);
+    this->model = glm::translate(this->model, position);
 }
 
 void Object::draw_object() {
-    assert(is_object(*this));
+    assert(is_object(*this) && this->VAO != NULL);
     bind_VAO(*this);
     this->shader.setMat4("model", this->model);
     glDrawArrays(GL_TRIANGLES, 0, this->vertexCount);

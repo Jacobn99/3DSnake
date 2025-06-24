@@ -11,8 +11,8 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 
 bool is_object(Object object) {
-    return object.get_VBO() != NULL && object.get_VAO() != NULL &&
-        object.get_vertexAttributeLoc() != NULL && object.get_vertexAttributeStart() != NULL;
+    return object.get_VBO() != NULL && object.get_VAO() != NULL;
+        //object.get_vertexAttributeLoc() != NULL/* && object.get_vertexAttributeStart() != NULL*/;
 }
 
 void unbind_buffers() {

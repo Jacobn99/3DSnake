@@ -54,4 +54,8 @@ void PrismObject::generate_prism(float xNeg, float xPos, float yNeg, float yPos,
         xNeg, yPos, zPos,  0.0f, 0.0f,
         xNeg, yPos, zNeg,  0.0f, 1.0f
     };
+
+    this->generate_buffers(vertices, sizeof(vertices), GL_STATIC_DRAW);
+    this->set_position(glm::vec3(0, 2, 0));
+    this->add_default_attributes();
 }

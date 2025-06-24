@@ -167,6 +167,10 @@ int main()
     object.set_position(glm::vec3(0, 0, 1));
     object.add_default_attributes();
 
+	PrismObject prism = PrismObject(36, ourShader);
+	prism.generate_prism(-0.5f, 0.5f, -0.5f, 0.5f, -5.0f, 5.0f);
+	prism.set_color(glm::vec3(0.5f, 0.5f, 0.5f));
+
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -254,6 +258,7 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         object.draw_object();
+        prism.draw_object();
 
         glBindVertexArray(0);
 

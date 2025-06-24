@@ -31,15 +31,23 @@ Object::Object(int vertexCount, Shader shader) {
     this->vertexCount = vertexCount;
     this->shader = shader;
     this->model = glm::mat4(1.0f);
+    this->isTextured = false;
+    this->color = this->default_color;
 }
 
 Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shader) {
+    this->VBO = new unsigned int;
+    this->VAO = new unsigned int;
+    this->EBO = new unsigned int;
+
     *(this->VBO) = VBO;
     *(this->VAO) = VAO;
 
     this->vertexCount = vertexCount;
     this->shader = shader;
     this->model = glm::mat4(1.0f);
+    this->isTextured = false;
+    this->color = this->default_color;
 }
 
 void Object::generate_buffers(float vertices[], size_t size, GLenum drawType) {
@@ -71,6 +79,9 @@ unsigned int* Object::get_VBO() {
 unsigned int* Object::get_VAO() {
     return this->VAO;
 }
+void Object::set_color(glm::vec3 color) {
+    this->color = color;
+}
 
 void Object::add_default_attributes() {
     bind_VAO(*this);
@@ -90,6 +101,8 @@ void Object::set_position(glm::vec3 position) {
 void Object::draw_object() {
     assert(is_object(*this) && this->VAO != NULL);
     bind_VAO(*this);
+    this->shader.setVec3("inputColor", this->color);
     this->shader.setMat4("model", this->model);
     glDrawArrays(GL_TRIANGLES, 0, this->vertexCount);
+    this->shader.setVec3("inputColor", this->default_color);
 }

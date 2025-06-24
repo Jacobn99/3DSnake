@@ -23,11 +23,15 @@ public:
 	void generate_buffers(float vertices[], size_t size, GLenum drawType);
 	void draw_object();
 	void set_position(glm::vec3 position);
+	void set_color(glm::vec3 color);
+	glm::vec3 default_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
 private:
 	unsigned int* VBO;
 	unsigned int* VAO;
 	unsigned int* EBO;
+	bool isTextured;
+	glm::vec3 color;
 	glm::mat4 model;
 	int vertexCount;
 	Shader shader;

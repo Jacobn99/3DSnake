@@ -50,15 +50,6 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shad
     this->color = this->default_color;
 }
 
-void Object::generate_buffers(float vertices[], size_t size, GLenum drawType) {
-    glGenVertexArrays(1, &*((this->VAO)));
-    glBindVertexArray(*(this->VAO));
-
-    glGenBuffers(1, &*((this->VBO)));
-    glBindBuffer(GL_ARRAY_BUFFER, *(this->VBO));
-    glBufferData(GL_ARRAY_BUFFER, size, vertices, drawType);
-}
-
 void Object::set_EBO(unsigned int EBO) {
 	*(this->EBO) = EBO;
 }
@@ -82,27 +73,18 @@ unsigned int* Object::get_VAO() {
 void Object::set_color(glm::vec3 color) {
     this->color = color;
 }
-
-void Object::add_default_attributes() {
-    bind_VAO(*this);
-    //Add vec3 as attribute to vertex object (position attribute)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coords attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    unbind_buffers();
+glm::vec3 Object::get_color() {
+    return this->color;
 }
-
+Shader Object::get_shader() {
+    return this->shader;
+}
+glm::mat4 Object::get_model() {
+    return this->model;
+}
+int Object::get_vertexCount() {
+    return this->vertexCount;
+}
 void Object::set_position(glm::vec3 position) {
     this->model = glm::translate(this->model, position);
-}
-
-void Object::draw_object() {
-    assert(is_object(*this) && this->VAO != NULL);
-    bind_VAO(*this);
-    this->shader.setVec3("inputColor", this->color);
-    this->shader.setMat4("model", this->model);
-    glDrawArrays(GL_TRIANGLES, 0, this->vertexCount);
-    this->shader.setVec3("inputColor", this->default_color);
 }

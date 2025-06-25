@@ -8,6 +8,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\stb_image.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 
 
 void PrismObject::generate_prism(float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos) {
@@ -55,7 +56,6 @@ void PrismObject::generate_prism(float xNeg, float xPos, float yNeg, float yPos,
         xNeg, yPos, zNeg,  0.0f, 1.0f
     };
 
-    this->generate_buffers(vertices, sizeof(vertices), GL_STATIC_DRAW);
-    this->set_position(glm::vec3(0, 2, 0));
-    this->add_default_attributes();
+    generate_buffers(*this, vertices, sizeof(vertices), GL_STATIC_DRAW);
+    add_default_attributes(*this);
 }

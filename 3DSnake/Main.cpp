@@ -8,6 +8,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\stb_image.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
 
 // settings
@@ -85,13 +86,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 int main()
 {
-    unsigned int VBO;
-    unsigned int VAO;
-    unsigned int EBO;
-
-    //unsigned int vertexShader;
-    //unsigned int fragmentShader;
-    //unsigned int shaderProgram;
     unsigned int texture1, texture2;
 
     float vertices[] = { 
@@ -112,18 +106,6 @@ int main()
     1.0f, 0.0f,  // lower-right corner
     0.5f, 1.0f   // top-center corner
     };
-    /*glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
-    };*/
 
     int width, height, nrChannels;
     unsigned char* data;
@@ -157,63 +139,38 @@ int main()
 
     glViewport(0, 0, 800, 600);
 
-
     //Shaders
     Shader ourShader("shader.vert", "shader.frag");
     ourShader.use();
 
-    Object object = Object(6, ourShader);
-    object.generate_buffers(vertices, sizeof(vertices), GL_STATIC_DRAW);
-    object.set_position(glm::vec3(0, 0, 1));
-    object.add_default_attributes();
-
+    //Object creation
 	PrismObject prism = PrismObject(36, ourShader);
-	prism.generate_prism(-0.5f, 0.5f, -0.5f, 0.5f, -5.0f, 5.0f);
+	prism.generate_prism(-5.0f, 5.0f, -0.5f, 0.5f, -5.0f, 5.0f);
 	prism.set_color(glm::vec3(0.5f, 0.5f, 0.5f));
-
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    //Add vec3 as attribute to vertex object (position attribute)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coords attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    prism.set_position(glm::vec3(0.0f, 0.0f, -4.0f));
 
     stbi_set_flip_vertically_on_load(true);
-
-    // either set it manually like so:
-    glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
-    // or set it via the texture class
-    ourShader.setInt("texture2", 1);
-    unsigned int transformLoc;
-
     glEnable(GL_DEPTH_TEST);
 
-    cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-    cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    //Camera fields
+    glm::vec3 cameraStart = glm::vec3(0.0f, 10.0f, 0.0f);
+    //MUST INITIALIZE CAMERA FIELDS RELATIVE TO cameraStart BECAUSE THE VALUES SHOULD CHANGE WITH CHANGES IN CAMERA POSITION
+    //This calibrates them to relative to where the camera is currently located at
+	cameraPos = glm::vec3(cameraStart.x, cameraStart.y, cameraStart.z + 3.0f);
+    cameraFront = glm::vec3(cameraStart.x, cameraStart.y, cameraStart.z - 1.0f);
+    cameraUp = glm::vec3(cameraStart.x, cameraStart.y + 1.0f, cameraStart.z);
 
-    cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    cameraTarget = glm::vec3(cameraStart.x, cameraStart.y, cameraStart.z);
     cameraDirection = glm::normalize(cameraPos - cameraTarget);
     up = glm::vec3(0.0f, 1.0f, 0.0f);
     cameraRight = glm::normalize(glm::cross(up, cameraDirection));
     cameraUp = glm::cross(cameraDirection, cameraRight);
+	//pitch = -60.0f; // Set pitch to look down
 
     //Ensures viewport resizes with window
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     while (!glfwWindowShouldClose(window))
     {
-        glBindVertexArray(VAO);
         // Pregame logic
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -233,18 +190,11 @@ int main()
         float camZ = cos(glfwGetTime()) * radius;
 
         // create transformations
-        glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 projection = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-        // retrieve the matrix uniform locations
-        unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
         unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
-
-        // pass them to the shaders (3 different ways)
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
         // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes 
         // it's often best practice to set it outside the main loop only once.
@@ -253,12 +203,10 @@ int main()
         //Rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glBindVertexArray(VAO);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        object.draw_object();
-        prism.draw_object();
+        draw_object(prism);
 
         glBindVertexArray(0);
 
@@ -270,3 +218,8 @@ int main()
     glfwTerminate();
     return 0;
 }
+
+/* What I need to accomplish for textures:
+    - Toggle texture mode easily
+    - Apply textures (ideally with one function)
+    - Toggle texture mode easily*/

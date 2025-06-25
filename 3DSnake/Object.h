@@ -1,6 +1,7 @@
-#include <vector>
 #ifndef OBJECT_H
 #define OBJECT_H
+
+#include <vector>
 
 enum Attribute {
 	VEC3,
@@ -19,11 +20,13 @@ public:
 	unsigned int* get_EBO();
 	unsigned int* get_VBO();
 	unsigned int* get_VAO();
-	void add_default_attributes();
-	void generate_buffers(float vertices[], size_t size, GLenum drawType);
-	void draw_object();
 	void set_position(glm::vec3 position);
 	void set_color(glm::vec3 color);
+	glm::vec3 get_color();
+	Shader get_shader();
+	glm::mat4 get_model();
+	int get_vertexCount();
+
 	glm::vec3 default_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
 private:

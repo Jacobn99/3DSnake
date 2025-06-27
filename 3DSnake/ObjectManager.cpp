@@ -43,7 +43,6 @@ void bind_EBO(Object object) {
 void add_default_attributes(Object object) {
 	assert(object.is_VAO_set() && object.is_VBO_set() && object.get_vertexCount() > 0);
     bind_VAO(object);
-    printf("all good\n");
     //Add vec3 as attribute to vertex object (position attribute)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -57,6 +56,9 @@ void draw_object(Object object) {
     bind_VAO(object);
     object.get_shader().setVec3("inputColor", object.get_color());
     object.get_shader().setMat4("model", object.get_model());
+    if (object.is_textured()) {
+        object.get_texture_manager()->use_2D_texture(object.get_texture());
+    }
     glDrawArrays(GL_TRIANGLES, 0, object.get_vertexCount());
     object.get_shader().setVec3("inputColor", object.default_color);
 }

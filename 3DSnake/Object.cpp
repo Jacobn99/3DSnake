@@ -23,7 +23,7 @@
 // - Draw function (could provide a function object (drawArrays() in default settings if NULL) )
 
 
-Object::Object(int vertexCount, Shader shader) {
+Object::Object(int vertexCount, Shader shader, TextureManager textureManager) {
     this->VBO = 0;
     this->VAO = 0;
     this->EBO = 0;
@@ -37,10 +37,11 @@ Object::Object(int vertexCount, Shader shader) {
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
     this->color = this->default_color;
+    this->textureManager = textureManager;
     //this->texture = nullptr;
 }
 
-Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shader) {
+Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shader, TextureManager textureManager) {
     this->VBO = 0;
     this->VAO = 0;
     this->EBO = 0;
@@ -57,6 +58,7 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shad
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
     this->color = this->default_color;
+    this->textureManager = textureManager;
 }
 
 void Object::set_EBO(unsigned int EBO) {
@@ -109,8 +111,22 @@ glm::mat4 Object::get_model() {
 int Object::get_vertexCount() {
     return this->vertexCount;
 }
+void Object::set_texture(Texture texture) {
+    this->texture = texture;
+    this->isTextured = true;
+}
+Texture Object::get_texture() {
+	assert(this->isTextured);
+    return this->texture;
+}
 void Object::set_position(glm::vec3 position) {
     this->model = glm::translate(this->model, position);
+}
+bool Object::is_textured() {
+	return this->isTextured;
+}
+TextureManager* Object::get_texture_manager() {
+    return &this->textureManager;
 }
 void Object::generate_buffers(float vertices[], size_t size, GLenum drawType) {
     glGenVertexArrays(1, &(this->VAO));
@@ -121,9 +137,8 @@ void Object::generate_buffers(float vertices[], size_t size, GLenum drawType) {
     this->VBO_set = true;
     glBindBuffer(GL_ARRAY_BUFFER, this->get_VBO());
     glBufferData(GL_ARRAY_BUFFER, size, vertices, drawType);
-    printf("4\n");
 }
-void Object::delete_buffers() {
+void Object::delete_object() {
     if (this->is_VAO_set()) {
         glDeleteBuffers(1, &(this->VBO));
     }
@@ -133,4 +148,7 @@ void Object::delete_buffers() {
     if (this->is_VAO_set()) {
         glDeleteVertexArrays(1, &(this->VAO));
     }
+    if(this->isTextured) {
+		this->texture.delete_texture();
+	}
 }

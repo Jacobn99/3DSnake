@@ -44,7 +44,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void processInput(GLFWwindow* window)
 {
     float cameraSpeed = 2.5f * deltaTime;
-    //printf("cameraSpeed: %d\n", cameraSpeed);
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -141,15 +140,20 @@ int main()
 
     glViewport(0, 0, 800, 600);
 
+    TextureManager textureManager = TextureManager();
+    Texture texture = textureManager.generate_texture_2D("C:\\Users\\jacob\\source\\repos\\OpenGL.com_Tutorial\\OpenGL.com_Tutorial\\awesomeface.jpg",
+        GL_REPEAT, GL_LINEAR);
+
     //Shaders
     Shader ourShader("shader.vert", "shader.frag");
     ourShader.use();
 
     //Object creation
-	PrismObject prism = PrismObject(36, ourShader);
+	PrismObject prism = PrismObject(36, ourShader, textureManager);
 	prism.generate_prism(-5.0f, 5.0f, -0.5f, 0.5f, -5.0f, 5.0f);
 	prism.set_color(glm::vec3(0.5f, 0.5f, 0.5f));
     prism.set_position(glm::vec3(0.0f, 0.0f, -4.0f));
+    prism.set_texture()
 
     stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
@@ -217,7 +221,7 @@ int main()
         glfwPollEvents();
     }
 
-	prism.delete_buffers();
+	prism.delete_object();
     glfwTerminate();
     return 0;
 }

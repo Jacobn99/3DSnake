@@ -24,9 +24,13 @@
 
 
 Object::Object(int vertexCount, Shader shader) {
-    this->VBO = nullptr;
-    this->VAO = nullptr;
-    this->EBO = nullptr;
+    this->VBO = 0;
+    this->VAO = 0;
+    this->EBO = 0;
+
+    this->VBO_set = false;
+    this->VAO_set = false;
+    this->EBO_set = false;
 
     this->vertexCount = vertexCount;
     this->shader = shader;
@@ -37,12 +41,16 @@ Object::Object(int vertexCount, Shader shader) {
 }
 
 Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shader) {
-    this->VBO = new unsigned int;
-    this->VAO = new unsigned int;
-    this->EBO = nullptr;
+    this->VBO = 0;
+    this->VAO = 0;
+    this->EBO = 0;
 
-    *(this->VBO) = VBO;
-    *(this->VAO) = VAO;
+    this->VBO = VBO;
+    this->VAO = VAO;
+
+    this->VBO_set = true;
+    this->VAO_set = true;
+    this->EBO_set = false;
 
     this->vertexCount = vertexCount;
     this->shader = shader;
@@ -52,36 +60,39 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shad
 }
 
 void Object::set_EBO(unsigned int EBO) {
-    if (this->EBO == nullptr) {
-		this->EBO = new unsigned int;
-    }
-	*(this->EBO) = EBO;
+	this->EBO = EBO;
+    this->EBO_set = true;
 }
 
 void Object::set_VBO(unsigned int VBO) {
-    if (this->VBO == nullptr) {
-        this->VBO = new unsigned int;
-    }
-    *(this->VBO) = VBO;
+    this->VBO = VBO;
+    this->EBO_set = true;
 }
 
 void Object::set_VAO(unsigned int VAO) {
-    if (this->VAO == nullptr) {
-        this->VAO = new unsigned int;
-    }
-    *(this->VAO) = VAO;
+    this->VAO = VAO;
+    this->VAO_set = true;
 }
-unsigned int* Object::get_EBO() {
-    assert(this->EBO != nullptr);
+unsigned int Object::get_EBO() {
+    assert(this->EBO_set);
     return this->EBO;
 }
-unsigned int* Object::get_VBO() {
-    assert(this->VBO != nullptr);
+unsigned int Object::get_VBO() {
+    assert(this->VBO_set);
     return this->VBO;
 }
-unsigned int* Object::get_VAO() {
-    assert(this->VAO != nullptr);
+unsigned int Object::get_VAO() {
+    assert(this->VAO_set);
     return this->VAO;
+}
+bool Object::is_EBO_set() {
+    return this->EBO_set;
+}
+bool Object::is_VBO_set() {
+    return this->VBO_set;
+}
+bool Object::is_VAO_set() {
+    return this->VAO_set;
 }
 void Object::set_color(glm::vec3 color) {
     this->color = color;
@@ -101,20 +112,25 @@ int Object::get_vertexCount() {
 void Object::set_position(glm::vec3 position) {
     this->model = glm::translate(this->model, position);
 }
-//void Object::free_object() {
-//    glDeleteVertexArrays(1, this->VAO);
-//    glDeleteBuffers(1, this->VBO);
-//    if (this->EBO != NULL) { 
-//        glDeleteBuffers(1, this->EBO); 
-//		delete this->EBO;
-//    }
-//
-//    delete this->VBO;
-//    delete this->VAO;
-//    
-//    if (this->texture != nullptr) {
-//        this->texture->free_texture();
-//        delete this->texture;
-//    }
-//    delete this;
-//}
+void Object::generate_buffers(float vertices[], size_t size, GLenum drawType) {
+    glGenVertexArrays(1, &(this->VAO));
+    this->VAO_set = true;
+    glBindVertexArray(this->get_VAO());
+
+    glGenBuffers(1, &(this->VBO));
+    this->VBO_set = true;
+    glBindBuffer(GL_ARRAY_BUFFER, this->get_VBO());
+    glBufferData(GL_ARRAY_BUFFER, size, vertices, drawType);
+    printf("4\n");
+}
+void Object::delete_buffers() {
+    if (this->is_VAO_set()) {
+        glDeleteBuffers(1, &(this->VBO));
+    }
+    if (this->is_EBO_set()) {
+        glDeleteBuffers(1, &(this->EBO));
+	}
+    if (this->is_VAO_set()) {
+        glDeleteVertexArrays(1, &(this->VAO));
+    }
+}

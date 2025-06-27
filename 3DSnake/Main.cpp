@@ -217,6 +217,7 @@ int main()
         glfwPollEvents();
     }
 
+	prism.delete_buffers();
     glfwTerminate();
     return 0;
 }

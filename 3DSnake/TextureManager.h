@@ -6,6 +6,7 @@
 //class TextureManager {
 //
 //public:
+//	TextureManager() = default;
 //	void set_texture_count(int count);
 //	int get_texture_count();
 //	void generate_texture_2D(Texture texture, const char* file_path, GLenum wrapType, GLenum filterType);

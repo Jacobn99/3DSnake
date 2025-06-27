@@ -21,24 +21,32 @@ public:
 	void set_EBO(unsigned int EBO);
 	void set_VBO(unsigned int VBO);
 	void set_VAO(unsigned int VAO);
-	unsigned int* get_EBO();
-	unsigned int* get_VBO();
-	unsigned int* get_VAO();
+	unsigned int get_EBO();
+	unsigned int get_VBO();
+	unsigned int get_VAO();
+	void generate_buffers(float vertices[], size_t size, GLenum drawType);
 	void set_position(glm::vec3 position);
 	void set_color(glm::vec3 color);
 	glm::vec3 get_color();
 	Shader get_shader();
 	glm::mat4 get_model();
 	int get_vertexCount();
-	//void apply_texture(Texture texture);
-	void free_object();
+	bool is_EBO_set();
+	bool is_VBO_set();
+	bool is_VAO_set();
+	void delete_buffers();
 
 	glm::vec3 default_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
 private:
-	unsigned int* VBO;
-	unsigned int* VAO;
-	unsigned int* EBO;
+	unsigned int VBO;
+	unsigned int VAO;
+	unsigned int EBO;
+
+	bool VBO_set;
+	bool VAO_set;
+	bool EBO_set;
+
 	bool isTextured;
 	glm::vec3 color;
 	glm::mat4 model;

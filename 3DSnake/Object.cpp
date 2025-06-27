@@ -24,21 +24,22 @@
 
 
 Object::Object(int vertexCount, Shader shader) {
-    this->VBO = new unsigned int;
-    this->VAO = new unsigned int;
-    this->EBO = new unsigned int;
+    this->VBO = nullptr;
+    this->VAO = nullptr;
+    this->EBO = nullptr;
 
     this->vertexCount = vertexCount;
     this->shader = shader;
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
     this->color = this->default_color;
+    //this->texture = nullptr;
 }
 
 Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shader) {
     this->VBO = new unsigned int;
     this->VAO = new unsigned int;
-    this->EBO = new unsigned int;
+    this->EBO = nullptr;
 
     *(this->VBO) = VBO;
     *(this->VAO) = VAO;
@@ -51,23 +52,35 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shad
 }
 
 void Object::set_EBO(unsigned int EBO) {
+    if (this->EBO == nullptr) {
+		this->EBO = new unsigned int;
+    }
 	*(this->EBO) = EBO;
 }
 
 void Object::set_VBO(unsigned int VBO) {
+    if (this->VBO == nullptr) {
+        this->VBO = new unsigned int;
+    }
     *(this->VBO) = VBO;
 }
 
 void Object::set_VAO(unsigned int VAO) {
+    if (this->VAO == nullptr) {
+        this->VAO = new unsigned int;
+    }
     *(this->VAO) = VAO;
 }
 unsigned int* Object::get_EBO() {
+    assert(this->EBO != nullptr);
     return this->EBO;
 }
 unsigned int* Object::get_VBO() {
+    assert(this->VBO != nullptr);
     return this->VBO;
 }
 unsigned int* Object::get_VAO() {
+    assert(this->VAO != nullptr);
     return this->VAO;
 }
 void Object::set_color(glm::vec3 color) {
@@ -88,3 +101,20 @@ int Object::get_vertexCount() {
 void Object::set_position(glm::vec3 position) {
     this->model = glm::translate(this->model, position);
 }
+//void Object::free_object() {
+//    glDeleteVertexArrays(1, this->VAO);
+//    glDeleteBuffers(1, this->VBO);
+//    if (this->EBO != NULL) { 
+//        glDeleteBuffers(1, this->EBO); 
+//		delete this->EBO;
+//    }
+//
+//    delete this->VBO;
+//    delete this->VAO;
+//    
+//    if (this->texture != nullptr) {
+//        this->texture->free_texture();
+//        delete this->texture;
+//    }
+//    delete this;
+//}

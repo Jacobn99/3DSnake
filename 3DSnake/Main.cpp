@@ -10,6 +10,8 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\TextureManager.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Texture.h"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -153,19 +155,19 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     //Camera fields
-    glm::vec3 cameraStart = glm::vec3(0.0f, 10.0f, 0.0f);
+    glm::vec3 startLoc = glm::vec3(0.0f, 10.0f, 0.0f);
     //MUST INITIALIZE CAMERA FIELDS RELATIVE TO cameraStart BECAUSE THE VALUES SHOULD CHANGE WITH CHANGES IN CAMERA POSITION
     //This calibrates them to relative to where the camera is currently located at
-	cameraPos = glm::vec3(cameraStart.x, cameraStart.y, cameraStart.z + 3.0f);
-    cameraFront = glm::vec3(cameraStart.x, cameraStart.y, cameraStart.z - 1.0f);
-    cameraUp = glm::vec3(cameraStart.x, cameraStart.y + 1.0f, cameraStart.z);
+	cameraPos = glm::vec3(startLoc.x, startLoc.y, startLoc.z + 3.0f);
+    cameraFront = glm::vec3(0, 0, -1.0f);
+    cameraUp = glm::vec3(0, 1.0f, 0);
 
-    cameraTarget = glm::vec3(cameraStart.x, cameraStart.y, cameraStart.z);
+    cameraTarget = startLoc;
     cameraDirection = glm::normalize(cameraPos - cameraTarget);
     up = glm::vec3(0.0f, 1.0f, 0.0f);
     cameraRight = glm::normalize(glm::cross(up, cameraDirection));
     cameraUp = glm::cross(cameraDirection, cameraRight);
-	//pitch = -60.0f; // Set pitch to look down
+	pitch = -60.0f; // Set pitch to look down
 
     //Ensures viewport resizes with window
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);

@@ -57,5 +57,7 @@ void PrismObject::generate_prism(float xNeg, float xPos, float yNeg, float yPos,
     };
 
     generate_buffers(*this, vertices, sizeof(vertices), GL_STATIC_DRAW);
+    printf("got here\n");
     add_default_attributes(*this);
+    printf("got here too\n");
 }

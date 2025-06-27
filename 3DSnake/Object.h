@@ -2,6 +2,10 @@
 #define OBJECT_H
 
 #include <vector>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Texture.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 
 enum Attribute {
 	VEC3,
@@ -26,6 +30,8 @@ public:
 	Shader get_shader();
 	glm::mat4 get_model();
 	int get_vertexCount();
+	//void apply_texture(Texture texture);
+	void free_object();
 
 	glm::vec3 default_color = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -38,6 +44,7 @@ private:
 	glm::mat4 model;
 	int vertexCount;
 	Shader shader;
+	//Texture* texture;
 };
 
 #endif

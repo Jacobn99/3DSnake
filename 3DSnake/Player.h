@@ -7,19 +7,15 @@
 #include <stdio.h>
 #include <iostream>
 #include <queue>
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
 
-enum Movements {
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT
-};
+
 class Player {
 public:
-	Player();
+	Player(GameManager gameManager);
 	unsigned int get_length();
 	glm::vec2 get_movement_direction();
-	std::queue<int>  get_body_parts();
+	std::queue<int>* get_body_parts();
 	void remove_tail();
 	void move_head();
 	void draw_body();
@@ -29,7 +25,7 @@ private:
 	int headIndex;
 	glm::vec2 movementDirection; // has dy, dx
 	int length;
-	std::queue<int>  bodyParts;
+	std::queue<int> bodyParts;
 
 };
 

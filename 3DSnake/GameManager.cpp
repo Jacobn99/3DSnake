@@ -1,10 +1,13 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
 #include <glm/glm.hpp>
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\TextureManager.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 
 GameManager::GameManager(unsigned int sizeInUnits, unsigned int sizeInTiles) {
 	this->sizeInTiles = sizeInTiles;
 	this->sizeInUnits = sizeInUnits;
 	this->startIndex = (this->sizeInTiles * this->sizeInTiles) / 2;
+	this->tileSizeInUnits = sizeInUnits / this->sizeInTiles;
 }
 unsigned int GameManager::index_to_row(unsigned int index) {
 	assert(index < this->sizeInTiles * this->sizeInTiles);

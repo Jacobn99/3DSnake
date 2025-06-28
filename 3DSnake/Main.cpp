@@ -13,6 +13,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\TextureManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Texture.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -117,8 +118,6 @@ int main()
     int sizeInTiles = 7;
     int sizeInUnits = 8;
 
-    GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
-
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
@@ -156,10 +155,12 @@ int main()
     Shader ourShader("shader.vert", "shader.frag");
     ourShader.use();
 
+    GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
+	AppContext appContext = AppContext(&gameManager, &textureManager, &ourShader);
+
     //Object creation
 	PrismObject prism = PrismObject(36, ourShader, textureManager);
 	prism.generate_prism(-(sizeInUnits/2), (sizeInUnits / 2), -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
-	prism.set_color(glm::vec3(0.5f, 0.5f, 0.5f));
     prism.set_position(glm::vec3(0.0f, 0.0f, -4.0f));
     prism.set_texture(texture);
 

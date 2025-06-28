@@ -2,7 +2,9 @@
 #define TEXTURE_MANAGER_H
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include <glad/glad.h>
-class Texture;
+
+class Texture; // Forward declaration of Texture
+class AppContext; // Forward declaration of AppContext
 
 class TextureManager {
 

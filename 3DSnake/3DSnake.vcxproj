@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AppContext.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="PrismObject.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AppContext.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="PrismObject.cpp" />

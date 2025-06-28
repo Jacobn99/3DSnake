@@ -29,7 +29,6 @@ void Texture::set_texture_loc(int loc) {
 }
 void Texture::delete_texture() {
 	glDeleteTextures(1, &this->ID);
-	delete this;
 }
 bool Texture::get_is_generated() {
 	return this->is_generated;

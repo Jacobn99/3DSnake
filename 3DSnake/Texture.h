@@ -5,7 +5,7 @@ class TextureManager;
 
 class Texture {
 public:
-	Texture() = default;
+	Texture();
 	//Texture(TextureManager manager, const char* file_path, GLenum wrapType, GLenum filterType);
 	unsigned int get_ID();
 	void set_ID(unsigned int ID);

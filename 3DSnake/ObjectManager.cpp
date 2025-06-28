@@ -57,7 +57,7 @@ void draw_object(Object object) {
     object.get_shader().setVec3("inputColor", object.get_color());
     object.get_shader().setMat4("model", object.get_model());
     if (object.is_textured()) {
-        object.get_texture_manager()->use_2D_texture(object.get_texture());
+        object.get_texture_manager()->use_2D_texture(object.get_texture(), object.get_shader());
     }
     glDrawArrays(GL_TRIANGLES, 0, object.get_vertexCount());
     object.get_shader().setVec3("inputColor", object.default_color);

@@ -54,6 +54,9 @@ void processInput(GLFWwindow* window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+        printf("sigma\n");
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -141,8 +144,8 @@ int main()
     glViewport(0, 0, 800, 600);
 
     TextureManager textureManager = TextureManager();
-    Texture texture = textureManager.generate_texture_2D("C:\\Users\\jacob\\source\\repos\\OpenGL.com_Tutorial\\OpenGL.com_Tutorial\\awesomeface.jpg",
-        GL_REPEAT, GL_LINEAR);
+    Texture texture = textureManager.generate_texture_2D("C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_tile.png", 
+        GL_RGBA, GL_REPEAT, GL_LINEAR);
 
     //Shaders
     Shader ourShader("shader.vert", "shader.frag");
@@ -150,10 +153,10 @@ int main()
 
     //Object creation
 	PrismObject prism = PrismObject(36, ourShader, textureManager);
-	prism.generate_prism(-5.0f, 5.0f, -0.5f, 0.5f, -5.0f, 5.0f);
+	prism.generate_prism(-4.0f, 4.0f, -0.5f, 0.5f, -5.0f, 5.0f, 7);
 	prism.set_color(glm::vec3(0.5f, 0.5f, 0.5f));
     prism.set_position(glm::vec3(0.0f, 0.0f, -4.0f));
-    prism.set_texture()
+    prism.set_texture(texture);
 
     stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);

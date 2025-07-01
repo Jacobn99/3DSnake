@@ -33,7 +33,7 @@
 
 
 */
-void initialize_body(Player* player, AppContext appContext) {
+void initialize_body(Player& player, AppContext appContext) {
 	GameManager gameManager = (*appContext.get_game_manager());
 	PrismObject prism = PrismObject(36, appContext.get_shader(), appContext);
 	glm::vec3 startLoc = gameManager.board_to_vec3(gameManager.sizeInTiles / 2, gameManager.sizeInTiles / 2);
@@ -41,11 +41,11 @@ void initialize_body(Player* player, AppContext appContext) {
 
 	/*generate_prism(&prism, -(tileSizeInUnits / 2), (tileSizeInUnits / 2),
 		-(tileSizeInUnits / 2), (tileSizeInUnits / 2), -(tileSizeInUnits / 2), (tileSizeInUnits / 2), gameManager.sizeInTiles);*/
-	generate_prism(&prism, appContext, -(tileSizeInUnits), 0.0f,
-		-(tileSizeInUnits/2), (tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, gameManager.sizeInTiles);
+	generate_prism(prism, appContext, -(tileSizeInUnits / 2), (tileSizeInUnits / 2), -(tileSizeInUnits / 2),
+		(tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, gameManager.sizeInTiles);
 	prism.set_position(startLoc);
 
-	(*player).add_body_part(prism, gameManager.startIndex);
+	player.add_body_part(prism, gameManager.startIndex);
 }
 
 Player::Player(AppContext appContext) {
@@ -55,13 +55,13 @@ Player::Player(AppContext appContext) {
 	this->speed = 0.5f; // 0.5 units per second
 	this->currentDirection = FORWARD;
 
-	initialize_body(this, appContext);
+	initialize_body(*this, appContext);
 }
 unsigned int Player::get_length() {
 	return this->length;
 }
-std::vector<int>* Player::get_body_indexes() {
-	return &this->bodyIndexes;
+std::vector<int>& Player::get_body_indexes() {
+	return this->bodyIndexes;
 }
 void Player::remove_tail() {
 	assert(!this->bodyIndexes.empty() && !this->bodyCubes.empty());
@@ -70,7 +70,7 @@ void Player::remove_tail() {
 	this->bodyCubes.pop_back();*/
 ;}
 void Player::move_body(float deltaTime) {
-	PrismObject* prism = &this->bodyCubes.front();
+	PrismObject& prism = this->bodyCubes.front();
 
 	glm::vec3 scaleChange;
 	//glm::vec3 positionChange;
@@ -93,7 +93,7 @@ void Player::move_body(float deltaTime) {
 			break;
 	}
 
-	(*prism).set_scale((*prism).currentScale + scaleChange);
+	(prism).set_scale((prism).currentScale + scaleChange);
 	//(*prism).set_position((*prism).currentPosition + positionChange);
 }
 void Player::draw_body(AppContext appContext) {

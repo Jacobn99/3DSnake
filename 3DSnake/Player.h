@@ -16,7 +16,7 @@ class Player {
 public:
 	Player(AppContext appContext);
 	unsigned int get_length();
-	std::vector<int>* get_body_indexes();
+	std::vector<int>& get_body_indexes();
 	std::vector<PrismObject> get_body_cubes();
 	void remove_tail();
 	void move_body(float deltaTime);

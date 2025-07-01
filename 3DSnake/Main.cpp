@@ -95,17 +95,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 int main()
 {
-    unsigned int texture1, texture2;
-
- /*   float vertices[] = { 
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-    };*/
-    
+    //unsigned int texture1, texture2;    
     unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,   // first triangle
     3, 2, 1    // second triangle
@@ -161,7 +151,8 @@ int main()
     ObjectManager objectManager = ObjectManager();
 
     GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
-	AppContext appContext = AppContext(&gameManager, &textureManager, &ourShader, &objectManager);
+	AppContext appContext = AppContext(gameManager, textureManager, ourShader, objectManager);
+    objectManager.generate_default_vertices(appContext);
 
     //Object creation
 	PrismObject prism = PrismObject(36, &ourShader, appContext);

@@ -20,8 +20,9 @@ private:
 	bool changeQueued;
 };
 
-void generate_prism(PrismObject* prism, AppContext appContext, float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range);
-void apply_orientation_changes(PrismObject* prism);
+void generate_prism(PrismObject& prism, AppContext appContext, float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range);
+void apply_orientation_changes(PrismObject& prism);
+std::vector<float> generate_prism_vertices(float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range);
 
 
 #endif

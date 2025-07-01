@@ -10,11 +10,29 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 
 //bool is_object(Object object) {
 //    return true;
 //        //object.get_vertexAttributeLoc() != NULL/* && object.get_vertexAttributeStart() != NULL*/;
 //}
+void ObjectManager::generate_default_vertices(AppContext appContext) {
+    GameManager gameManager = *appContext.get_game_manager();
+    float tileSizeInUnits = gameManager.unitsPerTile;
+
+    this->front_orientation = generate_prism_vertices(-(tileSizeInUnits/2), (tileSizeInUnits / 2), 
+        -(tileSizeInUnits / 2),(tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, gameManager.sizeInTiles);
+
+    this->back_orientation = generate_prism_vertices(0.0f, tileSizeInUnits, -(tileSizeInUnits / 2),
+        (tileSizeInUnits / 2), 0.0f, tileSizeInUnits, gameManager.sizeInTiles);
+
+    this->left_orientation = generate_prism_vertices(-(tileSizeInUnits / 2), 0.0f, -(tileSizeInUnits / 2), 
+        tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, gameManager.sizeInTiles);
+
+    this->right_orientation = generate_prism_vertices(0.0f, tileSizeInUnits / 2, -(tileSizeInUnits / 2),
+        tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, gameManager.sizeInTiles);
+}
 
 void ObjectManager::unbind_buffers() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

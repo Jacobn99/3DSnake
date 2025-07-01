@@ -17,8 +17,8 @@ enum Attribute {
 class Object 
 {
 public:
-	Object(int vertexCount, Shader* shader, AppContext appContext);
-	Object(unsigned int VBO, unsigned int VAO, int vertexCount, Shader* shader, AppContext appContext);
+	Object(int vertexCount, Shader& shader, AppContext appContext);
+	Object(unsigned int VBO, unsigned int VAO, int vertexCount, Shader& shader, AppContext appContext);
 	void set_EBO(unsigned int EBO);
 	void set_VBO(unsigned int VBO);
 	void set_VAO(unsigned int VAO);
@@ -27,7 +27,7 @@ public:
 	unsigned int get_VAO();
 	void set_texture(Texture texture);
 	Texture get_texture();
-	TextureManager* get_texture_manager();
+	TextureManager& get_texture_manager();
 	void generate_buffers(float* vertices, size_t size, GLenum drawType);
 	void set_position(glm::vec3 position);
 	void set_color(glm::vec3 color);
@@ -63,9 +63,9 @@ private:
 	/*glm::vec3 queuedTranslation;
 	glm::vec3 queuedScale;*/
 	int vertexCount;
-	Shader* shader;
+	Shader& shader;
 	Texture texture;
-	TextureManager* textureManager;
+	TextureManager& textureManager;
 };
 
 #endif

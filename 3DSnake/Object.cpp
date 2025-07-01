@@ -11,7 +11,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 
-Object::Object(int vertexCount, Shader* shader, AppContext appContext) {
+Object::Object(int vertexCount, Shader& shader, AppContext appContext) {
     this->VBO = 0;
     this->VAO = 0;
     this->EBO = 0;
@@ -33,7 +33,7 @@ Object::Object(int vertexCount, Shader* shader, AppContext appContext) {
     //this->texture = nullptr;
 }
 
-Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader* shader, AppContext appContext) {
+Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader& shader, AppContext appContext) {
     this->VBO = 0;
     this->VAO = 0;
     this->EBO = 0;

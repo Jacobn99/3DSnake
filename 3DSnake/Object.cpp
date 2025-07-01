@@ -38,6 +38,10 @@ Object::Object(int vertexCount, Shader shader, TextureManager textureManager) {
     this->isTextured = false;
     this->color = this->default_color;
     this->textureManager = textureManager;
+
+    this->queuedTranslation = glm::vec3(1.0f);
+    this->queuedScale = glm::vec3(1.0f);
+    this->isQueuedTransformation = false;
     //this->texture = nullptr;
 }
 
@@ -59,6 +63,9 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shad
     this->isTextured = false;
     this->color = this->default_color;
     this->textureManager = textureManager;
+
+    this->queuedTranslation = glm::vec3(1.0f);
+    this->queuedScale = glm::vec3(1.0f);
 }
 
 void Object::set_EBO(unsigned int EBO) {
@@ -119,8 +126,8 @@ Texture Object::get_texture() {
 	assert(this->isTextured);
     return this->texture;
 }
-void Object::set_position(glm::vec3 position) {
-    this->model = glm::translate(this->model, position);
+void Object::set_model(glm::mat4 model) {
+    this->model = model;
 }
 bool Object::is_textured() {
 	return this->isTextured;
@@ -128,7 +135,7 @@ bool Object::is_textured() {
 TextureManager* Object::get_texture_manager() {
     return &this->textureManager;
 }
-void Object::generate_buffers(float vertices[], size_t size, GLenum drawType) {
+void Object::generate_buffers(float* vertices, size_t size, GLenum drawType) {
     glGenVertexArrays(1, &(this->VAO));
     this->VAO_set = true;
     glBindVertexArray(this->get_VAO());
@@ -151,4 +158,15 @@ void Object::delete_object() {
     if(this->isTextured) {
 		this->texture.delete_texture();
 	}
+}
+void Object::set_scale(glm::vec3 scale) {
+    //this->model = glm::scale(this->model, scale);
+    this->queuedScale = scale;
+    this->isQueuedTransformation = true;
+    printf("scale.z (in function): %f\n", this->queuedScale.z);
+}
+void Object::set_position(glm::vec3 position) {
+    //this->model = glm::translate(this->model, position);
+    this->queuedTranslation = position;
+    this->isQueuedTransformation = true;
 }

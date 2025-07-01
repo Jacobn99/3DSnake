@@ -9,6 +9,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\stb_image.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
 
 //bool is_object(Object object) {
 //    return true;
@@ -51,14 +52,25 @@ void add_default_attributes(Object object) {
     glEnableVertexAttribArray(1);
     unbind_buffers();
 }
-void draw_object(Object object) {
-    assert(object.is_VBO_set() && object.is_VAO_set());
-    bind_VAO(object);
-    object.get_shader().setVec3("inputColor", object.get_color());
-    object.get_shader().setMat4("model", object.get_model());
-    if (object.is_textured()) {
-        object.get_texture_manager()->use_2D_texture(object.get_texture(), object.get_shader());
+void draw_object(Object* object) {
+    assert((*object).is_VBO_set() && (*object).is_VAO_set());
+    //printf("scale.z: %f\n", (*object).queuedScale.z);
+    //(*object).set_model(glm::scale(glm::translate((*object).get_model(), (*object).queuedTranslation), (*object).queuedScale));
+    if ((*object).isQueuedTransformation) {
+        (*object).set_model(glm::scale(glm::translate((*object).get_model(), (*object).queuedTranslation), (*object).queuedScale));
+        (*object).isQueuedTransformation = false;
     }
-    glDrawArrays(GL_TRIANGLES, 0, object.get_vertexCount());
-    object.get_shader().setVec3("inputColor", object.default_color);
+
+
+    //(*object).queuedScale = glm::vec3(1.0f);
+    //(*object).queuedTranslation = glm::vec3(1.0f);
+
+    bind_VAO((*object));
+    (*object).get_shader().setVec3("inputColor", (*object).get_color());
+    (*object).get_shader().setMat4("model", (*object).get_model());
+    if ((*object).is_textured()) {
+        (*object).get_texture_manager()->use_2D_texture((*object).get_texture(), (*object).get_shader());
+    }
+    glDrawArrays(GL_TRIANGLES, 0, (*object).get_vertexCount());
+    (*object).get_shader().setVec3("inputColor", (*object).default_color);
 }

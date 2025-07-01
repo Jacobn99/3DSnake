@@ -7,29 +7,30 @@
 #include <stdio.h>
 #include <iostream>
 #include <queue>
-#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
+//#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
 
 class AppContext; // Forward declaration of AppContext
+enum Faces;
 
 class Player {
 public:
 	Player(AppContext appContext);
 	unsigned int get_length();
-	glm::vec2 get_movement_direction();
+	Faces get_movement_direction();
 	std::vector<int>* get_body_indexes();
-	std::vector<PrismObject>* get_body_cubes();
+	std::vector<ExtendablePrismObject> get_body_cubes();
 	void remove_tail();
-	void move_head();
+	void move_body();
 	void draw_body();
-	//void add_body_part();
+	void add_body_part(ExtendablePrismObject prism, unsigned int tableIndex);
 
 private:
 	int headIndex;
-	glm::vec2 movementDirection; // has dy, dx
+	Faces currentDirection; // has dy, dx
 	int length;
 	std::vector<int> bodyIndexes;
-	std::vector<PrismObject> bodyCubes;
+	std::vector<ExtendablePrismObject> bodyCubes;
 };
 
 #endif

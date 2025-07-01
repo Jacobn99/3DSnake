@@ -3,11 +3,15 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\TextureManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 
-GameManager::GameManager(unsigned int sizeInUnits, unsigned int sizeInTiles) {
+GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 	this->sizeInTiles = sizeInTiles;
 	this->sizeInUnits = sizeInUnits;
 	this->startIndex = (this->sizeInTiles * this->sizeInTiles) / 2;
-	this->tileSizeInUnits = sizeInUnits / this->sizeInTiles;
+	this->unitsPerTile = this->sizeInUnits / this->sizeInTiles;
+	this->boardCenter = glm::vec3(0.0f, 0.0f, -4.0f);
+	this->boardTopLeft = this->boardCenter - glm::vec3((this->sizeInUnits / 2.0f) - this->unitsPerTile/2, 
+		0.0f, (this->sizeInUnits / 2.0f) - this->unitsPerTile / 2);
+	//printf("boardTopLeft: x: %f, y: %f, z: %f\n", this->boardTopLeft.x, this->boardTopLeft.y, this->boardTopLeft.z);
 }
 unsigned int GameManager::index_to_row(unsigned int index) {
 	assert(index < this->sizeInTiles * this->sizeInTiles);
@@ -17,7 +21,17 @@ unsigned int GameManager::index_to_column(unsigned int index) {
 	assert(index < sizeInTiles * sizeInTiles);
 	return index % this->sizeInTiles;
 }
-unsigned int GameManager::row_column_to_index(unsigned int row, unsigned int column) {
+unsigned int GameManager::row_col_to_index(unsigned int row, unsigned int column) {
 	assert(row < this->sizeInTiles && column < this->sizeInTiles);
 	return row * this->sizeInTiles + column;
+}
+glm::vec3 GameManager::board_to_vec3(unsigned int row, unsigned int column) {
+	glm::vec3 boardTopLeft = this->boardTopLeft;
+	float unitsPerTile = this->unitsPerTile;
+	/*printf("boardTopLeft.x: %f, column: %f, sizeInTiles: %f, result: %f\n", boardTopLeft.x, (float)column, sizeInTiles,
+		boardTopLeft.x + (float)column * sizeInTiles, boardTopLeft.y + 1.0f);*/
+	glm::vec3 result = glm::vec3(boardTopLeft.x + (float)column * unitsPerTile, 0.0f, boardTopLeft.z +	row * unitsPerTile);
+	//printf("result: x: %f, y: %f, z:%f\n", result.x, result.y, result.z);
+
+	return result;
 }

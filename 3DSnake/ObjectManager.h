@@ -2,6 +2,7 @@
 #define OBJECT_MANAGER_H
 
 class Object;
+class PrismObject;
 
 //bool is_object(Object object);
 void unbind_buffers();
@@ -10,7 +11,6 @@ void bind_VAO(Object object);
 void bind_VBO(Object object);
 void bind_EBO(Object object);
 void add_default_attributes(Object object);
-void generate_buffers(Object object, float vertices[], size_t size, GLenum drawType);
-void draw_object(Object object);
+void draw_object(Object* object);
 
 #endif

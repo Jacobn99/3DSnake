@@ -14,6 +14,8 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Texture.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Player.h"
+
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -46,6 +48,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void processInput(GLFWwindow* window)
 {
     float cameraSpeed = 2.5f * deltaTime;
+    float snakeSpeed = 2.5 * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -94,14 +97,14 @@ int main()
 {
     unsigned int texture1, texture2;
 
-    float vertices[] = { 
+ /*   float vertices[] = { 
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-    };
+    };*/
     
     unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,   // first triangle
@@ -160,9 +163,12 @@ int main()
 
     //Object creation
 	PrismObject prism = PrismObject(36, ourShader, textureManager);
-	prism.generate_prism(-(sizeInUnits/2), (sizeInUnits / 2), -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
-    prism.set_position(glm::vec3(0.0f, 0.0f, -4.0f));
+	generate_prism(&prism, -(sizeInUnits/2), (sizeInUnits / 2), -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
+    prism.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
     prism.set_texture(texture);
+
+    //Player creation
+    Player player = Player(appContext);
 
     stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
@@ -181,6 +187,8 @@ int main()
     cameraRight = glm::normalize(glm::cross(up, cameraDirection));
     cameraUp = glm::cross(cameraDirection, cameraRight);
 	pitch = -60.0f; // Set pitch to look down
+    
+    player.move_body();
 
     //Ensures viewport resizes with window
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -199,6 +207,7 @@ int main()
 
         //Input
         processInput(window);
+        //player.move_body();
 
         const float radius = 10.0f;
         float camX = sin(glfwGetTime()) * radius;
@@ -221,7 +230,8 @@ int main()
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        draw_object(prism);
+        draw_object(&prism);
+        player.draw_body();
 
         glBindVertexArray(0);
 

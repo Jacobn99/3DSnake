@@ -17,20 +17,19 @@ class Player {
 public:
 	Player(AppContext appContext);
 	unsigned int get_length();
-	Faces get_movement_direction();
 	std::vector<int>* get_body_indexes();
-	std::vector<ExtendablePrismObject> get_body_cubes();
+	std::vector<PrismObject> get_body_cubes();
 	void remove_tail();
-	void move_body();
+	void move_body(float deltaTime);
 	void draw_body();
-	void add_body_part(ExtendablePrismObject prism, unsigned int tableIndex);
+	void add_body_part(PrismObject prism, unsigned int tableIndex);
 
 private:
 	int headIndex;
-	Faces currentDirection; // has dy, dx
+	//Faces currentDirection; // has dy, dx
 	int length;
 	std::vector<int> bodyIndexes;
-	std::vector<ExtendablePrismObject> bodyCubes;
+	std::vector<PrismObject> bodyCubes;
 };
 
 #endif

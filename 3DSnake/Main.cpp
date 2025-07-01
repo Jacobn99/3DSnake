@@ -188,8 +188,6 @@ int main()
     cameraUp = glm::cross(cameraDirection, cameraRight);
 	pitch = -60.0f; // Set pitch to look down
     
-    player.move_body();
-
     //Ensures viewport resizes with window
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     while (!glfwWindowShouldClose(window))
@@ -207,7 +205,7 @@ int main()
 
         //Input
         processInput(window);
-        //player.move_body();
+        player.move_body(deltaTime);
 
         const float radius = 10.0f;
         float camX = sin(glfwGetTime()) * radius;

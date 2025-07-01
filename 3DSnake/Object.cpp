@@ -39,8 +39,8 @@ Object::Object(int vertexCount, Shader shader, TextureManager textureManager) {
     this->color = this->default_color;
     this->textureManager = textureManager;
 
-    this->queuedTranslation = glm::vec3(1.0f);
-    this->queuedScale = glm::vec3(1.0f);
+    this->currentTranslation = glm::vec3(1.0f);
+    this->currentScale = glm::vec3(1.0f);
     this->isQueuedTransformation = false;
     //this->texture = nullptr;
 }
@@ -64,8 +64,8 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shad
     this->color = this->default_color;
     this->textureManager = textureManager;
 
-    this->queuedTranslation = glm::vec3(1.0f);
-    this->queuedScale = glm::vec3(1.0f);
+    this->currentTranslation = glm::vec3(1.0f);
+    this->currentScale = glm::vec3(1.0f);
 }
 
 void Object::set_EBO(unsigned int EBO) {
@@ -161,12 +161,12 @@ void Object::delete_object() {
 }
 void Object::set_scale(glm::vec3 scale) {
     //this->model = glm::scale(this->model, scale);
-    this->queuedScale = scale;
+    this->currentScale = scale;
     this->isQueuedTransformation = true;
-    printf("scale.z (in function): %f\n", this->queuedScale.z);
+    //printf("scale.z (in function): %f\n", this->currentScale.z);
 }
 void Object::set_position(glm::vec3 position) {
     //this->model = glm::translate(this->model, position);
-    this->queuedTranslation = position;
+    this->currentTranslation = position;
     this->isQueuedTransformation = true;
 }

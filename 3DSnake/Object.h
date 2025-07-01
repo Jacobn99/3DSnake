@@ -44,8 +44,8 @@ public:
 	void set_scale(glm::vec3 scale);
 
 	glm::vec3 default_color = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 queuedTranslation;
-	glm::vec3 queuedScale;
+	glm::vec3 currentTranslation;
+	glm::vec3 currentScale;
 	bool isQueuedTransformation;
 
 private:

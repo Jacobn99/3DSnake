@@ -17,8 +17,8 @@ enum Attribute {
 class Object 
 {
 public:
-	Object(int vertexCount, Shader shader, TextureManager textureManager);
-	Object(unsigned int VBO, unsigned int VAO, int vertexCount, Shader shader, TextureManager textureManager);
+	Object(int vertexCount, Shader* shader, AppContext appContext);
+	Object(unsigned int VBO, unsigned int VAO, int vertexCount, Shader* shader, AppContext appContext);
 	void set_EBO(unsigned int EBO);
 	void set_VBO(unsigned int VBO);
 	void set_VAO(unsigned int VAO);
@@ -32,7 +32,7 @@ public:
 	void set_position(glm::vec3 position);
 	void set_color(glm::vec3 color);
 	glm::vec3 get_color();
-	Shader get_shader();
+	Shader* get_shader();
 	glm::mat4 get_model();
 	void set_model(glm::mat4 model);
 	int get_vertexCount();
@@ -44,7 +44,7 @@ public:
 	void set_scale(glm::vec3 scale);
 
 	glm::vec3 default_color = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 currentTranslation;
+	glm::vec3 currentPosition;
 	glm::vec3 currentScale;
 	bool isQueuedTransformation;
 
@@ -63,9 +63,9 @@ private:
 	/*glm::vec3 queuedTranslation;
 	glm::vec3 queuedScale;*/
 	int vertexCount;
-	Shader shader;
+	Shader* shader;
 	Texture texture;
-	TextureManager textureManager;
+	TextureManager* textureManager;
 };
 
 #endif

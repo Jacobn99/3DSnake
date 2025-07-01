@@ -9,21 +9,9 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\stb_image.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 
-//Potential bugs:
-// - Objects using same VBO/VAO make their own modifications that don't carry over to other objects (ex. attribute start)
-//   * solved by making these attributes pointers
-
-//Things an Object object should have:
-// - VBO (vertices immediately stored in here and then disgarded)
-// - EBO
-// - VAO
-// - Ability to add textures
-// - Ability to get VBO/EBO/VAO ID
-// - Draw function (could provide a function object (drawArrays() in default settings if NULL) )
-
-
-Object::Object(int vertexCount, Shader shader, TextureManager textureManager) {
+Object::Object(int vertexCount, Shader* shader, AppContext appContext) {
     this->VBO = 0;
     this->VAO = 0;
     this->EBO = 0;
@@ -37,15 +25,15 @@ Object::Object(int vertexCount, Shader shader, TextureManager textureManager) {
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
     this->color = this->default_color;
-    this->textureManager = textureManager;
+    this->textureManager = appContext.get_texture_manager();
 
-    this->currentTranslation = glm::vec3(1.0f);
+    this->currentPosition = glm::vec3(1.0f);
     this->currentScale = glm::vec3(1.0f);
     this->isQueuedTransformation = false;
     //this->texture = nullptr;
 }
 
-Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shader, TextureManager textureManager) {
+Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader* shader, AppContext appContext) {
     this->VBO = 0;
     this->VAO = 0;
     this->EBO = 0;
@@ -62,9 +50,9 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader shad
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
     this->color = this->default_color;
-    this->textureManager = textureManager;
+    this->textureManager = appContext.get_texture_manager();
 
-    this->currentTranslation = glm::vec3(1.0f);
+    this->currentPosition = glm::vec3(1.0f);
     this->currentScale = glm::vec3(1.0f);
 }
 
@@ -109,7 +97,7 @@ void Object::set_color(glm::vec3 color) {
 glm::vec3 Object::get_color() {
     return this->color;
 }
-Shader Object::get_shader() {
+Shader* Object::get_shader() {
     return this->shader;
 }
 glm::mat4 Object::get_model() {
@@ -133,7 +121,7 @@ bool Object::is_textured() {
 	return this->isTextured;
 }
 TextureManager* Object::get_texture_manager() {
-    return &this->textureManager;
+    return this->textureManager;
 }
 void Object::generate_buffers(float* vertices, size_t size, GLenum drawType) {
     glGenVertexArrays(1, &(this->VAO));
@@ -160,13 +148,10 @@ void Object::delete_object() {
 	}
 }
 void Object::set_scale(glm::vec3 scale) {
-    //this->model = glm::scale(this->model, scale);
     this->currentScale = scale;
     this->isQueuedTransformation = true;
-    //printf("scale.z (in function): %f\n", this->currentScale.z);
 }
 void Object::set_position(glm::vec3 position) {
-    //this->model = glm::translate(this->model, position);
-    this->currentTranslation = position;
+    this->currentPosition = position;
     this->isQueuedTransformation = true;
 }

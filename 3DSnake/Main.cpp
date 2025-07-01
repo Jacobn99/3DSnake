@@ -158,12 +158,15 @@ int main()
     Shader ourShader("shader.vert", "shader.frag");
     ourShader.use();
 
+    ObjectManager objectManager = ObjectManager();
+
     GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
-	AppContext appContext = AppContext(&gameManager, &textureManager, &ourShader);
+	AppContext appContext = AppContext(&gameManager, &textureManager, &ourShader, &objectManager);
 
     //Object creation
-	PrismObject prism = PrismObject(36, ourShader, textureManager);
-	generate_prism(&prism, -(sizeInUnits/2), (sizeInUnits / 2), -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
+	PrismObject prism = PrismObject(36, &ourShader, appContext);
+	generate_prism(&prism, appContext, -(sizeInUnits/2), (sizeInUnits / 2), 
+        -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
     prism.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
     prism.set_texture(texture);
 
@@ -228,8 +231,8 @@ int main()
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        draw_object(&prism);
-        player.draw_body();
+        objectManager.draw_object(&prism);
+        player.draw_body(appContext);
 
         glBindVertexArray(0);
 

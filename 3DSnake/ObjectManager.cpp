@@ -16,12 +16,12 @@
 //        //object.get_vertexAttributeLoc() != NULL/* && object.get_vertexAttributeStart() != NULL*/;
 //}
 
-void unbind_buffers() {
+void ObjectManager::unbind_buffers() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
-void bind_object_buffers(Object object) {
+void ObjectManager::bind_object_buffers(Object object) {
     assert(object.is_VAO_set() && object.is_VBO_set());
     if (object.is_EBO_set()) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object.get_EBO());
@@ -29,19 +29,19 @@ void bind_object_buffers(Object object) {
     glBindVertexArray(object.get_VAO());
     glBindBuffer(GL_ARRAY_BUFFER, object.get_VBO());
 }
-void bind_VAO(Object object) {
+void ObjectManager::bind_VAO(Object object) {
     assert(object.is_VAO_set());
     glBindVertexArray(object.get_VAO());
 }
-void bind_VBO(Object object) {
+void ObjectManager::bind_VBO(Object object) {
     assert(object.is_VBO_set());
     glBindBuffer(GL_ARRAY_BUFFER, object.get_VBO());
 }
-void bind_EBO(Object object) {
+void ObjectManager::bind_EBO(Object object) {
     assert(object.is_EBO_set());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object.get_EBO());
 }
-void add_default_attributes(Object object) {
+void ObjectManager::add_default_attributes(Object object) {
 	assert(object.is_VAO_set() && object.is_VBO_set() && object.get_vertexCount() > 0);
     bind_VAO(object);
     //Add vec3 as attribute to vertex object (position attribute)
@@ -52,12 +52,12 @@ void add_default_attributes(Object object) {
     glEnableVertexAttribArray(1);
     unbind_buffers();
 }
-void draw_object(Object* object) {
+void ObjectManager::draw_object(Object* object) {
     assert((*object).is_VBO_set() && (*object).is_VAO_set());
     //printf("scale.z: %f\n", (*object).queuedScale.z);
     //(*object).set_model(glm::scale(glm::translate((*object).get_model(), (*object).queuedTranslation), (*object).queuedScale));
     if ((*object).isQueuedTransformation) {
-        (*object).set_model(glm::scale(glm::translate((*object).get_model(), (*object).currentTranslation), (*object).currentScale));
+        (*object).set_model(glm::scale(glm::translate((*object).get_model(), (*object).currentPosition), (*object).currentScale));
         (*object).isQueuedTransformation = false;
     }
 
@@ -66,11 +66,11 @@ void draw_object(Object* object) {
     //(*object).queuedTranslation = glm::vec3(1.0f);
 
     bind_VAO((*object));
-    (*object).get_shader().setVec3("inputColor", (*object).get_color());
-    (*object).get_shader().setMat4("model", (*object).get_model());
+    (*(*object).get_shader()).setVec3("inputColor", (*object).get_color());
+    (*(*object).get_shader()).setMat4("model", (*object).get_model());
     if ((*object).is_textured()) {
-        (*object).get_texture_manager()->use_2D_texture((*object).get_texture(), (*object).get_shader());
+        (*object).get_texture_manager()->use_2D_texture((*object).get_texture(), (*(*object).get_shader()));
     }
     glDrawArrays(GL_TRIANGLES, 0, (*object).get_vertexCount());
-    (*object).get_shader().setVec3("inputColor", (*object).default_color);
+    (*(*object).get_shader()).setVec3("inputColor", (*object).default_color);
 }

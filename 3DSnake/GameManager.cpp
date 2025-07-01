@@ -11,7 +11,6 @@ GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 	this->boardCenter = glm::vec3(0.0f, 0.0f, -4.0f);
 	this->boardTopLeft = this->boardCenter - glm::vec3((this->sizeInUnits / 2.0f) - this->unitsPerTile/2, 
 		0.0f, (this->sizeInUnits / 2.0f) - this->unitsPerTile / 2);
-	//printf("boardTopLeft: x: %f, y: %f, z: %f\n", this->boardTopLeft.x, this->boardTopLeft.y, this->boardTopLeft.z);
 }
 unsigned int GameManager::index_to_row(unsigned int index) {
 	assert(index < this->sizeInTiles * this->sizeInTiles);
@@ -28,10 +27,7 @@ unsigned int GameManager::row_col_to_index(unsigned int row, unsigned int column
 glm::vec3 GameManager::board_to_vec3(unsigned int row, unsigned int column) {
 	glm::vec3 boardTopLeft = this->boardTopLeft;
 	float unitsPerTile = this->unitsPerTile;
-	/*printf("boardTopLeft.x: %f, column: %f, sizeInTiles: %f, result: %f\n", boardTopLeft.x, (float)column, sizeInTiles,
-		boardTopLeft.x + (float)column * sizeInTiles, boardTopLeft.y + 1.0f);*/
-	glm::vec3 result = glm::vec3(boardTopLeft.x + (float)column * unitsPerTile, 0.0f, boardTopLeft.z +	row * unitsPerTile);
-	//printf("result: x: %f, y: %f, z:%f\n", result.x, result.y, result.z);
 
+	glm::vec3 result = glm::vec3(boardTopLeft.x + (float)column * unitsPerTile, 0.0f, boardTopLeft.z +	row * unitsPerTile);
 	return result;
 }

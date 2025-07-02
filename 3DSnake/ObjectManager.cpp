@@ -17,8 +17,14 @@
 //    return true;
 //        //object.get_vertexAttributeLoc() != NULL/* && object.get_vertexAttributeStart() != NULL*/;
 //}
+
+std::vector<float>& ObjectManager::get_front_orientation() { return this->front_orientation; }
+std::vector<float>& ObjectManager::get_back_orientation() { return this->back_orientation; }
+std::vector<float>& ObjectManager::get_right_orientation() { return this->right_orientation; }
+std::vector<float>& ObjectManager::get_left_orientation() { return this->left_orientation; }
+
 void ObjectManager::generate_default_vertices(AppContext appContext) {
-    GameManager gameManager = *appContext.get_game_manager();
+    GameManager gameManager = appContext.get_game_manager();
     float tileSizeInUnits = gameManager.unitsPerTile;
 
     this->front_orientation = generate_prism_vertices(-(tileSizeInUnits/2), (tileSizeInUnits / 2), 
@@ -70,25 +76,25 @@ void ObjectManager::add_default_attributes(Object object) {
     glEnableVertexAttribArray(1);
     unbind_buffers();
 }
-void ObjectManager::draw_object(Object* object) {
-    assert((*object).is_VBO_set() && (*object).is_VAO_set());
+void ObjectManager::draw_object(Object& object) {
+    assert(object.is_VBO_set() && object.is_VAO_set());
     //printf("scale.z: %f\n", (*object).queuedScale.z);
     //(*object).set_model(glm::scale(glm::translate((*object).get_model(), (*object).queuedTranslation), (*object).queuedScale));
-    if ((*object).isQueuedTransformation) {
-        (*object).set_model(glm::scale(glm::translate((*object).get_model(), (*object).currentPosition), (*object).currentScale));
-        (*object).isQueuedTransformation = false;
+    if (object.isQueuedTransformation) {
+        object.set_model(glm::scale(glm::translate(object.get_model(), object.currentPosition), object.currentScale));
+        object.isQueuedTransformation = false;
     }
 
 
     //(*object).queuedScale = glm::vec3(1.0f);
     //(*object).queuedTranslation = glm::vec3(1.0f);
 
-    bind_VAO((*object));
-    (*(*object).get_shader()).setVec3("inputColor", (*object).get_color());
-    (*(*object).get_shader()).setMat4("model", (*object).get_model());
-    if ((*object).is_textured()) {
-        (*object).get_texture_manager()->use_2D_texture((*object).get_texture(), (*(*object).get_shader()));
+    bind_VAO(object);
+    object.get_shader().setVec3("inputColor", object.get_color());
+    object.get_shader().setMat4("model", object.get_model());
+    if (object.is_textured()) {
+        object.get_texture_manager().use_2D_texture(object.get_texture(), object.get_shader());
     }
-    glDrawArrays(GL_TRIANGLES, 0, (*object).get_vertexCount());
-    (*(*object).get_shader()).setVec3("inputColor", (*object).default_color);
+    glDrawArrays(GL_TRIANGLES, 0, object.get_vertexCount());
+    object.get_shader().setVec3("inputColor", object.default_color);
 }

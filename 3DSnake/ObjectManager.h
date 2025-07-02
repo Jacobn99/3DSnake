@@ -19,11 +19,11 @@ public:
 	void bind_VBO(Object object);
 	void bind_EBO(Object object);
 	void add_default_attributes(Object object);
-	void draw_object(Object* object);
-	//std::vector<float> get_front_orientation();
-	//std::vector<float> get_back_orientation();
-	//std::vector<float> get_right_orientation();
-	//std::vector<float> get_left_orientation();
+	void draw_object(Object& object);
+	std::vector<float>& get_front_orientation();
+	std::vector<float>& get_back_orientation();
+	std::vector<float>& get_right_orientation();
+	std::vector<float>& get_left_orientation();
 private:
 	std::vector<float> front_orientation;
 	std::vector<float> back_orientation;

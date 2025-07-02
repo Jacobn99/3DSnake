@@ -17,32 +17,16 @@
 // - Make it so a new prism is added to vector ONLY if the snake changes direction
 // - Add code to update the mesh of just the snake head and tail
 
-
-/*
-
-
-
-
-
-
-					MAKE DEFAULT ORIENTATION VERTICES
-
-					AND CHECK IF STD::VECTOR's MUST HAVE * TO MAKE REFERENCE
-
-
-
-
-*/
 void initialize_body(Player& player, AppContext appContext) {
-	GameManager gameManager = (*appContext.get_game_manager());
+	GameManager gameManager = appContext.get_game_manager();
 	PrismObject prism = PrismObject(36, appContext.get_shader(), appContext);
 	glm::vec3 startLoc = gameManager.board_to_vec3(gameManager.sizeInTiles / 2, gameManager.sizeInTiles / 2);
 	float tileSizeInUnits = gameManager.unitsPerTile;
 
-	/*generate_prism(&prism, -(tileSizeInUnits / 2), (tileSizeInUnits / 2),
-		-(tileSizeInUnits / 2), (tileSizeInUnits / 2), -(tileSizeInUnits / 2), (tileSizeInUnits / 2), gameManager.sizeInTiles);*/
-	generate_prism(prism, appContext, -(tileSizeInUnits / 2), (tileSizeInUnits / 2), -(tileSizeInUnits / 2),
-		(tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, gameManager.sizeInTiles);
+	/*generate_prism(prism, appContext, -(tileSizeInUnits / 2), (tileSizeInUnits / 2), -(tileSizeInUnits / 2),
+		(tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, gameManager.sizeInTiles);*/
+	std::vector<float>& vertices = appContext.get_object_manager().get_front_orientation();
+	generate_prism(prism, vertices, appContext);
 	prism.set_position(startLoc);
 
 	player.add_body_part(prism, gameManager.startIndex);
@@ -98,7 +82,7 @@ void Player::move_body(float deltaTime) {
 }
 void Player::draw_body(AppContext appContext) {
 	for (PrismObject prism : this->bodyCubes) {
-		(*(appContext.get_object_manager())).draw_object(&prism);
+		appContext.get_object_manager().draw_object(prism);
 	}
 }
 void Player::add_body_part(PrismObject prism, unsigned int tableIndex) {

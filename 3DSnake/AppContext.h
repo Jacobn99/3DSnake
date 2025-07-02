@@ -10,7 +10,7 @@
 
 class AppContext {
 public:
-    AppContext(GameManager& gameManager, TextureManager& textureManager, Shader& shader, ObjectManager& objectManager);
+    AppContext(GameManager* gameManager, TextureManager* textureManager, Shader* shader, ObjectManager* objectManager);
 
     GameManager& get_game_manager();
     TextureManager& get_texture_manager();
@@ -19,10 +19,10 @@ public:
     // Add more getters as needed
 
 private:
-    GameManager& gameManager;
-    TextureManager& textureManager;
-    Shader& shader;
-    ObjectManager& objectManager;
+    GameManager* gameManager;
+    TextureManager* textureManager;
+    Shader* shader;
+    ObjectManager* objectManager;
     // Add more manager pointers as needed
 };
 

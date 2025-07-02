@@ -21,11 +21,11 @@ Object::Object(int vertexCount, Shader& shader, AppContext appContext) {
     this->EBO_set = false;
 
     this->vertexCount = vertexCount;
-    this->shader = shader;
+    this->shader = &shader;
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
     this->color = this->default_color;
-    this->textureManager = appContext.get_texture_manager();
+    this->textureManager = &appContext.get_texture_manager();
 
     this->currentPosition = glm::vec3(1.0f);
     this->currentScale = glm::vec3(1.0f);
@@ -46,11 +46,11 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader& sha
     this->EBO_set = false;
 
     this->vertexCount = vertexCount;
-    this->shader = shader;
+    this->shader = &shader;
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
     this->color = this->default_color;
-    this->textureManager = appContext.get_texture_manager();
+    this->textureManager = &appContext.get_texture_manager();
 
     this->currentPosition = glm::vec3(1.0f);
     this->currentScale = glm::vec3(1.0f);
@@ -97,8 +97,8 @@ void Object::set_color(glm::vec3 color) {
 glm::vec3 Object::get_color() {
     return this->color;
 }
-Shader* Object::get_shader() {
-    return this->shader;
+Shader& Object::get_shader() {
+    return *this->shader;
 }
 glm::mat4 Object::get_model() {
     return this->model;
@@ -120,8 +120,8 @@ void Object::set_model(glm::mat4 model) {
 bool Object::is_textured() {
 	return this->isTextured;
 }
-TextureManager* Object::get_texture_manager() {
-    return this->textureManager;
+TextureManager& Object::get_texture_manager() {
+    return *this->textureManager;
 }
 void Object::generate_buffers(float* vertices, size_t size, GLenum drawType) {
     glGenVertexArrays(1, &(this->VAO));

@@ -68,20 +68,29 @@ std::vector<float> generate_prism_vertices(float xNeg, float xPos, float yNeg, f
     };
     return vertices;
 }
-void generate_prism(PrismObject* prism, AppContext appContext, float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range) {
-    (*prism).xNeg = xNeg;
-    (*prism).xPos = xPos;
-    (*prism).yNeg = yNeg;
-    (*prism).yPos = yPos;
-    (*prism).zNeg = zNeg;
-    (*prism).zPos = zPos;
+void generate_prism(PrismObject& prism, AppContext appContext, float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range) {
+    (prism).xNeg = xNeg;
+    (prism).xPos = xPos;
+    (prism).yNeg = yNeg;
+    (prism).yPos = yPos;
+    (prism).zNeg = zNeg;
+    (prism).zPos = zPos;
 
-    (*prism).vertices = generate_prism_vertices(xNeg, xPos, yNeg, yPos, zNeg, zPos, range);
+    std::vector<float> vertices = generate_prism_vertices(xNeg, xPos, yNeg, yPos, zNeg, zPos, range);
+    prism.vertices = &vertices;
 
-    (*prism).generate_buffers((*prism).vertices.data(), sizeof((*prism).vertices) * (*prism).vertices.size(), GL_STATIC_DRAW);
-    (*(appContext.get_object_manager())).add_default_attributes((*prism));
+    prism.generate_buffers((*prism.vertices).data(), sizeof(prism.vertices) * (*prism.vertices).size(), GL_STATIC_DRAW);
+    appContext.get_object_manager().add_default_attributes(prism);
 }
 
-void apply_orientation_changes(PrismObject* prism) {
+void generate_prism(PrismObject& prism, std::vector<float> vertices, AppContext appContext) {
+    prism.vertices = &vertices;
+    prism.generate_buffers(vertices.data(), (vertices).size() * sizeof(*(prism.vertices)), GL_STATIC_DRAW);
+
+    prism.generate_buffers((*prism.vertices).data(), sizeof(prism.vertices) * (*prism.vertices).size(), GL_STATIC_DRAW);
+    appContext.get_object_manager().add_default_attributes(prism);
+}
+
+void apply_orientation_changes(PrismObject& prism) {
     //prism->vertices = generate_prism_vertices((*prism).xNeg, (*prism).xPos, )
 }

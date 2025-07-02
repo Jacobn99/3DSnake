@@ -32,7 +32,7 @@ public:
 	void set_position(glm::vec3 position);
 	void set_color(glm::vec3 color);
 	glm::vec3 get_color();
-	Shader* get_shader();
+	Shader& get_shader();
 	glm::mat4 get_model();
 	void set_model(glm::mat4 model);
 	int get_vertexCount();
@@ -63,9 +63,9 @@ private:
 	/*glm::vec3 queuedTranslation;
 	glm::vec3 queuedScale;*/
 	int vertexCount;
-	Shader& shader;
+	Shader* shader;
 	Texture texture;
-	TextureManager& textureManager;
+	TextureManager* textureManager;
 };
 
 #endif

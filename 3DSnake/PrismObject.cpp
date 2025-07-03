@@ -69,18 +69,12 @@ std::vector<float> generate_prism_vertices(float xNeg, float xPos, float yNeg, f
     return vertices;
 }
 void generate_prism(PrismObject& prism, AppContext appContext, float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range) {
-    (prism).xNeg = xNeg;
-    (prism).xPos = xPos;
-    (prism).yNeg = yNeg;
-    (prism).yPos = yPos;
-    (prism).zNeg = zNeg;
-    (prism).zPos = zPos;
-
     std::vector<float> vertices = generate_prism_vertices(xNeg, xPos, yNeg, yPos, zNeg, zPos, range);
     prism.vertices = &vertices;
 
     prism.generate_buffers((*prism.vertices).data(), sizeof(prism.vertices) * (*prism.vertices).size(), GL_STATIC_DRAW);
     appContext.get_object_manager().add_default_attributes(prism);
+    prism.orientationChanged = false;
 }
 
 void generate_prism(PrismObject& prism, std::vector<float> vertices, AppContext appContext) {
@@ -89,8 +83,25 @@ void generate_prism(PrismObject& prism, std::vector<float> vertices, AppContext 
 
     prism.generate_buffers((*prism.vertices).data(), sizeof(prism.vertices) * (*prism.vertices).size(), GL_STATIC_DRAW);
     appContext.get_object_manager().add_default_attributes(prism);
+    prism.orientationChanged = false;
 }
 
-void apply_orientation_changes(PrismObject& prism) {
-    //prism->vertices = generate_prism_vertices((*prism).xNeg, (*prism).xPos, )
+void change_orientation(PrismObject& prism, Direction direction, AppContext appContext) {
+	ObjectManager& objectManager = appContext.get_object_manager();
+    switch (direction) {
+    case FORWARD:
+        prism.vertices = &objectManager.get_front_orientation();
+        break;
+    case BACKWARD:
+        prism.vertices = &objectManager.get_back_orientation();
+        break;
+    case LEFT:
+        prism.vertices = &objectManager.get_left_orientation();
+        break;
+    case RIGHT:
+        prism.vertices = &objectManager.get_right_orientation();
+        break;
+    }
+    prism.orientationChanged = true;
+    //objectManager.update_VBO(prism, *(prism.vertices), GL_STATIC_DRAW);
 }

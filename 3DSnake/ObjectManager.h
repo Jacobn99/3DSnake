@@ -14,12 +14,14 @@ public:
 	//bool is_object(Object object);
 	void generate_default_vertices(AppContext appContext);
 	void unbind_buffers();
+	void update_VBO(Object& object, std::vector<float>& vertices, GLenum drawType);
 	void bind_object_buffers(Object object);
 	void bind_VAO(Object object);
 	void bind_VBO(Object object);
 	void bind_EBO(Object object);
 	void add_default_attributes(Object object);
 	void draw_object(Object& object);
+	void draw_prism(PrismObject& prismObject);
 	std::vector<float>& get_front_orientation();
 	std::vector<float>& get_back_orientation();
 	std::vector<float>& get_right_orientation();

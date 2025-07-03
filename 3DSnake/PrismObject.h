@@ -6,23 +6,20 @@
 #include <stdio.h>
 #include <iostream>
 
+//enum Direction { FORWARD, BACKWARD, LEFT, RIGHT }; // Define the Direction enum
+
 class PrismObject : public Object {
 public:
 	using Object::Object;
 	std::vector<float>* vertices;
-	float xNeg;
-	float xPos;
-	float yNeg;
-	float yPos;
-	float zNeg;
-	float zPos;
+	bool orientationChanged;
 private:
 	bool changeQueued;
 };
 
 void generate_prism(PrismObject& prism, AppContext appContext, float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range);
 void generate_prism(PrismObject& prism, std::vector<float> vertices, AppContext appContext);
-void apply_orientation_changes(PrismObject& prism);
+void change_orientation(PrismObject& prism, Direction direction, AppContext appContext);
 std::vector<float> generate_prism_vertices(float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range);
 
 

@@ -10,6 +10,7 @@
 
 class AppContext {
 public:
+    AppContext() = default;
     AppContext(GameManager* gameManager, TextureManager* textureManager, Shader* shader, ObjectManager* objectManager);
 
     GameManager& get_game_manager();

@@ -10,10 +10,10 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
 
 class AppContext; // Forward declaration of AppContext
-enum Direction { FORWARD, BACKWARD, LEFT, RIGHT }; // Define the Direction enum
 
 class Player {
 public:
+	Player() = default;
 	Player(AppContext appContext);
 	unsigned int get_length();
 	std::vector<int>& get_body_indexes();
@@ -22,6 +22,8 @@ public:
 	void move_body(float deltaTime);
 	void draw_body(AppContext appContext);
 	void add_body_part(PrismObject prism, unsigned int tableIndex);
+	void change_direction(Direction direction, AppContext appContext);
+	Direction get_direction();
 
 private:
 	int headIndex;

@@ -38,6 +38,8 @@ float lastX = 400, lastY = 300;
 float yaw = -90.0f;
 float pitch = 0.0f;
 bool firstMouse = true;
+Player player;
+AppContext appContext;
 
 // A callback function to resize viewport with window upon resize
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -60,8 +62,14 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        printf("sigma\n");
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && player.get_direction() != FORWARD)
+        player.change_direction(FORWARD, appContext);
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) && player.get_direction() != BACKWARD)
+        player.change_direction(BACKWARD, appContext);
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) && player.get_direction() != LEFT)
+        player.change_direction(LEFT, appContext);
+    else if (glfwGetKey(window, GLFW_KEY_RIGHT) && player.get_direction() != RIGHT)
+        player.change_direction(RIGHT, appContext);
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
@@ -151,7 +159,7 @@ int main()
     ObjectManager objectManager = ObjectManager();
 
     GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
-	AppContext appContext = AppContext(&gameManager, &textureManager, &ourShader, &objectManager);
+	appContext = AppContext(&gameManager, &textureManager, &ourShader, &objectManager);
     objectManager.generate_default_vertices(appContext);
 
     //Object creation
@@ -162,7 +170,7 @@ int main()
     prism.set_texture(texture);
 
     //Player creation
-    Player player = Player(appContext);
+    player = Player(appContext);
 
     stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);

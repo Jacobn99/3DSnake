@@ -20,11 +20,9 @@
 void initialize_body(Player& player, AppContext appContext) {
 	GameManager gameManager = appContext.get_game_manager();
 	PrismObject prism = PrismObject(36, appContext.get_shader(), appContext);
-	glm::vec3 startLoc = gameManager.board_to_vec3(gameManager.sizeInTiles / 2, gameManager.sizeInTiles / 2);
-	float tileSizeInUnits = gameManager.unitsPerTile;
+	glm::vec3 startLoc = gameManager.board_to_vec3(gameManager.sizeInTiles / 2, gameManager.sizeInTiles / 2) + 
+		gameManager.get_position_offset(player.get_direction());
 
-	/*generate_prism(prism, appContext, -(tileSizeInUnits / 2), (tileSizeInUnits / 2), -(tileSizeInUnits / 2),
-		(tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, gameManager.sizeInTiles);*/
 	std::vector<float>& vertices = appContext.get_object_manager().get_front_orientation();
 	generate_prism(prism, vertices, appContext);
 	prism.set_position(startLoc);
@@ -82,11 +80,23 @@ void Player::move_body(float deltaTime) {
 }
 void Player::draw_body(AppContext appContext) {
 	for (PrismObject prism : this->bodyCubes) {
-		appContext.get_object_manager().draw_object(prism);
+		appContext.get_object_manager().draw_prism(prism);
 	}
 }
 void Player::add_body_part(PrismObject prism, unsigned int tableIndex) {
 	this->bodyCubes.push_back(prism);
 	this->bodyIndexes.push_back(tableIndex);
 	this->length++;
+}
+void Player::change_direction(Direction direction, AppContext appContext) {
+	PrismObject& prism = this->bodyCubes.front();
+	change_orientation(prism, direction, appContext);
+	//Undo previous position offset
+	prism.set_position(prism.get_position() - appContext.get_game_manager().get_position_offset(this->currentDirection));
+	this->currentDirection = direction;
+	prism.set_scale(glm::vec3(1.0f, 1.0f, 1.0f));
+	prism.set_position(prism.get_position() + appContext.get_game_manager().get_position_offset(direction));
+}
+Direction Player::get_direction() {
+	return this->currentDirection;
 }

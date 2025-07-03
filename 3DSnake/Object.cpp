@@ -155,3 +155,6 @@ void Object::set_position(glm::vec3 position) {
     this->currentPosition = position;
     this->isQueuedTransformation = true;
 }
+glm::vec3 Object::get_position() {
+    return this->currentPosition;
+}

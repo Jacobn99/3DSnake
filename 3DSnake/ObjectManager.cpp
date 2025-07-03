@@ -30,8 +30,8 @@ void ObjectManager::generate_default_vertices(AppContext appContext) {
     this->front_orientation = generate_prism_vertices(-(tileSizeInUnits/2), (tileSizeInUnits / 2), 
         -(tileSizeInUnits / 2),(tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, gameManager.sizeInTiles);
 
-    this->back_orientation = generate_prism_vertices(0.0f, tileSizeInUnits, -(tileSizeInUnits / 2),
-        (tileSizeInUnits / 2), 0.0f, tileSizeInUnits, gameManager.sizeInTiles);
+    this->back_orientation = generate_prism_vertices(-(tileSizeInUnits / 2), (tileSizeInUnits / 2),
+        -(tileSizeInUnits / 2), (tileSizeInUnits / 2), 0.0f, (tileSizeInUnits), gameManager.sizeInTiles);
 
     this->left_orientation = generate_prism_vertices(-(tileSizeInUnits / 2), 0.0f, -(tileSizeInUnits / 2), 
         tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, gameManager.sizeInTiles);
@@ -85,10 +85,6 @@ void ObjectManager::draw_object(Object& object) {
         object.isQueuedTransformation = false;
     }
 
-
-    //(*object).queuedScale = glm::vec3(1.0f);
-    //(*object).queuedTranslation = glm::vec3(1.0f);
-
     bind_VAO(object);
     object.get_shader().setVec3("inputColor", object.get_color());
     object.get_shader().setMat4("model", object.get_model());
@@ -97,4 +93,19 @@ void ObjectManager::draw_object(Object& object) {
     }
     glDrawArrays(GL_TRIANGLES, 0, object.get_vertexCount());
     object.get_shader().setVec3("inputColor", object.default_color);
+}
+
+void ObjectManager::update_VBO(Object& object, std::vector<float>& vertices, GLenum drawType) {
+    assert(object.is_VBO_set());
+	bind_VBO(object);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) * vertices.size(), vertices.data(), drawType);
+    unbind_buffers();
+
+}
+void ObjectManager::draw_prism(PrismObject& prism) {
+    if (prism.orientationChanged) {
+        update_VBO(prism, *(prism.vertices), GL_STATIC_DRAW);
+        prism.orientationChanged = false;
+    }
+    draw_object(prism);
 }

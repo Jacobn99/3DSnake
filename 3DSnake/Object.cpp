@@ -24,13 +24,12 @@ Object::Object(int vertexCount, Shader& shader, AppContext appContext) {
     this->shader = &shader;
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
-    this->color = this->default_color;
+    this->color = appContext.get_object_manager().get_default_color();
     this->textureManager = &appContext.get_texture_manager();
 
     this->currentPosition = glm::vec3(1.0f);
     this->currentScale = glm::vec3(1.0f);
     this->isQueuedTransformation = false;
-    //this->texture = nullptr;
 }
 
 Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader& shader, AppContext appContext) {
@@ -49,11 +48,12 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader& sha
     this->shader = &shader;
     this->model = glm::mat4(1.0f);
     this->isTextured = false;
-    this->color = this->default_color;
+    this->color = appContext.get_object_manager().get_default_color();
     this->textureManager = &appContext.get_texture_manager();
 
     this->currentPosition = glm::vec3(1.0f);
     this->currentScale = glm::vec3(1.0f);
+    this->isQueuedTransformation = false;
 }
 
 void Object::set_EBO(unsigned int EBO) {
@@ -100,11 +100,20 @@ glm::vec3 Object::get_color() {
 Shader& Object::get_shader() {
     return *this->shader;
 }
+void Object::set_shader(Shader* shader) {
+    this->shader = shader;
+}
 glm::mat4 Object::get_model() {
     return this->model;
 }
+void Object::set_model(glm::mat4 model) {
+    this->model = model;
+}
 int Object::get_vertexCount() {
     return this->vertexCount;
+}
+void Object::set_vertexCount(int vertexCount) {
+	this->vertexCount = vertexCount;
 }
 void Object::set_texture(Texture texture) {
     this->texture = texture;
@@ -114,14 +123,14 @@ Texture Object::get_texture() {
 	assert(this->isTextured);
     return this->texture;
 }
-void Object::set_model(glm::mat4 model) {
-    this->model = model;
-}
 bool Object::is_textured() {
 	return this->isTextured;
 }
 TextureManager& Object::get_texture_manager() {
     return *this->textureManager;
+}
+void Object::set_texture_manager(TextureManager* textureManager) {
+    this->textureManager = textureManager;
 }
 void Object::generate_buffers(float* vertices, size_t size, GLenum drawType) {
     glGenVertexArrays(1, &(this->VAO));

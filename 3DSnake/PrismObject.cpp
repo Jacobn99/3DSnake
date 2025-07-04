@@ -11,6 +11,9 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 
+PrismObject::PrismObject(int vertexCount, Shader& shader, AppContext appContext) : Object(vertexCount, shader, appContext) {
+    this->orientationChanged = false;
+}
 
 //After making vertices, go through every one and look for value where x = xNeg, x = xPos and so one for each coordinate. 
 //Then store xNeg, xPos, yNeg, yPos, zNeg, zPos lists of indexes to edit when extending a prism in that direction
@@ -74,10 +77,10 @@ void generate_prism(PrismObject& prism, AppContext appContext, float xNeg, float
 
     prism.generate_buffers((*prism.vertices).data(), sizeof(prism.vertices) * (*prism.vertices).size(), GL_STATIC_DRAW);
     appContext.get_object_manager().add_default_attributes(prism);
-    prism.orientationChanged = false;
+    //prism.orientationChanged = false;
 }
 
-void generate_prism(PrismObject& prism, std::vector<float> vertices, AppContext appContext) {
+void generate_prism(PrismObject& prism, std::vector<float>& vertices, AppContext appContext) {
     prism.vertices = &vertices;
     prism.generate_buffers(vertices.data(), (vertices).size() * sizeof(*(prism.vertices)), GL_STATIC_DRAW);
 
@@ -86,7 +89,7 @@ void generate_prism(PrismObject& prism, std::vector<float> vertices, AppContext 
     prism.orientationChanged = false;
 }
 
-void change_orientation(PrismObject& prism, Direction direction, AppContext appContext) {
+void set_orientation(PrismObject& prism, Direction direction, AppContext appContext) {
 	ObjectManager& objectManager = appContext.get_object_manager();
     switch (direction) {
     case FORWARD:
@@ -103,5 +106,4 @@ void change_orientation(PrismObject& prism, Direction direction, AppContext appC
         break;
     }
     prism.orientationChanged = true;
-    //objectManager.update_VBO(prism, *(prism.vertices), GL_STATIC_DRAW);
 }

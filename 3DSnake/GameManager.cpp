@@ -3,6 +3,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\TextureManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Player.h"
 
 GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 	this->sizeInTiles = sizeInTiles;
@@ -36,7 +37,7 @@ glm::vec3 GameManager::board_to_vec3(unsigned int row, unsigned int column) {
 	glm::vec3 result = glm::vec3(boardTopLeft.x + (float)column * unitsPerTile, 0.0f, boardTopLeft.z +	row * unitsPerTile);
 	return result;
 }
-glm::vec3 GameManager::get_position_offset(Direction direction) {
+glm::vec3 GameManager::get_orientation_offset(Direction direction) {
 	switch (direction) {
 	case FORWARD: 
 		return this->frontPositionOffset;

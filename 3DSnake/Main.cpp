@@ -62,13 +62,13 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && player.get_direction() != FORWARD)
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && player.get_head_direction() != FORWARD)
         player.change_direction(FORWARD, appContext);
-    else if (glfwGetKey(window, GLFW_KEY_DOWN) && player.get_direction() != BACKWARD)
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) && player.get_head_direction() != BACKWARD)
         player.change_direction(BACKWARD, appContext);
-    else if (glfwGetKey(window, GLFW_KEY_LEFT) && player.get_direction() != LEFT)
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) && player.get_head_direction() != LEFT)
         player.change_direction(LEFT, appContext);
-    else if (glfwGetKey(window, GLFW_KEY_RIGHT) && player.get_direction() != RIGHT)
+    else if (glfwGetKey(window, GLFW_KEY_RIGHT) && player.get_head_direction() != RIGHT)
         player.change_direction(RIGHT, appContext);
 }
 

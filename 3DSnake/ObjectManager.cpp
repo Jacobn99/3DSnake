@@ -92,7 +92,7 @@ void ObjectManager::draw_object(Object& object) {
         object.get_texture_manager().use_2D_texture(object.get_texture(), object.get_shader());
     }
     glDrawArrays(GL_TRIANGLES, 0, object.get_vertexCount());
-    object.get_shader().setVec3("inputColor", object.default_color);
+    object.get_shader().setVec3("inputColor", object.get_color());
 }
 
 void ObjectManager::update_VBO(Object& object, std::vector<float>& vertices, GLenum drawType) {
@@ -108,4 +108,7 @@ void ObjectManager::draw_prism(PrismObject& prism) {
         prism.orientationChanged = false;
     }
     draw_object(prism);
+}
+glm::vec3 ObjectManager::get_default_color() { 
+    return this->default_color;
 }

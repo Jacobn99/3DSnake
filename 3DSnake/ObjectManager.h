@@ -13,6 +13,7 @@ class ObjectManager {
 public:
 	//bool is_object(Object object);
 	void generate_default_vertices(AppContext appContext);
+	glm::vec3 get_default_color();
 	void unbind_buffers();
 	void update_VBO(Object& object, std::vector<float>& vertices, GLenum drawType);
 	void bind_object_buffers(Object object);
@@ -27,6 +28,7 @@ public:
 	std::vector<float>& get_right_orientation();
 	std::vector<float>& get_left_orientation();
 private:
+	glm::vec3 default_color = glm::vec3(0.0f, 0.0f, 0.0f);
 	std::vector<float> front_orientation;
 	std::vector<float> back_orientation;
 	std::vector<float> right_orientation;

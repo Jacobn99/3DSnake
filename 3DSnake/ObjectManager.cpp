@@ -18,10 +18,10 @@
 //        //object.get_vertexAttributeLoc() != NULL/* && object.get_vertexAttributeStart() != NULL*/;
 //}
 
-std::vector<float>& ObjectManager::get_front_orientation() { return this->front_orientation; }
-std::vector<float>& ObjectManager::get_back_orientation() { return this->back_orientation; }
-std::vector<float>& ObjectManager::get_right_orientation() { return this->right_orientation; }
-std::vector<float>& ObjectManager::get_left_orientation() { return this->left_orientation; }
+//std::vector<float>& ObjectManager::get_front_orientation() { return this->front_orientation; }
+//std::vector<float>& ObjectManager::get_back_orientation() { return this->back_orientation; }
+//std::vector<float>& ObjectManager::get_right_orientation() { return this->right_orientation; }
+//std::vector<float>& ObjectManager::get_left_orientation() { return this->left_orientation; }
 
 void ObjectManager::generate_default_vertices(AppContext appContext) {
     GameManager gameManager = appContext.get_game_manager();
@@ -111,4 +111,12 @@ void ObjectManager::draw_prism(PrismObject& prism) {
 }
 glm::vec3 ObjectManager::get_default_color() { 
     return this->default_color;
+}
+std::vector<float>& ObjectManager::get_orientation(Direction direction) {
+    switch (direction) {
+    case FORWARD: return this->front_orientation;
+    case BACKWARD: return this->back_orientation;
+    case LEFT: return this->left_orientation;
+    case RIGHT: return this->right_orientation;
+    }
 }

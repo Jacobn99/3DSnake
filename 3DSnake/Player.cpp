@@ -18,20 +18,16 @@
 
 void initialize_body(Player& player, AppContext appContext) {
 	GameManager gameManager = appContext.get_game_manager();
-	PrismObject prism = PrismObject(36, appContext.get_shader(), appContext);
-	glm::vec3 startLoc = gameManager.board_to_vec3(gameManager.sizeInTiles / 2, gameManager.sizeInTiles / 2) + 
-		gameManager.get_orientation_offset(player.get_head_direction());
+	SnakeScaleObject head = SnakeScaleObject(glm::vec2(gameManager.sizeInTiles / 2, gameManager.sizeInTiles / 2), 
+		gameManager.defaultDirection, 36, appContext.get_shader(), appContext);
 
-	std::vector<float>& vertices = appContext.get_object_manager().get_front_orientation();
-	generate_prism(prism, vertices, appContext);
-	prism.set_position(startLoc);
-
-	player.add_body_part(prism, gameManager.startIndex, true);
+	generate_snake_scale(head, appContext);
+	player.add_body_part(head, gameManager.startIndex, true);
 }
 
 Player::Player(AppContext appContext) {
-	this->bodyIndexes = std::vector<int>();
-	this->bodyCubes = std::deque<PrismObject>();
+	//this->bodyIndexes = std::vector<int>();
+	this->bodyCubes = std::deque<SnakeScaleObject>();
 	this->length = 0;
 	this->speed = 0.5f; // 0.5 units per second
 	this->headDirection = FORWARD;
@@ -41,10 +37,10 @@ Player::Player(AppContext appContext) {
 unsigned int Player::get_length() {
 	return this->length;
 }
-std::vector<int>& Player::get_body_indexes() {
-	return this->bodyIndexes;
-}
-std::deque<PrismObject>& Player::get_body_cubes() {
+//std::vector<int>& Player::get_body_indexes() {
+//	return this->bodyIndexes;
+//}
+std::deque<SnakeScaleObject>& Player::get_body_cubes() {
 	return this->bodyCubes;
 }
 //void Player::remove_tail() {
@@ -54,7 +50,7 @@ std::deque<PrismObject>& Player::get_body_cubes() {
 //	this->bodyCubes.pop_back();*/
 //;}
 void Player::move_body(float deltaTime) {
-	PrismObject& prism = this->bodyCubes.back();
+	SnakeScaleObject& head = this->bodyCubes.back();
 
 	glm::vec3 scaleChange;
 	glm::vec3 singletonPositionChange;
@@ -77,35 +73,34 @@ void Player::move_body(float deltaTime) {
 			singletonPositionChange = glm::vec3(this->speed * deltaTime, 0.0f, 0.0f);
 			break;
 	}
-	if(length > 1) (prism).set_scale((prism).currentScale + scaleChange);
-	else prism.set_position(prism.get_position() + singletonPositionChange);
+	if(length > 1) (head).set_scale((head).currentScale + scaleChange);
+	else head.set_position(head.get_position() + singletonPositionChange);
 }
 void Player::draw_body(AppContext appContext) {
-	for (PrismObject prism : this->bodyCubes) {
-		appContext.get_object_manager().draw_prism(prism);
+	for (SnakeScaleObject scale : this->bodyCubes) {
+		appContext.get_object_manager().draw_prism(scale);
 	}
 }
-void Player::add_body_part(PrismObject prism, unsigned int tableIndex, bool isGrowing) {
-	this->bodyCubes.push_back(prism);
-	this->bodyIndexes.push_back(tableIndex);
+void Player::add_body_part(SnakeScaleObject scale, unsigned int tableIndex, bool isGrowing) {
+	this->bodyCubes.push_back(scale);
+	//this->bodyIndexes.push_back(tableIndex);
 	if (isGrowing) this->length++;
 }
-//void Player::add_body_part(unsigned int tableIndex, AppContext appContext, bool isGrowing) {
-//	GameManager gameManager = appContext.get_game_manager();
-//	PrismObject prism = PrismObject(36, appContext.get_shader(), appContext);
-//
-//	
-//	glm::vec3 headLoc = this->bodyCubes.back().get_position()
-//	glm::vec3 startLoc = 
-//
-//	set_orientation(prism, this->headDirection, appContext);
-//	generate_prism(prism, *prism.vertices, appContext);
-//	prism.set_position(startLoc);
-//
-//	this->bodyCubes.push_back(prism);
-//	this->bodyIndexes.push_back(tableIndex);
-//	if(isGrowing) this->length++;
-//}
+void Player::add_body_part(AppContext appContext, bool isGrowing) {
+	GameManager gameManager = appContext.get_game_manager();
+	SnakeScaleObject newHead = SnakeScaleObject(get_new_head_position(*this, appContext), this->get_head_direction(), 
+		36, appContext.get_shader(), appContext);
+	glm::vec2 boardPosition = newHead.get_grid_position();
+	glm::vec3 startLoc = gameManager.board_to_vec3(boardPosition.x, boardPosition.y);
+
+	set_orientation(newHead, this->headDirection, appContext);
+	generate_snake_scale(newHead, appContext);
+	newHead.set_position(startLoc);
+	//printf("scale | x: %f, y: %f, z: %f\n", newHead.get_scale().x, newHead.get_scale().y, newHead.get_scale().z);
+
+	this->bodyCubes.push_back(newHead);
+	if(isGrowing) this->length++;
+}
 void Player::change_direction(Direction direction, AppContext appContext) {
 	if(length > 1) {
 		PrismObject& prism = this->bodyCubes.front();
@@ -121,27 +116,26 @@ void Player::change_direction(Direction direction, AppContext appContext) {
 Direction Player::get_head_direction() {
 	return this->headDirection;
 }
+glm::vec2 get_new_head_position(Player& player, AppContext appContext) {
+	glm::vec2 tileOffset;
+	glm::vec2 boardStart;
+	Direction headDirection = player.get_head_direction();
+	float unitsPerTile = appContext.get_game_manager().unitsPerTile;
+	SnakeScaleObject head = player.get_body_cubes().back();
 
-//glm::vec3 get_new_head_position(Player& player, AppContext appContext) {
-//	glm::vec3 positionOffset;
-//	Direction headDirection = player.get_head_direction();
-//	float unitsPerTile = appContext.get_game_manager().unitsPerTile;
-//	PrismObject head = player.get_body_cubes().back();
-//
-//	switch (headDirection) {
-//	case FORWARD:
-//		positionOffset = glm::vec3(0.0f, 0.0f, unitsPerTile / 2);
-//		break;
-//	case BACKWARD:
-//		positionOffset = glm::vec3(0.0f, 0.0f, unitsPerTile / 2);
-//		break;
-//	case LEFT:
-//		positionOffset = glm::vec3(unitsPerTile, 0.0f, 0.0f);
-//		break;
-//	case RIGHT:
-//		positionOffset = glm::vec3(unitsPerTile / 2, 0.0f, 0.0f);
-//		break;
-//	}
-//	
-//	return head.get_grid_position() + positionOffset);
-//}
+	switch (headDirection) {
+	case FORWARD:
+		tileOffset = glm::vec2(-1.0f, 0.0f);
+		break;
+	case BACKWARD:
+		tileOffset = glm::vec2(1.0f, 0.0f);
+		break;
+	case LEFT:
+		tileOffset = glm::vec2(0.0f, 1.0f);
+		break;
+	case RIGHT:
+		tileOffset = glm::vec2(0.0f, -1.0f);
+		break;
+	}
+	return head.get_grid_position() + tileOffset;
+}

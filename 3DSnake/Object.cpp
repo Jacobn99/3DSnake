@@ -160,6 +160,9 @@ void Object::set_scale(glm::vec3 scale) {
     this->currentScale = scale;
     this->isQueuedTransformation = true;
 }
+glm::vec3 Object::get_scale() {
+    return this->currentScale;
+}
 void Object::set_position(glm::vec3 position) {
     this->currentPosition = position;
     this->isQueuedTransformation = true;

@@ -22,6 +22,7 @@ public:
 	glm::vec3 boardCenter;
 	glm::vec3 boardTopLeft;
 	float unitsPerTile;
+	Direction defaultDirection;
 private:
 	glm::vec3 frontPositionOffset;
 	glm::vec3 backPositionOffset;

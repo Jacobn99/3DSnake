@@ -17,6 +17,7 @@ GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 	this->rightPositionOffset = glm::vec3(-(float)(this->unitsPerTile / 2), 0.0f, 0.0f);
 	this->frontPositionOffset = glm::vec3(0.0f, 0.0f, this->unitsPerTile / 2);
 	this->backPositionOffset = glm::vec3(0.0f, 0.0f, -(float)((this->unitsPerTile / 2)));
+	this->defaultDirection = FORWARD;
 }
 unsigned int GameManager::index_to_row(unsigned int index) {
 	assert(index < this->sizeInTiles * this->sizeInTiles);

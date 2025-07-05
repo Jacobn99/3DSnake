@@ -47,6 +47,7 @@ public:
 	bool is_textured();
 	void delete_object();
 	void set_scale(glm::vec3 scale);
+	glm::vec3 get_scale();
 	glm::vec3 currentPosition;
 	glm::vec3 currentScale;
 	bool isQueuedTransformation;

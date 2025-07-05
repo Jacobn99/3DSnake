@@ -15,7 +15,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Player.h"
-
+#include <unordered_map>
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -38,8 +38,21 @@ float lastX = 400, lastY = 300;
 float yaw = -90.0f;
 float pitch = 0.0f;
 bool firstMouse = true;
+double minButtonDelay = 0.5;
 Player player;
 AppContext appContext;
+//Make a hashtable containing the time last pressed
+std::unordered_map<GLenum, double> buttonsPressed = std::unordered_map<GLenum, double>();
+
+bool keyIsHeld(GLenum key) {
+    if (buttonsPressed.find(key) == buttonsPressed.end()) return false;
+    else {
+        assert(glfwGetTime() > buttonsPressed.at(key));
+        double timeDifference = glfwGetTime() - buttonsPressed.at(key);
+        printf("currentTime: %f, buttonTime: %f, timeDifference: %f\n", glfwGetTime(), buttonsPressed.at(key), timeDifference);
+        return timeDifference < minButtonDelay;
+    }
+}
 
 // A callback function to resize viewport with window upon resize
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -62,14 +75,26 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && player.get_head_direction() != FORWARD)
-        player.change_direction(FORWARD, appContext);
-    else if (glfwGetKey(window, GLFW_KEY_DOWN) && player.get_head_direction() != BACKWARD)
-        player.change_direction(BACKWARD, appContext);
-    else if (glfwGetKey(window, GLFW_KEY_LEFT) && player.get_head_direction() != LEFT)
-        player.change_direction(LEFT, appContext);
-    else if (glfwGetKey(window, GLFW_KEY_RIGHT) && player.get_head_direction() != RIGHT)
-        player.change_direction(RIGHT, appContext);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && player.get_head_direction() != FORWARD) {
+        if (!keyIsHeld(GLFW_KEY_UP)) player.change_direction(FORWARD, appContext);
+        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+    }
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && player.get_head_direction() != BACKWARD) {
+        if (!keyIsHeld(GLFW_KEY_DOWN)) player.change_direction(BACKWARD, appContext);
+        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+    }
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && player.get_head_direction() != LEFT) {
+        if (!keyIsHeld(GLFW_KEY_LEFT)) player.change_direction(LEFT, appContext);
+        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+    }
+    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && player.get_head_direction() != RIGHT) {
+        if (!keyIsHeld(GLFW_KEY_RIGHT)) player.change_direction(RIGHT, appContext);
+        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+    }
+    else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+        if(!keyIsHeld(GLFW_KEY_E)) player.add_body_part(appContext, true);
+        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+    }
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {

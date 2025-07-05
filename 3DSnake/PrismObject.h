@@ -21,11 +21,15 @@ private:
 class SnakeScaleObject : public PrismObject {
 public:
 	using PrismObject::PrismObject;
-	SnakeScaleObject(glm::vec2 tileIndex, int vertexCount, Shader& shader, AppContext appContext);
+	SnakeScaleObject(glm::vec2 tileLocation, Direction direction, int vertexCount, Shader& shader, AppContext appContext);
+	Direction get_direction();
+	glm::vec2 get_grid_position();
 private:
 	glm::vec2 tileLocation;
+	Direction direction;
 };
 
+void generate_snake_scale(SnakeScaleObject& snakeScale, AppContext appContext);
 void generate_prism(PrismObject& prism, AppContext appContext, float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range);
 void generate_prism(PrismObject& prism, std::vector<float>& vertices, AppContext appContext);
 void set_orientation(PrismObject& prism, Direction direction, AppContext appContext);

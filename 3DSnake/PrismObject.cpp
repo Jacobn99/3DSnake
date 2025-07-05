@@ -91,19 +91,6 @@ void generate_prism(PrismObject& prism, std::vector<float>& vertices, AppContext
 
 void set_orientation(PrismObject& prism, Direction direction, AppContext appContext) {
 	ObjectManager& objectManager = appContext.get_object_manager();
-    switch (direction) {
-    case FORWARD:
-        prism.vertices = &objectManager.get_front_orientation();
-        break;
-    case BACKWARD:
-        prism.vertices = &objectManager.get_back_orientation();
-        break;
-    case LEFT:
-        prism.vertices = &objectManager.get_left_orientation();
-        break;
-    case RIGHT:
-        prism.vertices = &objectManager.get_right_orientation();
-        break;
-    }
+    prism.vertices = &objectManager.get_orientation(direction);
     prism.orientationChanged = true;
 }

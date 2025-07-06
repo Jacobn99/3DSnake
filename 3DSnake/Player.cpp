@@ -31,10 +31,11 @@ void initialize_body(Player& player, AppContext appContext) {
 Player::Player(AppContext appContext) {
 	this->bodyIndexes = std::vector<int>();
 	this->bodyCubes = std::deque<SnakeScaleObject>();
-	this->length = 1;
+	this->length = 0;
 	this->speed = 0.5f; // 0.5 units per second
 	this->headDirection = appContext.get_game_manager().defaultDirection;
 	this->queuedHeadDirection = this->headDirection;
+	this->isQueuedGrow = false;
 
 	initialize_body(*this, appContext);
 }
@@ -75,6 +76,7 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 	glm::vec3 singletonPositionChange;
 	bool isScalingX = false;
 	bool isScalingZ = false;
+	GameManager& gameManager = appContext.get_game_manager();
 
 	switch (this->headDirection) {
 		case FORWARD:
@@ -118,12 +120,20 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 		// Checks if head location must be updated
 		if (hasRowChanged || hasColumnChanged) {
 			this->headGridPosition += appContext.get_game_manager().get_tile_offset(this->headDirection);
-			if (this->queuedHeadDirection != this->headDirection) turn_snake(*this, this->headDirection, appContext);
+			if (this->queuedHeadDirection != this->headDirection) turn_snake(*this, this->queuedHeadDirection, appContext);
 		}
 	}
 	else {
 		//if (this->queuedHeadDirection != this->headDirection) turn_snake(*this, this->headDirection, appContext);
+		glm::vec3 oldPosition = head.get_position();
 		head.set_position(head.get_position() + singletonPositionChange);
+		glm::vec2 oldGridPosition = gameManager.vec3_to_grid_position(oldPosition);
+		glm::vec2 newGridPosition = gameManager.vec3_to_grid_position(head.get_position());
+
+		if (gameManager.vec3_to_grid_position(oldPosition) != gameManager.vec3_to_grid_position(head.get_position())) {
+			turn_snake(*this, this->queuedHeadDirection, appContext);
+			this->headGridPosition = gameManager.vec3_to_grid_position(head.get_position());
+		}
 	}
 }
 void Player::draw_body(AppContext appContext) {
@@ -136,18 +146,18 @@ void Player::add_body_part(SnakeScaleObject scale, unsigned int tableIndex, bool
 	//this->bodyIndexes.push_back(tableIndex);
 	if (isGrowing) this->length++;
 }
-void Player::add_body_part(AppContext appContext, bool isGrowing) {
+void Player::add_body_part(AppContext appContext, Direction direction, bool isGrowing) {
 	GameManager gameManager = appContext.get_game_manager();
-	SnakeScaleObject newHead = SnakeScaleObject(get_new_head_position(*this, appContext), this->get_head_direction(), 
+	SnakeScaleObject newHead = SnakeScaleObject(get_new_head_position(*this, direction, appContext), direction,
 		36, appContext.get_shader(), appContext);
 	glm::vec2 boardPosition = this->get_head_grid_position();
 	glm::vec3 startLoc = gameManager.board_to_vec3(boardPosition.x, boardPosition.y);
-	glm::vec3 initialScale = get_initial_scaling(this->headDirection);
+	glm::vec3 initialScale = get_initial_scaling(direction);
 
-	set_orientation(newHead, this->headDirection, appContext);
 	generate_snake_scale(newHead, appContext);
 	newHead.set_scale(initialScale); //Start with no scale
-	newHead.set_adjusted_position(startLoc, appContext);
+	//newHead.set_adjusted_position(startLoc, appContext);
+	newHead.set_direction(direction);
 	//printf("scale | x: %f, y: %f, z: %f\n", newHead.get_scale().x, newHead.get_scale().y, newHead.get_scale().z);
 
 	this->bodyCubes.push_back(newHead);
@@ -167,30 +177,23 @@ void Player::queue_turn(Direction direction, AppContext appContext) {
 	//}
 	//else this->headDirection = direction;
 }
-glm::vec2 get_new_head_position(Player& player, AppContext appContext) {
+glm::vec2 get_new_head_position(Player& player, Direction direction, AppContext appContext) {
 	GameManager gameManager = appContext.get_game_manager();
-	Direction headDirection = player.get_head_direction();
-	glm::vec2 tileOffset = gameManager.get_tile_offset(headDirection);
+	//Direction headDirection = player.get_head_direction();
+	glm::vec2 tileOffset = gameManager.get_tile_offset(direction);
 	float unitsPerTile = gameManager.unitsPerTile;
 	SnakeScaleObject head = player.get_body_cubes().back();
 	glm::vec2 result = player.get_head_grid_position() + tileOffset;
-	
-	printf("result.x: %f, result.y: %f, grid_pos.x: %f, grid_pos.y: %f\n", result.x, result.y, 
-		player.get_head_grid_position().x, player.get_head_grid_position().y);
+
 	return result;
 }
 
 void turn_snake(Player& player, Direction direction, AppContext appContext) {
 	if (player.get_length() > 1) {
-		player.add_body_part(appContext, false);
+		player.add_body_part(appContext, direction, false);
 		SnakeScaleObject& newHead = player.get_body_cubes().back();
-		set_orientation(newHead, player.get_head_direction(), appContext);
-		//Undo previous position offset
-		newHead.set_position(newHead.get_position() - 
-			appContext.get_game_manager().get_orientation_offset(player.get_head_direction()));
+		set_orientation(newHead, direction, appContext);
 		player.set_head_direction(direction);
-		newHead.set_scale(glm::vec3(1.0f, 1.0f, 1.0f));
-		newHead.set_position(newHead.get_position() + appContext.get_game_manager().get_orientation_offset(direction));
 	}
 	else player.set_head_direction(direction);
 }

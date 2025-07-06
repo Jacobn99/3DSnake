@@ -23,6 +23,7 @@ public:
 	using PrismObject::PrismObject;
 	SnakeScaleObject(glm::vec2 tileLocation, Direction direction, int vertexCount, Shader& shader, AppContext appContext);
 	Direction get_direction();
+	void set_direction(Direction newDirection);
 	void set_adjusted_position(glm::vec3 position, AppContext appContext); // Adjusts position based on object orientation to be centered
 private:
 	//glm::vec Locations;

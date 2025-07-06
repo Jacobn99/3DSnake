@@ -29,11 +29,8 @@ void SnakeScaleObject::set_adjusted_position(glm::vec3 position, AppContext appC
 
 }
 
-//glm::vec2 SnakeScaleObject::get_grid_position() {
-//	return this->tileLocation;
-//}
-
 void generate_snake_scale(SnakeScaleObject& snakeScale, AppContext appContext) {
+	set_orientation(snakeScale, snakeScale.get_direction(), appContext);
 	std::vector<float>& vertices = appContext.get_object_manager().get_orientation(snakeScale.get_direction());
 	generate_prism(snakeScale, vertices, appContext);
 }
@@ -48,4 +45,7 @@ glm::vec3 get_initial_scaling(Direction direction) {
 	case LEFT:
 		return glm::vec3(0.0f, 1.0f, 1.0f);
 	}
+}
+void SnakeScaleObject::set_direction(Direction newDirection) {
+	this->direction = newDirection;
 }

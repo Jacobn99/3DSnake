@@ -5,6 +5,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Player.h"
 
+
 GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 	this->sizeInTiles = sizeInTiles;
 	this->sizeInUnits = sizeInUnits;
@@ -54,6 +55,17 @@ glm::vec3 GameManager::get_orientation_offset(Direction direction) {
 		break;
 	}
 
+}
+
+glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position) {
+	glm::vec3 normalizedPosition = (glm::vec3(position.x - this->boardTopLeft.x,
+		0.0f, -(this->boardTopLeft.z - this->unitsPerTile/2 - position.z) ));
+	int row = static_cast<int>(normalizedPosition.z / this->unitsPerTile);
+	int column = static_cast<int>(normalizedPosition.x / this->unitsPerTile);
+	glm::vec2 result = glm::vec2(row, column);
+	assert(result.x >= 0 && result.x < this->sizeInTiles);
+	assert(result.y >= 0 && result.y < this->sizeInTiles);
+	return result;
 }
 
 // REMEMBER, IT'S STORED AS ROW,COL

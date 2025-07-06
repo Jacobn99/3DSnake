@@ -140,6 +140,7 @@ void Object::generate_buffers(float* vertices, size_t size, GLenum drawType) {
     glGenBuffers(1, &(this->VBO));
     this->VBO_set = true;
     glBindBuffer(GL_ARRAY_BUFFER, this->get_VBO());
+    assert(vertices != NULL);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, drawType);
 }
 void Object::delete_object() {

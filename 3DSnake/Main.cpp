@@ -92,7 +92,7 @@ void processInput(GLFWwindow* window)
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        if(!keyIsHeld(GLFW_KEY_E)) player.add_body_part(appContext, true);
+        if(!keyIsHeld(GLFW_KEY_E)) player.add_body_part(appContext, player.get_head_direction(), true);
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
 }

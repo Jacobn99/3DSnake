@@ -77,7 +77,6 @@ void generate_prism(PrismObject& prism, AppContext appContext, float xNeg, float
 
     prism.generate_buffers((*prism.vertices).data(), sizeof(prism.vertices) * (*prism.vertices).size(), GL_STATIC_DRAW);
     appContext.get_object_manager().add_default_attributes(prism);
-    //prism.orientationChanged = false;
 }
 
 void generate_prism(PrismObject& prism, std::vector<float>& vertices, AppContext appContext) {

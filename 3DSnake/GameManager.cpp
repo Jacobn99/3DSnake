@@ -55,3 +55,17 @@ glm::vec3 GameManager::get_orientation_offset(Direction direction) {
 	}
 
 }
+
+// REMEMBER, IT'S STORED AS ROW,COL
+glm::vec2 GameManager::get_tile_offset(Direction direction) {
+	switch (direction) {
+	case FORWARD:
+		return glm::vec2(-1.0f, 0.0f);
+	case BACKWARD:
+		return glm::vec2(1.0f, 0.0f);
+	case LEFT:
+		return glm::vec2(0.0f, -1.0f);
+	case RIGHT:
+		return glm::vec2(0.0f, 1.0f);
+	}
+}

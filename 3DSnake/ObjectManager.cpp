@@ -33,10 +33,10 @@ void ObjectManager::generate_default_vertices(AppContext appContext) {
     this->back_orientation = generate_prism_vertices(-(tileSizeInUnits / 2), (tileSizeInUnits / 2),
         -(tileSizeInUnits / 2), (tileSizeInUnits / 2), 0.0f, (tileSizeInUnits), gameManager.sizeInTiles);
 
-    this->left_orientation = generate_prism_vertices(-(tileSizeInUnits / 2), 0.0f, -(tileSizeInUnits / 2), 
+    this->left_orientation = generate_prism_vertices(-(tileSizeInUnits), 0.0f, -(tileSizeInUnits / 2), 
         tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, gameManager.sizeInTiles);
 
-    this->right_orientation = generate_prism_vertices(0.0f, tileSizeInUnits / 2, -(tileSizeInUnits / 2),
+    this->right_orientation = generate_prism_vertices(0.0f, tileSizeInUnits, -(tileSizeInUnits / 2),
         tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, gameManager.sizeInTiles);
 }
 

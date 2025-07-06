@@ -14,7 +14,7 @@
 SnakeScaleObject::SnakeScaleObject(glm::vec2 tileLocation, Direction direction, int vertexCount, Shader& shader, AppContext appContext)
 	: PrismObject(vertexCount, shader, appContext) {
 	GameManager gameManager = appContext.get_game_manager();
-	this->tileLocation = tileLocation;
+	//this->tileLocation = tileLocation;
 	this->direction = direction;
 	this->currentPosition = gameManager.board_to_vec3(tileLocation.x, tileLocation.y)
 		+ gameManager.get_orientation_offset(direction);
@@ -23,12 +23,29 @@ SnakeScaleObject::SnakeScaleObject(glm::vec2 tileLocation, Direction direction, 
 Direction SnakeScaleObject::get_direction() {
 	return this->direction;
 }
+void SnakeScaleObject::set_adjusted_position(glm::vec3 position, AppContext appContext) {
+	this->currentPosition = position + appContext.get_game_manager().get_orientation_offset(this->direction);
+	this->isQueuedTransformation = true;
 
-glm::vec2 SnakeScaleObject::get_grid_position() {
-	return this->tileLocation;
 }
+
+//glm::vec2 SnakeScaleObject::get_grid_position() {
+//	return this->tileLocation;
+//}
 
 void generate_snake_scale(SnakeScaleObject& snakeScale, AppContext appContext) {
 	std::vector<float>& vertices = appContext.get_object_manager().get_orientation(snakeScale.get_direction());
 	generate_prism(snakeScale, vertices, appContext);
+}
+glm::vec3 get_initial_scaling(Direction direction) {
+	switch (direction) {
+	case FORWARD:
+		return glm::vec3(1.0f, 1.0f, 0.0f);
+	case BACKWARD:
+		return glm::vec3(1.0f, 1.0f, 0.0f);
+	case RIGHT:
+		return glm::vec3(0.0f, 1.0f, 1.0f);
+	case LEFT:
+		return glm::vec3(0.0f, 1.0f, 1.0f);
+	}
 }

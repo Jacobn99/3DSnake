@@ -76,19 +76,19 @@ void processInput(GLFWwindow* window)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && player.get_head_direction() != FORWARD) {
-        if (!keyIsHeld(GLFW_KEY_UP)) player.change_direction(FORWARD, appContext);
+        if (!keyIsHeld(GLFW_KEY_UP)) player.queue_turn(FORWARD, appContext);
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && player.get_head_direction() != BACKWARD) {
-        if (!keyIsHeld(GLFW_KEY_DOWN)) player.change_direction(BACKWARD, appContext);
+        if (!keyIsHeld(GLFW_KEY_DOWN)) player.queue_turn(BACKWARD, appContext);
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && player.get_head_direction() != LEFT) {
-        if (!keyIsHeld(GLFW_KEY_LEFT)) player.change_direction(LEFT, appContext);
+        if (!keyIsHeld(GLFW_KEY_LEFT)) player.queue_turn(LEFT, appContext);
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && player.get_head_direction() != RIGHT) {
-        if (!keyIsHeld(GLFW_KEY_RIGHT)) player.change_direction(RIGHT, appContext);
+        if (!keyIsHeld(GLFW_KEY_RIGHT)) player.queue_turn(RIGHT, appContext);
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
@@ -232,7 +232,7 @@ int main()
 
         //Input
         processInput(window);
-        player.move_body(deltaTime);
+        player.move_body(deltaTime, appContext);
 
         const float radius = 10.0f;
         float camX = sin(glfwGetTime()) * radius;

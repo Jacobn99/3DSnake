@@ -23,10 +23,6 @@ public:
 	void add_default_attributes(Object object);
 	void draw_object(Object& object);
 	void draw_prism(PrismObject& prismObject);
-	//std::vector<float>& get_front_orientation();
-	//std::vector<float>& get_back_orientation();
-	//std::vector<float>& get_right_orientation();
-	//std::vector<float>& get_left_orientation();
 	std::vector<float>& get_orientation(Direction direction);
 private:
 	glm::vec3 default_color = glm::vec3(0.0f, 0.0f, 0.0f);

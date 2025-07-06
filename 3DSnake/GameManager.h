@@ -16,6 +16,7 @@ public:
 	unsigned int row_col_to_index(unsigned int row, unsigned int col);
 	glm::vec3 board_to_vec3(unsigned int row, unsigned int col);
 	glm::vec3 get_orientation_offset(Direction direction);
+	glm::vec2 get_tile_offset(Direction direction);
 	unsigned int startIndex;
 	unsigned int sizeInTiles;
 	float sizeInUnits;

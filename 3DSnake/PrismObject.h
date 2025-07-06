@@ -23,12 +23,13 @@ public:
 	using PrismObject::PrismObject;
 	SnakeScaleObject(glm::vec2 tileLocation, Direction direction, int vertexCount, Shader& shader, AppContext appContext);
 	Direction get_direction();
-	glm::vec2 get_grid_position();
+	void set_adjusted_position(glm::vec3 position, AppContext appContext); // Adjusts position based on object orientation to be centered
 private:
-	glm::vec2 tileLocation;
+	//glm::vec Locations;
 	Direction direction;
 };
 
+glm::vec3 get_initial_scaling(Direction direction);
 void generate_snake_scale(SnakeScaleObject& snakeScale, AppContext appContext);
 void generate_prism(PrismObject& prism, AppContext appContext, float xNeg, float xPos, float yNeg, float yPos, float zNeg, float zPos, float range);
 void generate_prism(PrismObject& prism, std::vector<float>& vertices, AppContext appContext);

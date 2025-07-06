@@ -8,35 +8,45 @@
 #include <iostream>
 #include <queue>
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
+#include <functional>
 
 class AppContext; // Forward declaration of AppContext
-enum ActionTypes {TURN, GROW, MOVE, NO_CHANGE};
+//enum ActionTypes {TURN, GROW, MOVE, NO_CHANGE};
 
 class Player {
 public:
 	Player() = default;
 	Player(AppContext appContext);
 	unsigned int get_length();
-	//std::vector<int>& get_body_indexes();
+	std::vector<int>& get_body_indexes();
 	std::deque<SnakeScaleObject>& get_body_cubes();
 	void remove_tail();
-	void move_body(float deltaTime);
+	void move_body(float deltaTime, AppContext appContext);
 	void draw_body(AppContext appContext);
 	void add_body_part(SnakeScaleObject prism, unsigned int tableIndex, bool isGrowing);
 	void add_body_part(AppContext appContext, bool isGrowing);
-	void change_direction(Direction direction, AppContext appContext);
+	void queue_turn(Direction direction, AppContext appContext);
 	Direction get_head_direction();
+	void set_head_direction(Direction newDirection);
+	glm::vec2 get_head_grid_position();
+	void set_head_grid_position(glm::vec2 newPosition);
+	void set_queued_head_direction(Direction newDirection);
 
 private:
-	int headIndex;
+	glm::vec2 headGridPosition;
 	Direction headDirection;
 	Direction tailDirection;
 	int length;
-	//std::vector<int> bodyIndexes;
+	std::vector<int> bodyIndexes;
 	std::deque<SnakeScaleObject> bodyCubes;
+	Direction queuedHeadDirection;
+	
+	//std::function<void()> queuedActionFunction;
+
 	float speed;
 };
 
+void turn_snake(Player& player, Direction direction, AppContext appContext);
 glm::vec2 get_new_head_position(Player& player, AppContext appContext);
 
 #endif

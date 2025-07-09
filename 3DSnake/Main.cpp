@@ -49,7 +49,7 @@ bool keyIsHeld(GLenum key) {
     else {
         assert(glfwGetTime() > buttonsPressed.at(key));
         double timeDifference = glfwGetTime() - buttonsPressed.at(key);
-        printf("currentTime: %f, buttonTime: %f, timeDifference: %f\n", glfwGetTime(), buttonsPressed.at(key), timeDifference);
+        //printf("currentTime: %f, buttonTime: %f, timeDifference: %f\n", glfwGetTime(), buttonsPressed.at(key), timeDifference);
         return timeDifference < minButtonDelay;
     }
 }
@@ -92,7 +92,7 @@ void processInput(GLFWwindow* window)
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        if(!keyIsHeld(GLFW_KEY_E)) player.add_body_part(appContext, player.get_head_direction(), true);
+        if (!keyIsHeld(GLFW_KEY_E)) player.queue_grow(); 
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
 }

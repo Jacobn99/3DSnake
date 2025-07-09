@@ -32,11 +32,13 @@ unsigned int GameManager::row_col_to_index(unsigned int row, unsigned int column
 	assert(row < this->sizeInTiles && column < this->sizeInTiles);
 	return row * this->sizeInTiles + column;
 }
-glm::vec3 GameManager::board_to_vec3(unsigned int row, unsigned int column) {
+glm::vec3 GameManager::board_to_vec3(glm::vec2 boardLoc) {
 	glm::vec3 boardTopLeft = this->boardTopLeft;
 	float unitsPerTile = this->unitsPerTile;
+	int row = static_cast<int>(boardLoc.x);
+	int column = static_cast<int>(boardLoc.y);
 
-	glm::vec3 result = glm::vec3(boardTopLeft.x + (float)column * unitsPerTile, 0.0f, boardTopLeft.z +	row * unitsPerTile);
+	glm::vec3 result = glm::vec3(boardTopLeft.x + (float)column * unitsPerTile, 0.0f, boardTopLeft.z + row * unitsPerTile);
 	return result;
 }
 glm::vec3 GameManager::get_orientation_offset(Direction direction) {
@@ -58,13 +60,19 @@ glm::vec3 GameManager::get_orientation_offset(Direction direction) {
 }
 
 glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position) {
-	glm::vec3 normalizedPosition = (glm::vec3(position.x - this->boardTopLeft.x,
-		0.0f, -(this->boardTopLeft.z - this->unitsPerTile/2 - position.z) ));
-	int row = static_cast<int>(normalizedPosition.z / this->unitsPerTile);
-	int column = static_cast<int>(normalizedPosition.x / this->unitsPerTile);
+	glm::vec3 normalizedPosition = (glm::vec3(position.x + this->unitsPerTile - this->boardCenter.x,
+		0.0f, position.z + 3*this->unitsPerTile/2 - this->boardCenter.z));
+
+	int row = static_cast<int>(normalizedPosition.z / this->unitsPerTile + this->sizeInTiles / 2) - 1;
+	int column = static_cast<int>(normalizedPosition.x / this->unitsPerTile + this->sizeInTiles / 2) - 1;
+
 	glm::vec2 result = glm::vec2(row, column);
-	assert(result.x >= 0 && result.x < this->sizeInTiles);
-	assert(result.y >= 0 && result.y < this->sizeInTiles);
+	/*assert(result.x >= 0 && result.x < this->sizeInTiles);
+	assert(result.y >= 0 && result.y < this->sizeInTiles);*/
+	//printf("FIX MIDDLE BEING SKIPPED!!!!!\n");
+	//printf("-----------------------\n");
+	//printf("col = %f, (int) col: %d\n", normalizedPosition.x / this->unitsPerTile + this->sizeInTiles / 2, column);
+	//printf("result | x: %f, z: %f\n", result.x, result.y);
 	return result;
 }
 

@@ -14,7 +14,7 @@ public:
 	unsigned int index_to_column(unsigned int index);
 	unsigned int index_to_row(unsigned int index);
 	unsigned int row_col_to_index(unsigned int row, unsigned int col);
-	glm::vec3 board_to_vec3(unsigned int row, unsigned int col);
+	glm::vec3 board_to_vec3(glm::vec2 boardLoc);
 	glm::vec3 get_orientation_offset(Direction direction);
 	glm::vec2 get_tile_offset(Direction direction);
 	glm::vec2 vec3_to_grid_position(glm::vec3 position);

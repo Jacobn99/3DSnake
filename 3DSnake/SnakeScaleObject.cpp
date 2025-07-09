@@ -16,7 +16,7 @@ SnakeScaleObject::SnakeScaleObject(glm::vec2 tileLocation, Direction direction, 
 	GameManager gameManager = appContext.get_game_manager();
 	//this->tileLocation = tileLocation;
 	this->direction = direction;
-	this->currentPosition = gameManager.board_to_vec3(tileLocation.x, tileLocation.y)
+	this->currentPosition = gameManager.board_to_vec3(tileLocation)
 		+ gameManager.get_orientation_offset(direction);
 }
 

@@ -6,6 +6,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 
 class AppContext; // Forward declaration of AppContext
+class Player;
 
 class GameManager {
 public:
@@ -18,6 +19,9 @@ public:
 	glm::vec3 get_orientation_offset(Direction direction);
 	glm::vec2 get_tile_offset(Direction direction);
 	glm::vec2 vec3_to_grid_position(glm::vec3 position);
+	glm::vec2 vec3_to_adjusted_grid_position(Player& player, glm::vec3 position);
+	Direction get_opposite_direction(Direction direction);
+	const char* direction_to_string(Direction direction);
 	unsigned int startIndex;
 	unsigned int sizeInTiles;
 	float sizeInUnits;
@@ -31,5 +35,8 @@ private:
 	glm::vec3 leftPositionOffset;
 	glm::vec3 rightPositionOffset;
 };
+
+glm::vec3 get_scaled_grid_vector(Direction direction, glm::vec3 scale, float tileSize);
+const char* direction_to_string(Direction direction);
 
 #endif

@@ -13,7 +13,7 @@ enum Attribute {
 	COLOR,
 	TEXTURE
 };
-enum Direction { FORWARD, BACKWARD, LEFT, RIGHT }; // Define the Direction enum
+enum Direction { FORWARD, BACKWARD, LEFT, RIGHT}; // Define the Direction enum
 
 class Object 
 {
@@ -31,7 +31,7 @@ public:
 	TextureManager& get_texture_manager();
 	void set_texture_manager(TextureManager* textureManager);
 	void generate_buffers(float* vertices, size_t size, GLenum drawType);
-	void set_position(glm::vec3 position);
+	virtual void set_position(glm::vec3 position);
 	glm::vec3 get_position();
 	void set_color(glm::vec3 color);
 	glm::vec3 get_color();

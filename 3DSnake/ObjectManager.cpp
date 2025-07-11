@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <stdio.h>
 #include <iostream>
+#include <cmath>
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\stb_image.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"

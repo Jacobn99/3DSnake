@@ -10,29 +10,52 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
+#include <algorithm>
 //								  V V In row, col order V V
+
 SnakeScaleObject::SnakeScaleObject(glm::vec2 tileLocation, Direction direction, int vertexCount, Shader& shader, AppContext appContext)
 	: PrismObject(vertexCount, shader, appContext) {
 	GameManager gameManager = appContext.get_game_manager();
 	//this->tileLocation = tileLocation;
 	this->direction = direction;
-	this->currentPosition = gameManager.board_to_vec3(tileLocation)
-		+ gameManager.get_orientation_offset(direction);
+	this->currentPosition = gameManager.board_to_vec3(tileLocation);
 }
-
+void SnakeScaleObject::set_position(glm::vec3 position) {
+	this->prevPosition = this->currentPosition;
+	this->currentPosition = position;
+	this->isQueuedTransformation = true;
+}
+glm::vec3 SnakeScaleObject::get_prev_position() {
+	return this->prevPosition;
+}
 Direction SnakeScaleObject::get_direction() {
 	return this->direction;
 }
 void SnakeScaleObject::set_adjusted_position(glm::vec3 position, AppContext appContext) {
 	this->currentPosition = position + appContext.get_game_manager().get_orientation_offset(this->direction);
 	this->isQueuedTransformation = true;
-
+}
+float SnakeScaleObject::get_largest_dimension()
+{
+	glm::vec3 scale = get_scale();
+	//return 1.0f;
+	return std::max(scale.y, std::max(scale.x, scale.z));
 }
 
-void generate_snake_scale(SnakeScaleObject& snakeScale, AppContext appContext) {
-	set_orientation(snakeScale, snakeScale.get_direction(), appContext);
-	std::vector<float>& vertices = appContext.get_object_manager().get_orientation(snakeScale.get_direction());
+SnakeScaleObject generate_snake_scale(glm::vec2 tileLocation, Direction direction, 
+	Shader& shader, AppContext appContext) {
+	GameManager gameManager = appContext.get_game_manager();
+	SnakeScaleObject snakeScale = SnakeScaleObject(tileLocation, direction, 36, shader, appContext);
+
+	//set_orientation(snakeScale, direction, appContext);
+	std::vector<float>& vertices = appContext.get_object_manager().get_orientation(direction);
 	generate_prism(snakeScale, vertices, appContext);
+	set_orientation(snakeScale, direction, appContext);
+	snakeScale.set_position(snakeScale.get_position() + gameManager.get_orientation_offset(snakeScale.get_direction()));
+
+	//set_orientation_with_offset(snakeScale, direction, appContext);
+
+	return snakeScale;
 }
 glm::vec3 get_initial_scaling(Direction direction) {
 	switch (direction) {
@@ -48,4 +71,24 @@ glm::vec3 get_initial_scaling(Direction direction) {
 }
 void SnakeScaleObject::set_direction(Direction newDirection) {
 	this->direction = newDirection;
+}
+
+void set_snake_orientation_with_offset(SnakeScaleObject& scale, Direction direction, bool wasOffset, AppContext appContext) {
+	assert(scale.get_scale().x > 0.0f && scale.get_scale().y > 0.0f && scale.get_scale().z > 0.0f);
+	
+	GameManager gameManager = appContext.get_game_manager();
+	Direction oldDirection = scale.get_direction();
+	set_orientation(scale, direction, appContext);
+
+	// Revert previous orientation offset
+	if(wasOffset) scale.set_position(scale.get_position() - gameManager.get_orientation_offset(scale.get_direction()));
+
+	scale.set_direction(direction);
+
+	// Set new orientation offset
+	scale.set_position(scale.get_position() + gameManager.get_orientation_offset(scale.get_direction()));
+
+	// Account for length of scale
+	scale.set_position(scale.get_position() - get_scaled_grid_vector(scale.get_direction(),
+		scale.get_scale(), gameManager.unitsPerTile));
 }

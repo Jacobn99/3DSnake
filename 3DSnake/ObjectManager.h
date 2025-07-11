@@ -8,6 +8,7 @@
 class Object;
 class PrismObject;
 class AppContext;
+class SnakeScaleObject;
 
 class ObjectManager {
 public:

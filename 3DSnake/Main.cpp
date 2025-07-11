@@ -193,6 +193,41 @@ int main()
         -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
     prism.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
     prism.set_texture(texture);
+    //Don't have to change initial offset if changing to opposite direction
+
+    Direction oldDirection = LEFT;
+    Direction newDirection = RIGHT;
+
+    //!!!!!!!!!!!!Works perfectly just reversing direction so make it clear that direction being reversed in function!!!!!!!!!!!!!!!!!!!!
+
+    //Object creation
+    /*SnakeScaleObject test = generate_snake_scale(glm::vec2(5.0f, 5.0f), oldDirection, ourShader, appContext);
+    test.set_scale(glm::vec3(3.0f, 1.0f, 1.0f));
+
+    set_orientation_with_offset(test, newDirection, true, appContext);*/
+    /*set_orientation(test, newDirection, appContext);
+    test.set_position(test.get_position() - gameManager.get_orientation_offset(test.get_direction()));
+    test.set_direction(newDirection);
+    test.set_position(test.get_position() + gameManager.get_orientation_offset(test.get_direction()));
+    test.set_position(test.get_position() - get_scaled_grid_vector(test.get_direction(),
+        test.get_scale(), gameManager.unitsPerTile));*/
+
+    //test.set_position(test.get_position() + get_length_offset(test.get_direction(), test.get_largest_dimension(), true, appContext));
+    
+
+
+
+    //test.set_position(test.get_position() - gameManager.get_orientation_offset(LEFT));
+    //set_orientation(test, RIGHT, appContext);
+
+
+   /* printf("-----------------------\n");
+    set_orientation_with_offset(test, RIGHT, appContext);
+    printf("-----------------------\n");*/
+
+    //set_orientation(test, LEFT, appContext);
+    //test.set_position(test.get_position() + gameManager.get_orientation_offset(LEFT));
+    //set_orientation_with_offset(test, LEFT, appContext);
 
     //Player creation
     player = Player(appContext);
@@ -255,7 +290,8 @@ int main()
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        objectManager.draw_object(prism);
+        objectManager.draw_prism(prism);
+        //objectManager.draw_prism(test);
         player.draw_body(appContext);
 
         glBindVertexArray(0);

@@ -76,6 +76,12 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position) {
 	return result;
 }
 
+glm::vec2 GameManager::vec3_to_adjusted_grid_position(Player& player, glm::vec3 position) {
+	if (player.get_body_cubes().size() == 1)
+		return vec3_to_grid_position(position) + get_tile_offset(player.get_head_direction()).operator*=(player.get_length() - 1);
+	else return vec3_to_grid_position(position);
+}
+
 // REMEMBER, IT'S STORED AS ROW,COL
 glm::vec2 GameManager::get_tile_offset(Direction direction) {
 	switch (direction) {
@@ -88,4 +94,61 @@ glm::vec2 GameManager::get_tile_offset(Direction direction) {
 	case RIGHT:
 		return glm::vec2(0.0f, 1.0f);
 	}
+}
+Direction GameManager::get_opposite_direction(Direction direction) {
+	switch (direction) {
+	case FORWARD:
+		return BACKWARD;
+	case BACKWARD:
+		return FORWARD;
+	case LEFT:
+		return RIGHT;
+	case RIGHT:
+		return LEFT;
+	}
+}
+const char* direction_to_string(Direction direction) {
+	const char* result = "UNKNOWN DIRECTION";
+
+	switch (direction) {
+	case FORWARD:
+		result = "FORWARD";
+		break;
+	case BACKWARD:
+		result = "BACKWARD";
+		break;
+	case LEFT:
+		result = "LEFT";
+		break;
+	case RIGHT:
+		result = "RIGHT";
+		break;
+	default:
+		break;
+	}
+	return result;
+}
+
+glm::vec3 get_scaled_grid_vector(Direction direction, glm::vec3 scale, float tileSize) {
+	assert(scale.x > 0.0f && scale.y > 0.0f && scale.z > 0.0f);
+
+	glm::vec3 vect;
+	//glm::vec3 adjustedScale = scale;
+
+	switch (direction) {
+	case LEFT:
+		vect = glm::vec3(-tileSize * (scale.x - 1), 0.0f, 0.0f);
+		break;
+	case RIGHT:
+		vect = glm::vec3(tileSize * (scale.x - 1), 0.0f, 0.0f);
+		break;
+	case FORWARD:
+		vect = glm::vec3(0.0f, 0.0f, -tileSize * (scale.z - 1));
+		break;
+	case BACKWARD:
+		vect = glm::vec3(0.0f, 0.0f, tileSize * (scale.z - 1));
+		break;
+	}
+
+	return vect;
 }

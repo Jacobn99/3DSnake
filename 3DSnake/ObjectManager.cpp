@@ -14,16 +14,6 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\GameManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 
-//bool is_object(Object object) {
-//    return true;
-//        //object.get_vertexAttributeLoc() != NULL/* && object.get_vertexAttributeStart() != NULL*/;
-//}
-
-//std::vector<float>& ObjectManager::get_front_orientation() { return this->front_orientation; }
-//std::vector<float>& ObjectManager::get_back_orientation() { return this->back_orientation; }
-//std::vector<float>& ObjectManager::get_right_orientation() { return this->right_orientation; }
-//std::vector<float>& ObjectManager::get_left_orientation() { return this->left_orientation; }
-
 void ObjectManager::generate_default_vertices(AppContext appContext) {
     GameManager gameManager = appContext.get_game_manager();
     float tileSizeInUnits = gameManager.unitsPerTile;

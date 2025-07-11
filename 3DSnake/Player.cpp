@@ -189,9 +189,6 @@ void Player::add_body_part(AppContext appContext, Direction direction, bool isGr
 	else boardPosition += gameManager.get_tile_offset(direction);
 
 	set_snake_orientation_with_offset(oldHead, gameManager.get_opposite_direction(oldHead.get_direction()), true, appContext);
-	////Reorient old head so it scales in opposite direction
-	//appContext.get_object_manager().switch_scale_direction(oldHead, 
-	//	gameManager.get_opposite_direction(oldHead.get_direction()), appContext);
 
 	newHead.set_direction(direction);
 	this->bodyCubes.push_back(newHead);
@@ -208,9 +205,11 @@ glm::vec2 get_new_head_position(Player& player, Direction direction, AppContext 
 
 	float unitsPerTile = gameManager.unitsPerTile;
 	SnakeScaleObject head = player.get_body_cubes().back();
-	//printf("currentHeadPos | row: %f, col: %f\n", player.get_head_grid_position().x, player.get_head_grid_position().y);
+	glm::vec2 prevHeadPosition = gameManager.vec3_to_grid_position(head.get_prev_position());
 
-	if(player.get_length() == 1) result = gameManager.vec3_to_grid_position(head.get_prev_position()) + tileOffset;
+	printf("\t\t\t\t\t\t\t\t\tprevHeadPos | row: %f, col: %f\n", prevHeadPosition.x, prevHeadPosition.y);
+
+	if(player.get_length() == 1) result = prevHeadPosition + tileOffset;
 	else result = player.get_head_grid_position() + tileOffset;
 	//printf("----------------------\n");
 	//printf("headGridPosition | x: %f, y: %f\n", player.get_head_grid_position().x, player.get_head_grid_position().y);

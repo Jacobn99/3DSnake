@@ -82,7 +82,6 @@ void set_snake_orientation_with_offset(SnakeScaleObject& scale, Direction direct
 
 	// Revert previous orientation offset
 	if(wasOffset) scale.set_position(scale.get_position() - gameManager.get_orientation_offset(scale.get_direction()));
-
 	scale.set_direction(direction);
 
 	// Set new orientation offset

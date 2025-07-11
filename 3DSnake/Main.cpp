@@ -291,7 +291,6 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         objectManager.draw_prism(prism);
-        //objectManager.draw_prism(test);
         player.draw_body(appContext);
 
         glBindVertexArray(0);

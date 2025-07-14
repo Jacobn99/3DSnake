@@ -14,6 +14,7 @@ public:
 	int get_next_location();
 	Texture generate_texture_2D(const char* file_path, GLenum imageDataType, GLenum wrapType, GLenum filterType);
 	void use_2D_texture(Texture texture, Shader shader);
+	void turn_off_texture(Shader& shader);
 private:
 	int next_texture_slot = 0;
 };

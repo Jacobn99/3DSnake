@@ -21,7 +21,9 @@ public:
 	glm::vec2 vec3_to_grid_position(glm::vec3 position);
 	glm::vec2 vec3_to_adjusted_grid_position(Player& player, glm::vec3 position);
 	Direction get_opposite_direction(Direction direction);
-	const char* direction_to_string(Direction direction);
+	Texture& get_snake_texture();
+	void set_snake_texture(Texture& texture);
+	//const char* direction_to_string(Direction direction);
 	unsigned int startIndex;
 	unsigned int sizeInTiles;
 	float sizeInUnits;
@@ -30,6 +32,7 @@ public:
 	float unitsPerTile;
 	Direction defaultDirection;
 private:
+	Texture snakeTexture;
 	glm::vec3 frontPositionOffset;
 	glm::vec3 backPositionOffset;
 	glm::vec3 leftPositionOffset;

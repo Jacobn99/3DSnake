@@ -163,6 +163,7 @@
     <None Include="shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Textures\snake_scale.png" />
     <Image Include="Textures\snake_tile.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

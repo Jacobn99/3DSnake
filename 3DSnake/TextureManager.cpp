@@ -60,6 +60,12 @@ void TextureManager::use_2D_texture(Texture texture, Shader shader) {
     assert(texture.get_is_generated());
     shader.setBool("isTextured", true);
 	shader.setInt("texture1", texture.get_texture_loc());
+    //printf("\t\t\t\t\t\t\t\ttexture loc: %d\n", texture.get_texture_loc());
     glActiveTexture(GL_TEXTURE0 + texture.get_texture_loc());
+    //printf("Location: %d\n", texture.get_texture_loc());
     glBindTexture(GL_TEXTURE_2D, texture.get_ID());
+    printf("ID: %d\n", texture.get_ID());
+}
+void TextureManager::turn_off_texture(Shader& shader) {
+    shader.setBool("isTextured", false);
 }

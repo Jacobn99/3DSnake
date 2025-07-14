@@ -4,6 +4,8 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Player.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
+
 
 
 GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
@@ -19,6 +21,15 @@ GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 	this->frontPositionOffset = glm::vec3(0.0f, 0.0f, this->unitsPerTile / 2);
 	this->backPositionOffset = glm::vec3(0.0f, 0.0f, -(float)((this->unitsPerTile / 2)));
 	this->defaultDirection = FORWARD;
+	/*this->snakeTexture = appContext.get_texture_manager().generate_texture_2D(
+		"C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
+		GL_RGBA, GL_REPEAT, GL_LINEAR);*/
+}
+Texture& GameManager::get_snake_texture() {
+	return this->snakeTexture;
+}
+void GameManager::set_snake_texture(Texture& texture) {
+	this->snakeTexture = texture;
 }
 unsigned int GameManager::index_to_row(unsigned int index) {
 	assert(index < this->sizeInTiles * this->sizeInTiles);

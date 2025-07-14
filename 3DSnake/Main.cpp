@@ -184,6 +184,11 @@ int main()
     ObjectManager objectManager = ObjectManager();
 
     GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
+    Texture snakeTexture = textureManager.generate_texture_2D(
+        "C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
+        GL_RGBA, GL_REPEAT, GL_LINEAR);
+
+    gameManager.set_snake_texture(snakeTexture);
 	appContext = AppContext(&gameManager, &textureManager, &ourShader, &objectManager);
     objectManager.generate_default_vertices(appContext);
 
@@ -192,7 +197,7 @@ int main()
 	generate_prism(prism, appContext, -(sizeInUnits/2), (sizeInUnits / 2), 
         -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
     prism.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
-    prism.set_texture(texture);
+    prism.set_texture(snakeTexture);
     //Don't have to change initial offset if changing to opposite direction
 
     Direction oldDirection = LEFT;

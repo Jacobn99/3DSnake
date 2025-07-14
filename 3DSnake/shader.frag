@@ -12,7 +12,7 @@ void main()
 {
     if(isTextured) {
         // FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.4);
-        FragColor = texture(texture2, TexCoord);
+        FragColor = texture(texture1, TexCoord);
     }
     else {
         FragColor = vec4(ourColor, 1.0);

@@ -19,16 +19,16 @@ void ObjectManager::generate_default_vertices(AppContext appContext) {
     float tileSizeInUnits = gameManager.unitsPerTile;
 
     this->front_orientation = generate_prism_vertices(-(tileSizeInUnits/2), (tileSizeInUnits / 2), 
-        -(tileSizeInUnits / 2),(tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, gameManager.sizeInTiles);
+        -(tileSizeInUnits / 2),(tileSizeInUnits / 2), -(tileSizeInUnits), 0.0f, 1.0f);
 
     this->back_orientation = generate_prism_vertices(-(tileSizeInUnits / 2), (tileSizeInUnits / 2),
-        -(tileSizeInUnits / 2), (tileSizeInUnits / 2), 0.0f, (tileSizeInUnits), gameManager.sizeInTiles);
+        -(tileSizeInUnits / 2), (tileSizeInUnits / 2), 0.0f, (tileSizeInUnits), 1.0f);
 
     this->left_orientation = generate_prism_vertices(-(tileSizeInUnits), 0.0f, -(tileSizeInUnits / 2), 
-        tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, gameManager.sizeInTiles);
+        tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, 1.0f);
 
     this->right_orientation = generate_prism_vertices(0.0f, tileSizeInUnits, -(tileSizeInUnits / 2),
-        tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, gameManager.sizeInTiles);
+        tileSizeInUnits / 2, -(tileSizeInUnits / 2), tileSizeInUnits / 2, 1.0f);
 }
 
 void ObjectManager::unbind_buffers() {
@@ -82,6 +82,11 @@ void ObjectManager::draw_object(Object& object) {
     if (object.is_textured()) {
         object.get_texture_manager().use_2D_texture(object.get_texture(), object.get_shader());
     }
+    //else { 
+    //    /*printf("position | x: %f, y: %f, z: %f\n", object.get_position().x,
+    //        object.get_position().y, object.get_position().z);*/
+    //    object.get_texture_manager().turn_off_texture(object.get_shader());
+    //}
     glDrawArrays(GL_TRIANGLES, 0, object.get_vertexCount());
     object.get_shader().setVec3("inputColor", object.get_color());
 }

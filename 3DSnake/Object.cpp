@@ -143,7 +143,7 @@ void Object::generate_buffers(float* vertices, size_t size, GLenum drawType) {
     assert(vertices != NULL && vertices != nullptr);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, drawType);
 }
-void Object::delete_object() {
+void Object::delete_object(bool deleteTexture) {
     if (this->is_VAO_set()) {
         glDeleteBuffers(1, &(this->VBO));
     }
@@ -153,7 +153,7 @@ void Object::delete_object() {
     if (this->is_VAO_set()) {
         glDeleteVertexArrays(1, &(this->VAO));
     }
-    if(this->isTextured) {
+    if(this->isTextured && deleteTexture) {
 		this->texture.delete_texture();
 	}
 }

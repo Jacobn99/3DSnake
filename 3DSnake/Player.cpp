@@ -103,7 +103,7 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 		//Checks if current tail is gone
 		if (tail.currentScale.x < 0 || tail.currentScale.z < 0) {
 			this->bodyCubes.pop_front();
-			tail.delete_object();
+			tail.delete_object(false);
 			//ensures position is in correct spot if reverted back to singleton
 			/*if(bodyCubes.size() == 1) this->set_head_grid_position(
 				this->get_head_grid_position() + gameManager.get_tile_offset(this->get_head_direction()))*/

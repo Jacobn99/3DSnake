@@ -25,10 +25,10 @@ GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 		"C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
 		GL_RGBA, GL_REPEAT, GL_LINEAR);*/
 }
-Texture& GameManager::get_snake_texture() {
+Texture GameManager::get_snake_texture() {
 	return this->snakeTexture;
 }
-void GameManager::set_snake_texture(Texture& texture) {
+void GameManager::set_snake_texture(Texture texture) {
 	this->snakeTexture = texture;
 }
 unsigned int GameManager::index_to_row(unsigned int index) {

@@ -45,7 +45,7 @@ public:
 	bool is_VBO_set();
 	bool is_VAO_set();
 	bool is_textured();
-	void delete_object();
+	void delete_object(bool deleteTexture);
 	void set_scale(glm::vec3 scale);
 	glm::vec3 get_scale();
 	glm::vec3 currentPosition;

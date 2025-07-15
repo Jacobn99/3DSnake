@@ -11,16 +11,15 @@
 #include <functional>
 
 class AppContext; // Forward declaration of AppContext
-//enum ActionTypes {TURN, GROW, MOVE, NO_CHANGE};
 
 class Player {
 public:
 	Player() = default;
 	Player(AppContext appContext);
 	unsigned int get_length();
-	std::vector<int>& get_body_indexes();
+	std::queue<int> get_body_indexes();
 	std::deque<SnakeScaleObject>& get_body_cubes();
-	void remove_tail();
+	//void remove_tail();
 	void move_body(float deltaTime, AppContext appContext);
 	void draw_body(AppContext appContext);
 	void add_body_part(SnakeScaleObject prism, unsigned int tableIndex, bool isGrowing);
@@ -30,17 +29,16 @@ public:
 	void set_head_direction(Direction newDirection);
 	glm::vec2 get_head_grid_position();
 	void set_head_grid_position(glm::vec2 newPosition);
-	void queue_grow();
+	void queue_growth();
 	float get_speed();
 	int i = 0;
-	//void set_queued_head_direction(Direction newDirection);
 
 private:
 	glm::vec2 headGridPosition;
 	Direction headDirection;
 	Direction tailDirection;
 	int length;
-	std::vector<int> bodyIndexes;
+	std::queue<int> bodyIndexes;
 	std::deque<SnakeScaleObject> bodyCubes;
 	Direction queuedHeadDirection;
 	bool isQueuedGrow;
@@ -50,6 +48,7 @@ private:
 	float speed;
 };
 
+bool checkTileDuplicates(Player& player);
 void turn_snake(Player& player, Direction direction, AppContext appContext);
 glm::vec2 get_new_head_position(Player& player, Direction direction, AppContext appContext);
 glm::vec3 getSingletonPositionChange(Player player, double deltaTime);

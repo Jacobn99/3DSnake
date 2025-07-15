@@ -92,7 +92,7 @@ void processInput(GLFWwindow* window)
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        if (!keyIsHeld(GLFW_KEY_E)) player.queue_grow(); 
+        if (!keyIsHeld(GLFW_KEY_E)) player.queue_growth(); 
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
 }
@@ -279,8 +279,3 @@ int main()
     glfwTerminate();
     return 0;
 }
-
-/* What I need to accomplish for textures:
-    - Toggle texture mode easily
-    - Apply textures (ideally with one function)
-    - Toggle texture mode easily*/

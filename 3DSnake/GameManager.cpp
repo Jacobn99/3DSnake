@@ -25,11 +25,30 @@ GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 		"C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
 		GL_RGBA, GL_REPEAT, GL_LINEAR);*/
 }
-Texture GameManager::get_snake_texture() {
-	return this->snakeTexture;
+Texture GameManager::get_generated_texture(GeneratedTextures texture) {
+	switch (texture) {
+	case FLOOR:
+		return this->floorTexture;
+	case GREEN_SQUARE:
+		return this->greenSquareTexture;
+	default:
+		printf("ERROR: GeneratedTextures enum bigger than switch statement 1\n");
+		Texture texture = Texture();
+		return texture;
+	}
 }
-void GameManager::set_snake_texture(Texture texture) {
-	this->snakeTexture = texture;
+void GameManager::set_generated_texture(GeneratedTextures gen, Texture texture) {
+	switch (gen) {
+	case FLOOR:
+		this->floorTexture = texture;
+		break;
+	case GREEN_SQUARE:
+		this->greenSquareTexture = texture;
+		break;	
+	default:
+		printf("ERROR: GeneratedTextures enum bigger than switch statement 2\n");
+	}
+	this->floorTexture = texture;
 }
 unsigned int GameManager::index_to_row(unsigned int index) {
 	assert(index < this->sizeInTiles * this->sizeInTiles);

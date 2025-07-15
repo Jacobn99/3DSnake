@@ -174,7 +174,7 @@ int main()
     glViewport(0, 0, 800, 600);
     
     TextureManager textureManager = TextureManager();
-    Texture texture = textureManager.generate_texture_2D("C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_tile.png", 
+    Texture snakeTexture = textureManager.generate_texture_2D("C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_tile.png", 
         GL_RGBA, GL_REPEAT, GL_LINEAR);
 
     //Shaders
@@ -184,11 +184,12 @@ int main()
     ObjectManager objectManager = ObjectManager();
 
     GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
-    Texture snakeTexture = textureManager.generate_texture_2D(
+    Texture tileTexture = textureManager.generate_texture_2D(
         "C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
         GL_RGBA, GL_REPEAT, GL_LINEAR);
 
-    gameManager.set_snake_texture(snakeTexture);
+    gameManager.set_generated_texture(FLOOR, tileTexture);
+    gameManager.set_generated_texture(GREEN_SQUARE, snakeTexture);
 	appContext = AppContext(&gameManager, &textureManager, &ourShader, &objectManager);
     objectManager.generate_default_vertices(appContext);
 
@@ -197,18 +198,12 @@ int main()
 	generate_prism(prism, appContext, -(sizeInUnits/2), (sizeInUnits / 2), 
         -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
     prism.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
-    prism.set_texture(snakeTexture);
+    prism.set_texture(tileTexture);
     //Don't have to change initial offset if changing to opposite direction
 
     Direction oldDirection = LEFT;
     Direction newDirection = RIGHT;
-    
-    PrismObject prism2 = PrismObject(36, ourShader, appContext);
-    generate_prism(prism2, appContext, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 1.0f);
-    prism2.set_position(gameManager.board_to_vec3(glm::vec2(4.0f, 4.0f)));
-    prism2.set_texture(texture);
-    prism2.set_scale(prism2.get_scale() + glm::vec3(0.0f, 0.0f, 1.0f));
-
+ 
     //Player creation
     player = Player(appContext);
 
@@ -271,7 +266,6 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         objectManager.draw_prism(prism);
-        objectManager.draw_prism(prism2);
         player.draw_body(appContext);
 
         glBindVertexArray(0);

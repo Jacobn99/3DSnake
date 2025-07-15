@@ -7,6 +7,10 @@
 
 class AppContext; // Forward declaration of AppContext
 class Player;
+enum GeneratedTextures {
+	FLOOR,
+	GREEN_SQUARE
+};
 
 class GameManager {
 public:
@@ -21,8 +25,8 @@ public:
 	glm::vec2 vec3_to_grid_position(glm::vec3 position);
 	glm::vec2 vec3_to_adjusted_grid_position(Player& player, glm::vec3 position);
 	Direction get_opposite_direction(Direction direction);
-	Texture get_snake_texture();
-	void set_snake_texture(Texture texture);
+	Texture get_generated_texture(GeneratedTextures texture);
+	void set_generated_texture(GeneratedTextures gen, Texture texture);
 	//const char* direction_to_string(Direction direction);
 	unsigned int startIndex;
 	unsigned int sizeInTiles;
@@ -32,7 +36,8 @@ public:
 	float unitsPerTile;
 	Direction defaultDirection;
 private:
-	Texture snakeTexture;
+	Texture floorTexture;
+	Texture greenSquareTexture;
 	glm::vec3 frontPositionOffset;
 	glm::vec3 backPositionOffset;
 	glm::vec3 leftPositionOffset;

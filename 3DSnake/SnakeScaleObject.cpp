@@ -19,7 +19,8 @@ SnakeScaleObject::SnakeScaleObject(glm::vec2 tileLocation, Direction direction, 
 	//this->tileLocation = tileLocation;
 	this->direction = direction;
 	this->currentPosition = gameManager.board_to_vec3(tileLocation);
-	this->set_texture(gameManager.get_snake_texture());
+	//this->set_color(glm::vec3(30,80,20) / 255.0f);
+	this->set_texture(gameManager.get_generated_texture(GREEN_SQUARE));
 }
 void SnakeScaleObject::set_position(glm::vec3 position) {
 	this->prevPosition = this->currentPosition;

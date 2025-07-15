@@ -67,15 +67,6 @@ void Player::set_head_direction(Direction newDirection) {
 float Player::get_speed() {
 	return this->speed;
 }
-//void Player::set_queued_head_direction(Direction newDirection) {
-//	this->queuedHeadDirection = newDirection;
-//}
-//void Player::remove_tail() {
-//	assert(!this->bodyIndexes.empty() && !this->bodyCubes.empty());
-//	//HOW DO I POP FROM FRONT!!!???
-//	/*this->bodyIndexes.pop_back();
-//	this->bodyCubes.pop_back();*/
-//;}
 
 void Player::move_body(float deltaTime, AppContext appContext) {
 	SnakeScaleObject& head = this->bodyCubes.back();
@@ -104,9 +95,6 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 		if (tail.currentScale.x < 0 || tail.currentScale.z < 0) {
 			this->bodyCubes.pop_front();
 			tail.delete_object(false);
-			//ensures position is in correct spot if reverted back to singleton
-			/*if(bodyCubes.size() == 1) this->set_head_grid_position(
-				this->get_head_grid_position() + gameManager.get_tile_offset(this->get_head_direction()))*/
 		}
 
 		// Checks if head location must be updated

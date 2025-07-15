@@ -82,11 +82,11 @@ void ObjectManager::draw_object(Object& object) {
     if (object.is_textured()) {
         object.get_texture_manager().use_2D_texture(object.get_texture(), object.get_shader());
     }
-    //else { 
-    //    /*printf("position | x: %f, y: %f, z: %f\n", object.get_position().x,
-    //        object.get_position().y, object.get_position().z);*/
-    //    object.get_texture_manager().turn_off_texture(object.get_shader());
-    //}
+    else { 
+        /*printf("position | x: %f, y: %f, z: %f\n", object.get_position().x,
+            object.get_position().y, object.get_position().z);*/
+        object.get_texture_manager().turn_off_texture(object.get_shader());
+    }
     glDrawArrays(GL_TRIANGLES, 0, object.get_vertexCount());
     object.get_shader().setVec3("inputColor", object.get_color());
 }

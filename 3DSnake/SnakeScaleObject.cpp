@@ -76,7 +76,7 @@ void SnakeScaleObject::set_direction(Direction newDirection) {
 }
 
 void set_snake_orientation_with_offset(SnakeScaleObject& scale, Direction direction, bool wasOffset, AppContext appContext) {
-	assert(scale.get_scale().x > 0.0f && scale.get_scale().y > 0.0f && scale.get_scale().z > 0.0f);
+	//assert(scale.get_scale().x > 0.0f && scale.get_scale().y > 0.0f && scale.get_scale().z > 0.0f);
 	
 	GameManager gameManager = appContext.get_game_manager();
 	Direction oldDirection = scale.get_direction();

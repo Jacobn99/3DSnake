@@ -29,6 +29,8 @@ public:
 	void set_head_direction(Direction newDirection);
 	glm::vec2 get_head_grid_position();
 	void set_head_grid_position(glm::vec2 newPosition);
+	void push_body_index(glm::vec2 boardPosition, AppContext appContext);
+	void pop_body_index();
 	void queue_growth();
 	float get_speed();
 	int i = 0;
@@ -41,6 +43,7 @@ private:
 	std::queue<int> bodyIndexes;
 	std::deque<SnakeScaleObject> bodyCubes;
 	Direction queuedHeadDirection;
+	bool canPopIndexes;
 	bool isQueuedGrow;
 	
 	//std::function<void()> queuedActionFunction;
@@ -48,7 +51,8 @@ private:
 	float speed;
 };
 
-bool checkTileDuplicates(Player& player);
+void update_body_indexes(Player& player, AppContext appContext);
+bool check_collision(Player& player, bool isDebug);
 void turn_snake(Player& player, Direction direction, AppContext appContext);
 glm::vec2 get_new_head_position(Player& player, Direction direction, AppContext appContext);
 glm::vec3 getSingletonPositionChange(Player player, double deltaTime);

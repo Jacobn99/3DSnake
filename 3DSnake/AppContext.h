@@ -1,3 +1,7 @@
+#ifndef OFFSET
+#define OFFSET = "\t\t\t\t\t\t\t\t\t"
+#endif
+
 #ifndef APP_CONTEXT_H
 #define APP_CONTEXT_H
 

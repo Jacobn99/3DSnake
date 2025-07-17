@@ -40,6 +40,7 @@ Player::Player(AppContext appContext) {
 	this->headDirection = appContext.get_game_manager().defaultDirection;
 	this->queuedHeadDirection = this->headDirection;
 	this->isQueuedGrow = false;
+	this->canPopIndexes = false;
 	/*this->headGridPosition = glm::vec2(0.0f, 0.0f);*/
 
 	initialize_body(*this, appContext);
@@ -69,44 +70,63 @@ float Player::get_speed() {
 	return this->speed;
 }
 
+//Add indexes if start scale is 1.0f and when scale rounds to new number
+
 void Player::move_body(float deltaTime, AppContext appContext) {
 	SnakeScaleObject& head = this->bodyCubes.back();
 	SnakeScaleObject& tail = this->bodyCubes.front();
 	bool inNewTile = false;
 	GameManager& gameManager = appContext.get_game_manager();
-	printf("scales: %d\n", this->bodyIndexes.size());
-
+	update_body_indexes(*this, appContext);
 
 	//If snake has multiple scales
 	if (this->length > 1 && this->bodyCubes.size() > 1) { 
 		glm::vec3 headScaleChange = getMovementScaleChange(this->speed, head.get_direction(), deltaTime);
 		glm::vec3 tailScaleChange = getMovementScaleChange(this->speed, tail.get_direction(), deltaTime);
-		glm::vec3 oldScale;
-		glm::vec3 newScale;
+		glm::vec3 oldTailScale;
+		glm::vec3 newTailScale;
+		glm::vec3 oldHeadScale;
+		glm::vec3 newHeadScale;
+		glm::vec2 tailGridPosition;
 		bool hasRowChanged;
 		bool hasColumnChanged;
 
-		
-		oldScale = head.get_scale();
+		oldHeadScale = head.get_scale();
+		oldTailScale = tail.get_scale();
 		head.set_scale(head.currentScale + headScaleChange);
 		tail.set_scale(tail.currentScale - tailScaleChange);
-		newScale = head.get_scale();
-		int newScaleXInt = (static_cast<int>(newScale.x));
-		int newScaleZInt = (static_cast<int>(newScale.z));
-		hasRowChanged = newScaleZInt > static_cast<int>(oldScale.z);
-		hasColumnChanged = newScaleXInt > static_cast<int>(oldScale.x);
+		newHeadScale = head.get_scale();
+		newTailScale = tail.get_scale();
+
+		int newScaleXInt = (static_cast<int>(newHeadScale.x));
+		int newScaleZInt = (static_cast<int>(newHeadScale.z));
+		hasRowChanged = newScaleZInt > static_cast<int>(oldHeadScale.z);
+		hasColumnChanged = newScaleXInt > static_cast<int>(oldHeadScale.x);
+
+		tailGridPosition = gameManager.vec3_to_grid_position(tail.get_position());
+
+		//Checks if snake head is touching tail
+		if (this->get_head_grid_position() == tailGridPosition && this->length > 2) printf("\t\t\t\t\t\t\t\t\tHIT!!!\n");
+
 		//Checks if current tail is gone
-		if (tail.currentScale.x < 0 || tail.currentScale.z < 0) {
+		if (newTailScale.x < 0 || newTailScale.z < 0) {
 			this->bodyCubes.pop_front();
 			tail.delete_object(false);
-			if(this->bodyIndexes.size() > 0) this->bodyIndexes.pop();
-
+		}
+		if ((static_cast<int>(newTailScale.x) < static_cast<int>(oldTailScale.x))  ||
+			static_cast<int>(newTailScale.z) < static_cast<int>(oldTailScale.z)) {
+			//pop_body_index();
+			//printf("(int)newTail.x: %d, (int)oldTailScale.z: %d, (int)n")		
+			//this->pop_body_index();
+			//printf("\t\t\t\t\t\t\t\t\tsize: %d\n", this->bodyIndexes.size());		
 		}
 
 		// Checks if head location must be updated
 		if (hasRowChanged || hasColumnChanged) {
 			inNewTile = true;
 			bool isTurning = this->queuedHeadDirection != this->headDirection;
+			//this->push_body_index(this->get_head_grid_position(), appContext);
+			//this->try_pop_body_index();
 
 			if (this->isQueuedGrow) {
 				this->add_body_part(appContext, this->get_head_direction(), true, false);
@@ -131,31 +151,28 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 			inNewTile = true;
 
 			//Edit bodyCubes and bodyIndexes
-			this->bodyIndexes.push(gameManager.row_col_to_index(currentGridPosition.x, currentGridPosition.y));
-			if (this->bodyIndexes.size() > 1)this->bodyIndexes.pop();
+			//this->bodyIndexes.push(gameManager.row_col_to_index(currentGridPosition.x, currentGridPosition.y));
+			//this->push_body_index(currentGridPosition, appContext);
+			//this->pop_body_index();
 
 			if (this->queuedHeadDirection != this->headDirection) turn_snake(*this, this->queuedHeadDirection, appContext);
 			if (this->isQueuedGrow) {
 				this->add_body_part(appContext, this->get_head_direction(), true, false);
 				this->isQueuedGrow = false;
 			}
-		
-			/*glm::vec3 normalizedPosition = (glm::vec3(currentPosition.x + gameManager.unitsPerTile - gameManager.boardCenter.x,
-				0.0f, currentPosition.z + 3 * gameManager.unitsPerTile / 2 - gameManager.boardCenter.z));
-
-			int row = static_cast<int>(normalizedPosition.z / gameManager.unitsPerTile + gameManager.sizeInTiles / 2) - 1;
-			int column = static_cast<int>(normalizedPosition.x / gameManager.unitsPerTile + gameManager.sizeInTiles / 2) - 1;
-			glm::vec2 result = glm::vec2(row, column);*/
-
-			//printf("\t\t\t\t\t\t\t\t\tcurrent pos | x: %f, y: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
-
-			//printf("\t\t\t\t\t\t\t\t\tcol = %f, (int) col: %d\n", (normalizedPosition.z / gameManager.unitsPerTile + gameManager.sizeInTiles / 2) - 1, column);
-			//printf("\t\t\t\t\t\t\t\t\tresult | x: %f, z: %f\n", result.x, result.y);
 		}
-		//if(inNewTile) head.set_adjusted_position(gameManager.board_to_vec3(newGridPosition), appContext);
 	}
+	/*printf("\t\t\t\t\t\t\t\t\t");
+	check_collision(*this, true);
+	printf("\n");*/
 	//printf("current pos | x: %f, y: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
-	if (inNewTile && checkTileDuplicates(*this)) printf("\t\t\t\t\t\t\t\t\tfart\n");
+	if (inNewTile && check_collision(*this, false)) {
+		printf("\t\t\t\t\t\t\t\t\tTriggered at | row: %f, col: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
+		printf("\t\t\t\t\t\t\t\t\t");
+		printf("\t\t\t\t\t\t\t\t\t----------------------------\n");
+
+	//	//printf("\t\t\t\t\t\t\t\t\tfart\n");
+	}
 	this->i += 1;
 }
 void Player::queue_growth() {
@@ -186,16 +203,35 @@ void Player::add_body_part(AppContext appContext, Direction direction, bool isGr
 	if (startAsPlane) newHead.set_scale(get_initial_scaling(direction)); //Start with no scale
 	else boardPosition += gameManager.get_tile_offset(direction);
 
-	set_snake_orientation_with_offset(oldHead, gameManager.get_opposite_direction(oldHead.get_direction()), true, appContext);\
+	set_snake_orientation_with_offset(oldHead, gameManager.get_opposite_direction(oldHead.get_direction()), true, appContext);
 	newHead.set_direction(direction);
+	//this->push_body_index(boardPosition, appContext);
 
-	//Edit bodyCubes and bodyIndexes
+	//Edit bodyCubes
 	this->bodyCubes.push_back(newHead);
-	this->bodyIndexes.push(gameManager.row_col_to_index(boardPosition.x, boardPosition.y));
-	if(this->bodyIndexes.size() > 1) this->bodyIndexes.pop();
 
-	if(isGrowing) this->length++;
+	if (isGrowing) { 
+		this->length++;
+		//this->canPopIndexes = false;
+		//this->try_push_body_index(boardPosition, appContext);
+	}
 	this->set_head_grid_position(boardPosition);
+}
+void Player::push_body_index(glm::vec2 boardPosition, AppContext appContext) {
+	int index = appContext.get_game_manager().row_col_to_index(boardPosition.x, boardPosition.y);
+	this->bodyIndexes.push(index);
+	/*if (this->bodyIndexes.size() == 0 || this->bodyIndexes.back() != index) {
+		this->bodyIndexes.push(index);
+	}*/
+}
+void Player::pop_body_index() {
+	//printf("\t\t\t\t\t\t\t\t\tbefore: %d, ", this->bodyIndexes.size());
+	assert(this->bodyIndexes.size() > 0);
+	this->bodyIndexes.pop();
+
+	//if(this->bodyIndexes.size() > this->length) this->bodyIndexes.pop();
+	//printf("after: %d\n", this->bodyIndexes.size());
+
 }
 void Player::queue_turn(Direction direction, AppContext appContext) {
 	this->queuedHeadDirection = direction;
@@ -272,14 +308,29 @@ glm::vec3 getMovementScaleChange(float speed, Direction direction, double deltaT
 	}
 	return scaleChange;
 }
-bool checkTileDuplicates(Player& player) {
+bool check_collision(Player& player, bool isDebug) {
 	std::queue<int> tmp = player.get_body_indexes();
 	std::unordered_set<int> set = std::unordered_set<int>();
 	while (!tmp.empty()) {
 		int current = tmp.front();
+		if (isDebug) printf("%d, ", current);
 		if (set.count(current) > 0) return true;
 		set.insert(current);
 		tmp.pop();
 	}
 	return false;
+}
+void update_body_indexes(Player& player, AppContext appContext) {
+	std::queue<int> bodyIndexes = player.get_body_indexes();
+	glm::vec2 boardPosition = player.get_head_grid_position();
+	int index = appContext.get_game_manager().row_col_to_index(boardPosition.x, boardPosition.y);
+	
+	//Update pushes
+	if (bodyIndexes.size() == 0 || bodyIndexes.back() != index) {
+		player.push_body_index(boardPosition, appContext);
+	}
+	if (bodyIndexes.size() > player.get_length()) player.pop_body_index();
+
+	//Update pops
+
 }

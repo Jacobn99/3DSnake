@@ -59,7 +59,7 @@ unsigned int GameManager::index_to_column(unsigned int index) {
 	return index % this->sizeInTiles;
 }
 unsigned int GameManager::row_col_to_index(unsigned int row, unsigned int column) {
-	assert(row < this->sizeInTiles && column < this->sizeInTiles);
+	//assert(row < this->sizeInTiles && column < this->sizeInTiles);
 	return row * this->sizeInTiles + column;
 }
 glm::vec3 GameManager::board_to_vec3(glm::vec2 boardLoc) {

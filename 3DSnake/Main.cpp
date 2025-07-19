@@ -128,21 +128,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 int main()
 {
-    //unsigned int texture1, texture2;    
-    unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,   // first triangle
-    3, 2, 1    // second triangle
-    };
-    float texCoords[] = {
-    0.0f, 0.0f,  // lower-left corner  
-    1.0f, 0.0f,  // lower-right corner
-    0.5f, 1.0f   // top-center corner
-    };
-
     int width, height, nrChannels;
     unsigned char* data;
     int sizeInTiles = 7;
     int sizeInUnits = 8;
+    bool isDebuging = true;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -185,27 +175,26 @@ int main()
 
     GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
     Texture tileTexture = textureManager.generate_texture_2D(
-        "C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
+        "C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_tile_og.png",
         GL_RGBA, GL_REPEAT, GL_LINEAR);
 
     gameManager.set_generated_texture(FLOOR, tileTexture);
-    gameManager.set_generated_texture(GREEN_SQUARE, snakeTexture);
+    gameManager.set_generated_texture(SNAKE, snakeTexture);
 	appContext = AppContext(&gameManager, &textureManager, &ourShader, &objectManager);
     objectManager.generate_default_vertices(appContext);
 
-    //Object creation
-	PrismObject prism = PrismObject(36, ourShader, appContext);
-	generate_prism(prism, appContext, -(sizeInUnits/2), (sizeInUnits / 2), 
-        -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
-    prism.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
-    prism.set_texture(tileTexture);
-    //Don't have to change initial offset if changing to opposite direction
+    gameManager.start_game(appContext);
+    player = gameManager.get_player();
+    PrismObject prism = gameManager.get_board();
 
-    Direction oldDirection = LEFT;
-    Direction newDirection = RIGHT;
- 
-    //Player creation
-    player = Player(appContext);
+    /*SnakeScaleObject testScale = generate_snake_scale(glm::vec2(1.0f, 1.0f), LEFT, ourShader, appContext);
+    testScale.set_scale(glm::vec3(1.0f, 1.0f, 1.0f));*/
+
+    PrismObject prism2 = PrismObject(36, appContext.get_shader(), appContext);
+    generate_prism(prism2, appContext, -0.2, 0.2,
+        -0.6f, 0.6f, -0.2, 0.2, 1.0f);
+    prism2.set_position(glm::vec3(0.0f,3.0f,-1.0f));
+    //gameManager.test.set_position(glm::vec3(1.0f, 3.0f, 4.0f));
 
     stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
@@ -229,10 +218,34 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     while (!glfwWindowShouldClose(window))
     {
+        /*printf("location | x: %f, y: %f, z: %f\n",
+            gameManager.test.get_position().x, gameManager.test.get_position().y, gameManager.test.get_position().z);*/
         // Pregame logic
         float currentFrame = glfwGetTime();
+        int intFrame = static_cast<int>(currentFrame);
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
+        SnakeScaleObject head = player.get_body_cubes().back();
+
+        prism2.delete_object(false);
+        prism2 = PrismObject(36, appContext.get_shader(), appContext);
+        generate_prism(prism2, appContext, -0.2, 0.2,
+            -0.6f, 0.6f, -0.2, 0.2, 1.0f);
+        prism2.set_position(centered_vec3_to_edge(head, head.get_position(), appContext));
+        
+        if ((intFrame + 1) % 2 == 1) {
+            isDebuging = true;
+        }
+
+        if ((intFrame + 1) % 2 == 0 && isDebuging) {
+            isDebuging = false;
+            glm::vec2 currentGridPosition = gameManager.vec3_to_grid_position(prism2.get_position());
+
+
+            printf("\t\t\t\t\t\t\t\t\tgrid location | row: %f, col: %f\n",
+                currentGridPosition.x, currentGridPosition.y);
+        }
 
         glm::vec3 direction;
         direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
@@ -242,7 +255,7 @@ int main()
 
         //Input
         processInput(window);
-        player.move_body(deltaTime, appContext);
+        player.move_body(deltaTime, prism2, appContext);
 
         const float radius = 10.0f;
         float camX = sin(glfwGetTime()) * radius;
@@ -266,6 +279,7 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         objectManager.draw_prism(prism);
+        objectManager.draw_prism(prism2);
         player.draw_body(appContext);
 
         glBindVertexArray(0);

@@ -72,12 +72,14 @@ float Player::get_speed() {
 
 //Add indexes if start scale is 1.0f and when scale rounds to new number
 
-void Player::move_body(float deltaTime, AppContext appContext) {
+void Player::move_body(float deltaTime, PrismObject& prismObject, AppContext& appContext) {
 	SnakeScaleObject& head = this->bodyCubes.back();
 	SnakeScaleObject& tail = this->bodyCubes.front();
 	bool inNewTile = false;
 	GameManager& gameManager = appContext.get_game_manager();
 	update_body_indexes(*this, appContext);
+	//gameManager.test.set_position(glm::vec3(5.0f, 3.0f, 1.0f));
+
 
 	//If snake has multiple scales
 	if (this->length > 1 && this->bodyCubes.size() > 1) { 
@@ -113,13 +115,6 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 			this->bodyCubes.pop_front();
 			tail.delete_object(false);
 		}
-		if ((static_cast<int>(newTailScale.x) < static_cast<int>(oldTailScale.x))  ||
-			static_cast<int>(newTailScale.z) < static_cast<int>(oldTailScale.z)) {
-			//pop_body_index();
-			//printf("(int)newTail.x: %d, (int)oldTailScale.z: %d, (int)n")		
-			//this->pop_body_index();
-			//printf("\t\t\t\t\t\t\t\t\tsize: %d\n", this->bodyIndexes.size());		
-		}
 
 		// Checks if head location must be updated
 		if (hasRowChanged || hasColumnChanged) {
@@ -139,21 +134,27 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 	//If snake is a singleton
 	else {
 		glm::vec3 singletonPositionChange = getSingletonPositionChange(*this, deltaTime);
-		glm::vec3 oldPosition = head.get_position();
-		glm::vec3 currentPosition = head.get_position() + singletonPositionChange;
-		glm::vec2 oldGridPosition = gameManager.vec3_to_adjusted_grid_position(*this, oldPosition);
-		glm::vec2 currentGridPosition = gameManager.vec3_to_adjusted_grid_position(*this,currentPosition);
-		
-		head.set_position(currentPosition);
+
+		glm::vec3 oldAssignedPosition = head.get_position();/* = centered_vec3_to_edge(head, appContext)*/;
+		glm::vec3 currentAssignedPosition = oldAssignedPosition + (singletonPositionChange);
+
+		glm::vec2 oldGridPosition = gameManager.vec3_to_length_adjusted_tile(head,
+			oldAssignedPosition, appContext);
+		glm::vec2 currentGridPosition = gameManager.vec3_to_length_adjusted_tile(head, 
+			currentAssignedPosition, appContext);
+
+		head.set_position(currentAssignedPosition);
+		/*if (this->is_in_new_tile(player, oldGridPosition)) {
+			glm::vec2 tileOffset = this->get_tile_offset(player.get_head_direction());
+			player.set_head_grid_position(currentAdjustedPosition.operator+=(tileOffset));
+		}*/
 		this->set_head_grid_position(currentGridPosition);
 
 		if (oldGridPosition != currentGridPosition) {
+			printf("\t\t\t\t\t\t\t\t\tGAHHH!\n");
 			inNewTile = true;
-
-			//Edit bodyCubes and bodyIndexes
-			//this->bodyIndexes.push(gameManager.row_col_to_index(currentGridPosition.x, currentGridPosition.y));
-			//this->push_body_index(currentGridPosition, appContext);
-			//this->pop_body_index();
+			/*printf("\t\t\t\t\t\t\t\t\tlocation | x: %f, y: %f, z: %f\n",
+				gameManager.test.get_position().x, gameManager.test.get_position().y, gameManager.test.get_position().z);*/
 
 			if (this->queuedHeadDirection != this->headDirection) turn_snake(*this, this->queuedHeadDirection, appContext);
 			if (this->isQueuedGrow) {

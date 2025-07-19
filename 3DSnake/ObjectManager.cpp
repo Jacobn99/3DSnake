@@ -72,7 +72,7 @@ void ObjectManager::draw_object(Object& object) {
     //printf("scale.z: %f\n", (*object).queuedScale.z);
     //(*object).set_model(glm::scale(glm::translate((*object).get_model(), (*object).queuedTranslation), (*object).queuedScale));
     if (object.isQueuedTransformation) {
-        object.set_model(glm::scale(glm::translate(object.get_model(), object.currentPosition), object.currentScale));
+        object.set_model(glm::scale(glm::translate(object.get_model(), object.currentAssignedPosition), object.currentScale));
         object.isQueuedTransformation = false;
     }
 

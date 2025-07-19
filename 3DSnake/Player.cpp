@@ -199,7 +199,6 @@ void Player::add_body_part(AppContext appContext, Direction direction, bool isGr
 	/*SnakeScaleObject(boardPosition, direction, 36, appContext.get_shader(), appContext);*/
 	glm::vec3 startLoc = gameManager.board_to_vec3(boardPosition);
 	SnakeScaleObject& oldHead = this->bodyCubes.back();
-	glm::vec3 oldScale = oldHead.get_scale();
 
 	//generate_snake_scale(newHead, appContext);
 	if (startAsPlane) newHead.set_scale(get_initial_scaling(direction)); //Start with no scale
@@ -207,8 +206,6 @@ void Player::add_body_part(AppContext appContext, Direction direction, bool isGr
 
 	set_snake_orientation_with_offset(oldHead, gameManager.get_opposite_direction(oldHead.get_direction()), true, appContext);
 	newHead.set_direction(direction);
-	
-	oldHead.set_scale(glm::round(oldScale));
 	//this->push_body_index(boardPosition, appContext);
 
 	//Edit bodyCubes
@@ -328,11 +325,13 @@ void update_body_indexes(Player& player, AppContext appContext) {
 	std::queue<int> bodyIndexes = player.get_body_indexes();
 	glm::vec2 boardPosition = player.get_head_grid_position();
 	int index = appContext.get_game_manager().row_col_to_index(boardPosition.x, boardPosition.y);
-
+	
 	//Update pushes
 	if (bodyIndexes.size() == 0 || bodyIndexes.back() != index) {
 		player.push_body_index(boardPosition, appContext);
 	}
-	//Update pops
 	if (bodyIndexes.size() > player.get_length()) player.pop_body_index();
+
+	//Update pops
+
 }

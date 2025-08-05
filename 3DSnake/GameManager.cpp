@@ -90,9 +90,9 @@ glm::vec3 GameManager::get_orientation_offset(Direction direction) {
 
 }
 
-glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position) {
+glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 	glm::vec3 normalizedPosition = (glm::vec3(position.x - this->boardCenter.x,
-		0.0f, position.z - this->boardCenter.z));
+		0.0f, position.z - this->boardCenter.z)) + glm::vec3(this->unitsPerTile, 0.0f, this->unitsPerTile);
 
 	float rowFloat = (normalizedPosition.z / this->unitsPerTile + this->sizeInTiles / 2);
 	float columnFloat = (normalizedPosition.x / this->unitsPerTile + this->sizeInTiles / 2);
@@ -101,20 +101,28 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position) {
 	if (-1.0f < columnFloat && columnFloat < 0.0f) columnFloat = 0.0f;*/
 	int row;
 	int column;
-	if (rowFloat - std::floor(rowFloat) < 0.07) row = std::floor(rowFloat);
+	/*if (rowFloat - std::floor(rowFloat) < 0.07) row = std::floor(rowFloat);
 	else row = std::ceil(rowFloat);
 	if (columnFloat - std::floor(columnFloat) < 0.07f) column = std::floor(columnFloat);
-	else column = std::ceil(columnFloat);
+	else column = std::ceil(columnFloat);*/
 	
-	/*int row = static_cast<int>(rowFloat);
-	int column = static_cast<int>(columnFloat);*/
+	row = static_cast<int>(rowFloat);
+	column = static_cast<int>(columnFloat);
 	
-	if (rowFloat - row > 0.95) row++;
-	if (columnFloat - column > 0.95) column++;
+	/*if (rowFloat - row > 0.95) row++;
+	if (columnFloat - column > 0.95) column++;*/
 
 	glm::vec2 result = glm::vec2(row, column);
 
-	//printf("\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f, row: %d, col: %d\n", rowFloat, columnFloat, row, column);
+	if (isDebug) {
+		printf("\t\t\t\t\t\t\t\t\t-------------------------\n");
+		printf("\t\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f\n",
+		rowFloat, columnFloat);
+		printf("\t\t\t\t\t\t\t\t\trow = %d, col = %d\n",
+			row, column);
+		/*printf("\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f, row: %d, col: %d\n",
+			rowFloat, columnFloat, row, column);*/
+	}
 
 
 	/*assert(result.x >= 0 && result.x < this->sizeInTiles);
@@ -127,14 +135,15 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position) {
 	return result;
 }
 
-glm::vec2 GameManager::vec3_to_length_adjusted_tile(Player& player, glm::vec3 position) {
+glm::vec2 GameManager::vec3_to_length_adjusted_tile(Player& player, glm::vec3 og_position, bool isDebug) {
 	if (player.get_body_cubes().size() == 1) {
-		glm::vec2 gridPos = vec3_to_grid_position(position);
-		glm::vec2 result = gridPos + get_tile_offset(player.get_head_direction()).operator*=(player.get_length() - 1);
+		glm::vec2 gridPos = vec3_to_grid_position(og_position, isDebug);
+		glm::vec2 result = gridPos + get_tile_offset(
+			player.get_head_direction()).operator*=(player.get_length() - 1);
 		//printf("result | x: %f, z: %f\n", result.x, result.y);
 		return result;
 	}
-	else return vec3_to_grid_position(position);
+	else return vec3_to_grid_position(og_position, isDebug);
 }
 
 // REMEMBER, IT'S STORED AS ROW,COL
@@ -236,7 +245,7 @@ void snap_to_grid(SnakeScaleObject& scale, AppContext appContext) {
 	float rowFloat = (normalizedPosition.z / gameManager.unitsPerTile + gameManager.sizeInTiles / 2);
 	float columnFloat = (normalizedPosition.x / gameManager.unitsPerTile + gameManager.sizeInTiles / 2);
 	
-	glm::vec2 currentGridPosition = gameManager.vec3_to_grid_position(frontCenter);
+	glm::vec2 currentGridPosition = gameManager.vec3_to_grid_position(frontCenter, false);
 	float row = currentGridPosition.x;
 	float column = currentGridPosition.y;
 

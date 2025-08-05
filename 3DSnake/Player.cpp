@@ -103,7 +103,7 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 		hasRowChanged = newScaleZInt > static_cast<int>(oldHeadScale.z);
 		hasColumnChanged = newScaleXInt > static_cast<int>(oldHeadScale.x);
 
-		tailGridPosition = gameManager.vec3_to_grid_position(tail.get_position());
+		tailGridPosition = gameManager.vec3_to_grid_position(tail.get_position(), false);
 
 		//Checks if snake head is touching tail
 		if (this->get_head_grid_position() == tailGridPosition && this->length > 2) printf("\t\t\t\t\t\t\t\t\tHIT!!!\n");
@@ -138,8 +138,8 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 		glm::vec3 oldFrontCenterPosition = edge_to_front_center(oldPosition, head, appContext);
 		glm::vec3 currentFrontCenterPosition = edge_to_front_center(currentPosition, head, appContext);
 
-		glm::vec2 oldGridPosition = gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition);
-		glm::vec2 currentGridPosition = gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition);
+		glm::vec2 oldGridPosition = gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition, false);
+		glm::vec2 currentGridPosition = gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, false);
 
 		/*printf("centered pos | x: %f, y: %f, z: %f\n", currentCenteredPosition.x, 
 currentCenteredPosition.y, currentCenteredPosition.z);*/
@@ -244,7 +244,7 @@ glm::vec2 get_new_head_position(Player& player, Direction direction, AppContext 
 	float unitsPerTile = gameManager.unitsPerTile;
 	SnakeScaleObject head = player.get_body_cubes().back();
 	glm::vec3 prevCenteredPosition = edge_to_center_position(head.get_prev_position(), head, appContext);
-	glm::vec2 prevGridPosition = gameManager.vec3_to_grid_position(prevCenteredPosition);
+	glm::vec2 prevGridPosition = gameManager.vec3_to_grid_position(prevCenteredPosition, false);
 
 	//printf("\t\t\t\t\t\t\t\t\tprevHeadPos | row: %f, col: %f\n", prevHeadPosition.x, prevHeadPosition.y);
 
@@ -263,7 +263,7 @@ void turn_snake(Player& player, Direction direction, AppContext appContext) {
 	SnakeScaleObject& head = player.get_body_cubes().back();
 
 	glm::vec2 currentGridPosition = player.get_head_grid_position();
-	printf("\t\t\t\t\t\t\t\t\tregistered | row: %f, col: %f\n", currentGridPosition.x, currentGridPosition.y);
+	//printf("\t\t\t\t\t\t\t\t\tregistered | row: %f, col: %f\n", currentGridPosition.x, currentGridPosition.y);
 
 	glm::vec3 currentFrontCenterPosition = edge_to_front_center(head.get_position(), head, appContext);
 
@@ -285,7 +285,7 @@ void turn_snake(Player& player, Direction direction, AppContext appContext) {
 	if (columnFloat - column > 0.95) column++;
 
 	glm::vec2 result = glm::vec2(row, column);*/
-	printf("\t\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f\n", rowFloat, columnFloat);
+	//printf("\t\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f\n", rowFloat, columnFloat);
 	/*printf("\t\t\t\t\t\t\t\t\trow: %f, col: %f\n", result.x, result.y);*/
 
 

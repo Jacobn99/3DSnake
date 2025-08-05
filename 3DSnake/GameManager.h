@@ -24,8 +24,8 @@ public:
 	glm::vec3 board_to_vec3(glm::vec2 boardLoc);
 	glm::vec3 get_orientation_offset(Direction direction);
 	glm::vec2 get_tile_offset(Direction direction);
-	glm::vec2 vec3_to_grid_position(glm::vec3 position);
-	glm::vec2 vec3_to_length_adjusted_tile(Player& player, glm::vec3 position);
+	glm::vec2 vec3_to_grid_position(glm::vec3 position, bool isDebug);
+	glm::vec2 vec3_to_length_adjusted_tile(Player& player, glm::vec3 position, bool isDebug);
 	Direction get_opposite_direction(Direction direction);
 	Texture get_generated_texture(GeneratedTextures texture);
 	void set_generated_texture(GeneratedTextures gen, Texture texture);

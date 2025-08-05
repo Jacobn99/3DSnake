@@ -20,6 +20,7 @@
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+GLenum currentKey = GLFW_KEY_UNKNOWN;
 
 // camera settings
 glm::vec3 cameraPos;
@@ -30,6 +31,7 @@ glm::vec3 cameraTarget;
 glm::vec3 cameraDirection;
 glm::vec3 up;
 glm::vec3 cameraRight;
+GameManager gameManager;
 
 // global variables
 float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -38,18 +40,22 @@ float lastX = 400, lastY = 300;
 float yaw = -90.0f;
 float pitch = 0.0f;
 bool firstMouse = true;
-double minButtonDelay = 0.5;
+double minButtonDelay = 0.01;
 Player player;
 AppContext appContext;
 //Make a hashtable containing the time last pressed
 std::unordered_map<GLenum, double> buttonsPressed = std::unordered_map<GLenum, double>();
 
 bool keyIsHeld(GLenum key) {
-    if (buttonsPressed.find(key) == buttonsPressed.end()) return false;
+    //If key is not in the map
+    if (buttonsPressed.find(key) == buttonsPressed.end()) {
+        return false;
+    }
+    //If key is in the map, then check time difference between now and last pressed time
     else {
         assert(glfwGetTime() > buttonsPressed.at(key));
         double timeDifference = glfwGetTime() - buttonsPressed.at(key);
-        //printf("currentTime: %f, buttonTime: %f, timeDifference: %f\n", glfwGetTime(), buttonsPressed.at(key), timeDifference);
+        //if(timeDifference >= minButtonDelay) printf("\t\t\t\t\t\t\t\t\tcurrentTime: %f, buttonTime: %f, timeDifference: %f\n", glfwGetTime(), buttonsPressed.at(key), timeDifference);
         return timeDifference < minButtonDelay;
     }
 }
@@ -64,6 +70,9 @@ void processInput(GLFWwindow* window)
 {
     float cameraSpeed = 2.5f * deltaTime;
     float snakeSpeed = 2.5 * deltaTime;
+    GLenum oldkey = currentKey;
+
+    //Process input    
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -75,25 +84,43 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && player.get_head_direction() != FORWARD) {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS/* && player.get_head_direction() != FORWARD*/) {
         if (!keyIsHeld(GLFW_KEY_UP)) player.queue_turn(FORWARD, appContext);
-        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+        currentKey = GLFW_KEY_UP;
+
+        buttonsPressed.insert_or_assign(GLFW_KEY_UP, glfwGetTime());
     }
-    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && player.get_head_direction() != BACKWARD) {
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS/* && player.get_head_direction() != BACKWARD*/) {
         if (!keyIsHeld(GLFW_KEY_DOWN)) player.queue_turn(BACKWARD, appContext);
-        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+        currentKey = GLFW_KEY_DOWN;
+        buttonsPressed.insert_or_assign(GLFW_KEY_DOWN, glfwGetTime());
     }
-    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && player.get_head_direction() != LEFT) {
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS/* && player.get_head_direction() != LEFT*/) {
         if (!keyIsHeld(GLFW_KEY_LEFT)) player.queue_turn(LEFT, appContext);
-        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+        currentKey = GLFW_KEY_LEFT;
+        buttonsPressed.insert_or_assign(GLFW_KEY_LEFT, glfwGetTime());
     }
-    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && player.get_head_direction() != RIGHT) {
+    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS/* && player.get_head_direction() != RIGHT*/) {
         if (!keyIsHeld(GLFW_KEY_RIGHT)) player.queue_turn(RIGHT, appContext);
-        buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+        currentKey = GLFW_KEY_RIGHT;
+        buttonsPressed.insert_or_assign(GLFW_KEY_RIGHT, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         if (!keyIsHeld(GLFW_KEY_E)) player.queue_growth(); 
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
+    }
+    else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        if (!keyIsHeld(GLFW_KEY_E)) currentKey = GLFW_KEY_Q;
+
+        buttonsPressed.insert_or_assign(GLFW_KEY_Q, glfwGetTime());
+    }
+	//else currentKey = GLFW_KEY_UNKNOWN; // Reset currentKey if no keys are pressed
+
+    //Debug
+    if (currentKey != GLFW_KEY_UNKNOWN && !keyIsHeld(currentKey)) {
+        glm::vec3 playerPosition = player.get_body_cubes().back().get_position();
+        gameManager.vec3_to_length_adjusted_tile(player, playerPosition, true);
+        currentKey = GLFW_KEY_UNKNOWN;
     }
 }
 
@@ -183,7 +210,7 @@ int main()
 
     ObjectManager objectManager = ObjectManager();
 
-    GameManager gameManager = GameManager(sizeInUnits, sizeInTiles);
+    gameManager = GameManager(sizeInUnits, sizeInTiles);
     Texture tileTexture = textureManager.generate_texture_2D(
         "C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
         GL_RGBA, GL_REPEAT, GL_LINEAR);

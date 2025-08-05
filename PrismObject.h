@@ -11,6 +11,7 @@
 class PrismObject : public Object {
 public:
 	using Object::Object;
+	PrismObject() = default;
 	PrismObject(int vertexCount, Shader& shader, AppContext appContext);
 	std::vector<float>* vertices;
 	bool orientationChanged;
@@ -34,9 +35,8 @@ private:
 	glm::vec3 prevPosition;
 };
 
-//glm::vec3 get_length_offset(Direction direction, float length, bool scalePositive, AppContext appContext);
-glm::vec3 edge_to_front_center(glm::vec3 position, SnakeScaleObject head, AppContext appContext);
-glm::vec3 edge_to_center_position(glm::vec3 position, SnakeScaleObject head, AppContext appContext);
+glm::vec3 centered_vec3_to_edge(SnakeScaleObject scale, glm::vec3 position, AppContext appContext);
+glm::vec3 get_length_offset(Direction direction, float length, bool scalePositive, AppContext appContext);
 glm::vec3 get_initial_scaling(Direction direction);
 void set_snake_orientation_with_offset(SnakeScaleObject& scale, Direction direction, bool wasOffset, AppContext appContext);
 SnakeScaleObject generate_snake_scale(glm::vec2 tileLocation, Direction direction, Shader& shader, AppContext appContext);

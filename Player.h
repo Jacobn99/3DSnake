@@ -20,7 +20,7 @@ public:
 	std::queue<int> get_body_indexes();
 	std::deque<SnakeScaleObject>& get_body_cubes();
 	//void remove_tail();
-	void move_body(float deltaTime, AppContext appContext);
+	void move_body(float deltaTime, PrismObject& prismObject, AppContext& appContext);
 	void draw_body(AppContext appContext);
 	void add_body_part(SnakeScaleObject prism, unsigned int tableIndex, bool isGrowing);
 	void add_body_part(AppContext appContext, Direction direction, bool isGrowing, bool startAsPlane);

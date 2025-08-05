@@ -27,7 +27,7 @@ Object::Object(int vertexCount, Shader& shader, AppContext appContext) {
     this->color = appContext.get_object_manager().get_default_color();
     this->textureManager = &appContext.get_texture_manager();
 
-    this->currentPosition = glm::vec3(1.0f);
+    this->currentAssignedPosition = glm::vec3(1.0f);
     this->currentScale = glm::vec3(1.0f);
     this->isQueuedTransformation = false;
 }
@@ -51,7 +51,7 @@ Object::Object(unsigned int VBO, unsigned int VAO,  int vertexCount, Shader& sha
     this->color = appContext.get_object_manager().get_default_color();
     this->textureManager = &appContext.get_texture_manager();
 
-    this->currentPosition = glm::vec3(1.0f);
+    this->currentAssignedPosition = glm::vec3(1.0f);
     this->currentScale = glm::vec3(1.0f);
     this->isQueuedTransformation = false;
 }
@@ -165,9 +165,9 @@ glm::vec3 Object::get_scale() {
     return this->currentScale;
 }
 void Object::set_position(glm::vec3 position) {
-    this->currentPosition = position;
+    this->currentAssignedPosition = position;
     this->isQueuedTransformation = true;
 }
 glm::vec3 Object::get_position() {
-    return this->currentPosition;
+    return this->currentAssignedPosition;
 }

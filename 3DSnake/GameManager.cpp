@@ -5,6 +5,7 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Player.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
+#include <cmath>
 
 
 
@@ -21,46 +22,16 @@ GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 	this->frontPositionOffset = glm::vec3(0.0f, 0.0f, this->unitsPerTile / 2);
 	this->backPositionOffset = glm::vec3(0.0f, 0.0f, -(float)((this->unitsPerTile / 2)));
 	this->defaultDirection = FORWARD;
-	this->gameRunning = false;
-	this->player = Player();
-	this->board = PrismObject();
 	/*this->snakeTexture = appContext.get_texture_manager().generate_texture_2D(
 		"C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
 		GL_RGBA, GL_REPEAT, GL_LINEAR);*/
 }
-
-void GameManager::start_game(AppContext appContext) {
-	Texture tileTexture = this->get_generated_texture(FLOOR);
-	this->gameRunning = true;
-
-	//Object creation
-	this->board = PrismObject(36, appContext.get_shader(), appContext);
-	generate_prism(this->board, appContext, -(sizeInUnits / 2), (sizeInUnits / 2),
-		-0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), this->sizeInTiles);
-	this->board.set_position(this->boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
-	this->board.set_texture(tileTexture);
-
-	//Player creation
-	this->player = Player(appContext);
-}
-
-Player& GameManager::get_player() {
-	assert(this->gameRunning);
-	return this->player;
-}
-
-PrismObject& GameManager::get_board() {
-	assert(this->gameRunning);
-	return this->board;
-}
-
-
 Texture GameManager::get_generated_texture(GeneratedTextures texture) {
 	switch (texture) {
 	case FLOOR:
 		return this->floorTexture;
-	case SNAKE:
-		return this->snakeTexture;
+	case GREEN_SQUARE:
+		return this->greenSquareTexture;
 	default:
 		printf("ERROR: GeneratedTextures enum bigger than switch statement 1\n");
 		Texture texture = Texture();
@@ -72,13 +43,13 @@ void GameManager::set_generated_texture(GeneratedTextures gen, Texture texture) 
 	case FLOOR:
 		this->floorTexture = texture;
 		break;
-	case SNAKE:
-		this->snakeTexture = texture;
+	case GREEN_SQUARE:
+		this->greenSquareTexture = texture;
 		break;	
 	default:
 		printf("ERROR: GeneratedTextures enum bigger than switch statement 2\n");
-		break;
 	}
+	this->floorTexture = texture;
 }
 unsigned int GameManager::index_to_row(unsigned int index) {
 	assert(index < this->sizeInTiles * this->sizeInTiles);
@@ -120,78 +91,51 @@ glm::vec3 GameManager::get_orientation_offset(Direction direction) {
 }
 
 glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position) {
-	glm::vec3 normalizedPosition = (glm::vec3(position.x + this->unitsPerTile - this->boardCenter.x,
-		0.0f, position.z + 3*this->unitsPerTile/2 - this->boardCenter.z));
+	glm::vec3 normalizedPosition = (glm::vec3(position.x - this->boardCenter.x,
+		0.0f, position.z - this->boardCenter.z));
 
-	int row = static_cast<int>(normalizedPosition.z / this->unitsPerTile + this->sizeInTiles / 2) - 1;
-	int column = static_cast<int>(normalizedPosition.x / this->unitsPerTile + this->sizeInTiles / 2) - 1;
+	float rowFloat = (normalizedPosition.z / this->unitsPerTile + this->sizeInTiles / 2);
+	float columnFloat = (normalizedPosition.x / this->unitsPerTile + this->sizeInTiles / 2);
+
+	/*if (-1.0f < rowFloat && rowFloat < 0.0f) rowFloat = 0.0f;
+	if (-1.0f < columnFloat && columnFloat < 0.0f) columnFloat = 0.0f;*/
+	int row;
+	int column;
+	if (rowFloat - std::floor(rowFloat) < 0.07) row = std::floor(rowFloat);
+	else row = std::ceil(rowFloat);
+	if (columnFloat - std::floor(columnFloat) < 0.07f) column = std::floor(columnFloat);
+	else column = std::ceil(columnFloat);
+	
+	/*int row = static_cast<int>(rowFloat);
+	int column = static_cast<int>(columnFloat);*/
+	
+	if (rowFloat - row > 0.95) row++;
+	if (columnFloat - column > 0.95) column++;
 
 	glm::vec2 result = glm::vec2(row, column);
+
+	//printf("\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f, row: %d, col: %d\n", rowFloat, columnFloat, row, column);
+
+
+	/*assert(result.x >= 0 && result.x < this->sizeInTiles);
+	assert(result.y >= 0 && result.y < this->sizeInTiles);*/
+	//printf("FIX MIDDLE BEING SKIPPED!!!!!\n");
+	//printf("-----------------------\n");
+	/*printf("row = %f, col = %f, (int) row: %d, (int) col: %d,\n", normalizedPosition.z / this->unitsPerTile + this->sizeInTiles / 2,
+		normalizedPosition.x / this->unitsPerTile + this->sizeInTiles / 2, row, column);
+	printf("result | x: %f, z: %f\n", result.x, result.y);*/
 	return result;
 }
 
-glm::vec2 GameManager::vec3_to_length_adjusted_tile(SnakeScaleObject head, glm::vec3 position, AppContext appContext) {
+glm::vec2 GameManager::vec3_to_length_adjusted_tile(Player& player, glm::vec3 position) {
 	if (player.get_body_cubes().size() == 1) {
-		glm::vec3 lengthAdjustedPosition = centered_vec3_to_edge(head, position, appContext);
-
-		return vec3_to_grid_position(lengthAdjustedPosition);
-		//return vec3_to_grid_position(lengthAdjustedPosition) + get_tile_offset(player.get_head_direction()).operator*=(player.get_length() - 1);
+		glm::vec2 gridPos = vec3_to_grid_position(position);
+		glm::vec2 result = gridPos + get_tile_offset(player.get_head_direction()).operator*=(player.get_length() - 1);
+		//printf("result | x: %f, z: %f\n", result.x, result.y);
+		return result;
 	}
-	else return vec3_to_grid_position(head.get_position());
+	else return vec3_to_grid_position(position);
 }
-
-bool GameManager::singleton_in_new_tile(Player& player, glm::vec3 currentAdjustedPosition) {
-	assert(player.get_body_cubes().size() == 1);
-	float xOffset = 0.0f;
-	float zOffset = 0.0f;
-
-	switch (player.get_head_direction()) {
-	case FORWARD:
-		zOffset = -unitsPerTile / 2;
-		break;
-	case BACKWARD:
-		zOffset = unitsPerTile / 2;
-		break;
-	case LEFT:
-		xOffset = -unitsPerTile / 2;
-		break;
-	case RIGHT:
-		zOffset = unitsPerTile / 2;
-		break;
-	}
-
-	glm::vec2 tileOffset = this->get_tile_offset(player.get_head_direction());
-	glm::vec2 currentTile = player.get_head_grid_position();
-	glm::vec2 targetTile = currentTile + tileOffset;
-	glm::vec3 directionalOffset = glm::vec3(xOffset, 0.0f, zOffset);
-
-	glm::vec3 targetPosition = this->board_to_vec3(targetPosition) + (directionalOffset);
-	glm::vec3 positionChange = glm::abs(targetPosition - (currentAdjustedPosition));
-
-	if (positionChange.x <= 0.1 && positionChange.z <= 0.1) return true;
-	else return false;
-}
-
-//void GameManager::singleton_tile_check(Player& player, glm::vec3 currentAdjustedPosition) {
-//	if (player.get_body_cubes().size() > 1) return;
-//
-//	if (this->is_in_new_tile(player, currentAdjustedPosition)) {
-//		glm::vec2 tileOffset = this->get_tile_offset(player.get_head_direction());
-//		player.set_head_grid_position(currentAdjustedPosition.operator+=(tileOffset));
-//	}
-//
-//	//glm::vec3 normalizedPosition = (glm::vec3(position.x + this->unitsPerTile - this->boardCenter.x,
-//	//	0.0f, position.z + 3 * this->unitsPerTile / 2 - this->boardCenter.z);
-//
-//	//int row = static_cast<int>(normalizedPosition.z / this->unitsPerTile + this->sizeInTiles / 2) - 1;
-//	//int column = static_cast<int>(normalizedPosition.x / this->unitsPerTile + this->sizeInTiles / 2) - 1;
-//
-//	//glm::vec2 result = glm::vec2(row, column);
-//
-//	//if (player.get_body_cubes().size() == 1)
-//	//	return vec3_to_grid_position(position) + get_tile_offset(direction/*player.get_head_direction()*/).operator*=(player.get_length() - 1);
-//	//else return vec3_to_grid_position(position);
-//}
 
 // REMEMBER, IT'S STORED AS ROW,COL
 glm::vec2 GameManager::get_tile_offset(Direction direction) {
@@ -240,48 +184,68 @@ const char* direction_to_string(Direction direction) {
 	return result;
 }
 
-glm::vec3 get_scaled_grid_vector(Direction direction, glm::vec3 scale, float tileSize) {
-	assert(scale.x > 0.0f && scale.y > 0.0f && scale.z > 0.0f);
+glm::vec3 get_scaled_grid_vector(Direction direction, glm::vec3 scale, float tileSize, int lengthOffset) {
+	//assert(scale.x > 0.0f && scale.y > 0.0f && scale.z > 0.0f);
 
 	glm::vec3 vect;
+	//glm::vec3 adjustedScale = scale;
 
 	switch (direction) {
 	case LEFT:
-		vect = glm::vec3(-tileSize * (scale.x - 1), 0.0f, 0.0f);
+		vect = glm::vec3(-tileSize * (scale.x - lengthOffset), 0.0f, 0.0f);
 		break;
 	case RIGHT:
-		vect = glm::vec3(tileSize * (scale.x - 1), 0.0f, 0.0f);
+		vect = glm::vec3(tileSize * (scale.x - lengthOffset), 0.0f, 0.0f);
 		break;
 	case FORWARD:
-		vect = glm::vec3(0.0f, 0.0f, -tileSize * (scale.z - 1));
+		vect = glm::vec3(0.0f, 0.0f, -tileSize * (scale.z - lengthOffset));
 		break;
 	case BACKWARD:
-		vect = glm::vec3(0.0f, 0.0f, tileSize * (scale.z - 1));
+		vect = glm::vec3(0.0f, 0.0f, tileSize * (scale.z - lengthOffset));
 		break;
 	}
 
 	return vect;
 }
-
-glm::vec3 get_vec3_directional_grid_offset(Direction direction, AppContext appContext) {
-	GameManager gameManager = appContext.get_game_manager();
-	float unitsPerTile = gameManager.unitsPerTile;
-	float xOffset = 0.0f;
-	float zOffset = 0.0f;
-
+glm::vec3 get_directional_offset(Direction direction) {
+	glm::vec3 vect;
 	switch (direction) {
-	case FORWARD:
-		zOffset = -unitsPerTile;
-		break;
-	case BACKWARD:
-		zOffset = unitsPerTile;
-		break;
 	case LEFT:
-		xOffset = -unitsPerTile;
+		vect = glm::vec3(-1.0f, 0.0f, 0.0f);
 		break;
 	case RIGHT:
-		xOffset = unitsPerTile;
+		vect = glm::vec3(1.0f, 0.0f, 0.0f);
+		break;
+	case FORWARD:
+		vect = glm::vec3(0.0f, 0.0f, -1.0f);
+		break;
+	case BACKWARD:
+		vect = glm::vec3(0.0f, 0.0f, 1.0f);
 		break;
 	}
-	return glm::vec3(xOffset, 0.0f, zOffset);
+	return vect;
+}
+
+void snap_to_grid(SnakeScaleObject& scale, AppContext appContext) {
+	GameManager gameManager = appContext.get_game_manager();
+	glm::vec3 frontCenter = edge_to_front_center(scale.get_position(), scale, appContext);
+
+	glm::vec3 normalizedPosition = (glm::vec3(frontCenter.x - gameManager.boardCenter.x,
+		0.0f, frontCenter.z - gameManager.boardCenter.z));
+
+	float rowFloat = (normalizedPosition.z / gameManager.unitsPerTile + gameManager.sizeInTiles / 2);
+	float columnFloat = (normalizedPosition.x / gameManager.unitsPerTile + gameManager.sizeInTiles / 2);
+	
+	glm::vec2 currentGridPosition = gameManager.vec3_to_grid_position(frontCenter);
+	float row = currentGridPosition.x;
+	float column = currentGridPosition.y;
+
+	if ((scale.get_direction() == FORWARD || scale.get_direction() == BACKWARD) 
+		&& std::abs(columnFloat - column) < 0.1) {
+		scale.set_position(scale.get_position() - glm::vec3(0.0f,0.0f, (columnFloat - column)));
+	}
+	else if((scale.get_direction() == LEFT || scale.get_direction() == RIGHT) 
+		&& std::abs(rowFloat - row) < 0.1){
+		scale.set_position(scale.get_position() - glm::vec3((rowFloat - row), 0.0f, 0.0f));
+	}
 }

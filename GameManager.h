@@ -4,14 +4,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
+#include "Player.h"
 
 class AppContext; // Forward declaration of AppContext
 class Player;
-class SnakeScaleObject;
-
 enum GeneratedTextures {
 	FLOOR,
-	GREEN_SQUARE
+	SNAKE
 };
 
 class GameManager {
@@ -21,14 +20,20 @@ public:
 	unsigned int index_to_column(unsigned int index);
 	unsigned int index_to_row(unsigned int index);
 	unsigned int row_col_to_index(unsigned int row, unsigned int col);
+	void start_game(AppContext appContext);
+	Player& get_player();
 	glm::vec3 board_to_vec3(glm::vec2 boardLoc);
 	glm::vec3 get_orientation_offset(Direction direction);
 	glm::vec2 get_tile_offset(Direction direction);
 	glm::vec2 vec3_to_grid_position(glm::vec3 position);
-	glm::vec2 vec3_to_length_adjusted_tile(Player& player, glm::vec3 position);
+	void singleton_tile_check(Player& player, glm::vec3 currentAdjustedPosition);
+	bool singleton_in_new_tile(Player& player, glm::vec3 currentAdjustedPosition);
+	glm::vec2 vec3_to_length_adjusted_tile(SnakeScaleObject head, glm::vec3 position, AppContext appContext);
+	//glm::vec2 vec3_to_direction_adjusted_grid_position(Direction direction, glm::vec3 position);
 	Direction get_opposite_direction(Direction direction);
 	Texture get_generated_texture(GeneratedTextures texture);
 	void set_generated_texture(GeneratedTextures gen, Texture texture);
+	PrismObject& get_board();
 	//const char* direction_to_string(Direction direction);
 	unsigned int startIndex;
 	unsigned int sizeInTiles;
@@ -37,18 +42,20 @@ public:
 	glm::vec3 boardTopLeft;
 	float unitsPerTile;
 	Direction defaultDirection;
+	bool gameRunning;
 private:
 	Texture floorTexture;
-	Texture greenSquareTexture;
+	Texture snakeTexture;
 	glm::vec3 frontPositionOffset;
 	glm::vec3 backPositionOffset;
 	glm::vec3 leftPositionOffset;
 	glm::vec3 rightPositionOffset;
+	Player player;
+	PrismObject board;
 };
 
-void snap_to_grid(SnakeScaleObject& scale, AppContext appContext);
-glm::vec3 get_directional_offset(Direction direction);
-glm::vec3 get_scaled_grid_vector(Direction direction, glm::vec3 scale, float tileSize, int lengthOffset);
+glm::vec3 get_vec3_directional_grid_offset(Direction direction, AppContext appContext);
+glm::vec3 get_scaled_grid_vector(Direction direction, glm::vec3 scale, float tileSize);
 const char* direction_to_string(Direction direction);
 
 #endif

@@ -119,7 +119,7 @@ void processInput(GLFWwindow* window)
     //Debug
     if (currentKey != GLFW_KEY_UNKNOWN && !keyIsHeld(currentKey)) {
         glm::vec3 playerPosition = player.get_body_cubes().back().get_position();
-        gameManager.vec3_to_length_adjusted_tile(player, playerPosition, true);
+        //gameManager.vec3_to_length_adjusted_tile(player, playerPosition, true);
         currentKey = GLFW_KEY_UNKNOWN;
     }
 }

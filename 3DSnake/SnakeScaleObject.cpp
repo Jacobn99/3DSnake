@@ -13,6 +13,7 @@
 #include <algorithm>
 //								  V V In row, col order V V
 
+int global_second = 0;
 SnakeScaleObject::SnakeScaleObject(glm::vec2 tileLocation, Direction direction, int vertexCount, Shader& shader, AppContext appContext)
 	: PrismObject(vertexCount, shader, appContext) {
 	GameManager gameManager = appContext.get_game_manager();
@@ -102,10 +103,23 @@ glm::vec3 edge_to_center_position(glm::vec3 position, SnakeScaleObject head, App
 }
 
 glm::vec3 edge_to_front_center(glm::vec3 position, SnakeScaleObject head, AppContext appContext) {
+	double time = glfwGetTime();
+	int second = (int)(time);
+
+
 	GameManager gameManager = appContext.get_game_manager();
 	float length = head.get_largest_dimension();
 
 	glm::vec3 centeredPosition = position + get_scaled_grid_vector(head.get_direction(),
 		head.get_scale(), gameManager.unitsPerTile, 0).operator*=((length) / (length + 1));
+
+	//printf("time: %f, second: %d\n", time, second);
+	if (second % 2 == 0 && second != global_second) {
+		glm::vec3 scaled = get_scaled_grid_vector(head.get_direction(), head.get_scale(), gameManager.unitsPerTile, 0);
+		printf("\t\t\t\t\t\t\t\t\edge - position | x: %f, z: %f\n", position.x, position.z);
+		printf("\t\t\t\t\t\t\t\t\edge - scaled | x: %f, z: %f\n", scaled.x, scaled.z);
+	}
+
+	global_second = second;
 	return centeredPosition;
 }

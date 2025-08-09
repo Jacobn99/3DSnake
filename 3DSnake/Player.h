@@ -33,6 +33,7 @@ public:
 	void pop_body_index();
 	void queue_growth();
 	float get_speed();
+	bool isTurning;
 	int i = 0;
 
 private:

@@ -146,10 +146,11 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 currentCenteredPosition.y, currentCenteredPosition.z);*/
 
 		head.set_position(currentPosition);
-		this->set_head_grid_position(currentGridPosition);
+		/*this->set_head_grid_position(currentGridPosition);*/
 
 		if (oldGridPosition != currentGridPosition) {
-
+			//this->previousHeadGridPosition = oldGridPosition;
+			this->set_head_grid_position(currentGridPosition);
 			/*
 			
 			WE KNOW:
@@ -160,7 +161,10 @@ currentCenteredPosition.y, currentCenteredPosition.z);*/
 			*/
 
 			//gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition, true);
+			
+			//VVVVVVVV WAS USING THIS VVVVVVVV
 			gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, true);
+
 			//printf("\t\t\t\t\t\t\t\t\tcurrentPos | x: %f, z: %f\n", currentPosition.x,
 			//	currentPosition.z);
 			//printf("\t\t\t\t\t\t\t\t\tcurrentFC | x: %f, z: %f\n", currentFrontCenterPosition.x,
@@ -168,16 +172,16 @@ currentCenteredPosition.y, currentCenteredPosition.z);*/
 			//printf("\t\t\t\t\t\t\t\t\tcurrentGr | row: %f, column: %f\n", currentGridPosition.x,
 			//	currentGridPosition.y);
 
-
-			/*printf("\t\t\t\t\t\t\t\t\tNEW TILE\n");*/
 			glm::vec2 difference = currentGridPosition - oldGridPosition;
 			inNewTile = true;
-
-			if (this->queuedHeadDirection != this->headDirection) {
+			
+			if (this->queuedHeadDirection != this->headDirection && !this->isTurning) {
 				turn_snake(*this, this->queuedHeadDirection, appContext);
+				snap_to_grid(*this, appContext);
 			}
 			if (this->isQueuedGrow) {
 				this->add_body_part(appContext, this->get_head_direction(), true, false);
+				snap_to_grid(*this, appContext);
 				this->isQueuedGrow = false;
 			}
 			//printf("\t\t\t\t\t\t\t\t\tcurrent pos | row: %f, col: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
@@ -251,16 +255,19 @@ glm::vec2 get_new_head_position(Player& player, Direction direction, AppContext 
 
 	float unitsPerTile = gameManager.unitsPerTile;
 	SnakeScaleObject head = player.get_body_cubes().back();
-	glm::vec3 prevCenteredPosition = edge_to_center_position(head.get_prev_position(), head, appContext);
-	glm::vec2 prevGridPosition = gameManager.vec3_to_grid_position(prevCenteredPosition, false);
+	//glm::vec3 prevCenteredPosition = edge_to_center_position(head.get_prev_position(), head, appContext);
+	/*glm::vec3 prevCenteredPosition = edge_to_front_center(head.get_prev_position(), head, appContext);
+	glm::vec2 prevGridPosition = gameManager.vec3_to_grid_position(prevCenteredPosition, false);*/
 	glm::vec2 currentPos = player.get_head_grid_position();
 
-	/*printf("\t\t\t\t\t\t\t\t\tprevHeadPos | row: %f, col: %f\n", prevGridPosition.x, prevGridPosition.y);
-	printf("\t\t\t\t\t\t\t\t\tcurrentHeadPos | row: %f, col: %f\n", currentPos.x, currentPos.y);*/
+	//printf("\t\t\t\t\t\t\t\t\tprevHeadPos | row: %f, col: %f\n", prevGridPosition.x, prevGridPosition.y);
+	printf("\t\t\t\t\t\t\t\t\tcurrentHeadPos | row: %f, col: %f\n", currentPos.x, currentPos.y);
 
 
-	if(player.get_length() == 1) result = prevGridPosition + tileOffset;
-	else result = player.get_head_grid_position() + tileOffset;
+	/*if(player.get_length() == 1) result = prevGridPosition + tileOffset;
+	else result = player.get_head_grid_position() + tileOffset;*/
+
+	result = player.get_head_grid_position() + tileOffset;
 
 	//printf("----------------------\n");
 	//printf("headGridPosition | x: %f, y: %f\n", player.get_head_grid_position().x, player.get_head_grid_position().y);
@@ -284,7 +291,7 @@ void turn_snake(Player& player, Direction direction, AppContext appContext) {
 		player.set_head_direction(direction);
 	}
 	glm::vec2 currentGridPosition = player.get_head_grid_position();
-	printf("\t\t\t\t\t\t\t\t\tregistered | row: %f, col: %f\n", currentGridPosition.x, currentGridPosition.y);
+	//printf("\t\t\t\t\t\t\t\t\tregistered | row: %f, col: %f\n", currentGridPosition.x, currentGridPosition.y);
 }
 
 glm::vec3 getSingletonPositionChange(Player player, double deltaTime) {
@@ -352,3 +359,50 @@ void update_body_indexes(Player& player, AppContext appContext) {
 	//Update pops
 	if (bodyIndexes.size() > player.get_length()) player.pop_body_index();
 }
+void snap_to_grid(Player& player, AppContext appContext) {
+	GameManager gameManager = appContext.get_game_manager();
+	SnakeScaleObject& head = player.get_body_cubes().back();
+	glm::vec3 position = head.get_position();
+
+	glm::vec3 normalizedPosition = (glm::vec3(position.x - gameManager.boardCenter.x,
+		0.0f, position.z - gameManager.boardCenter.z)) - glm::vec3(gameManager.unitsPerTile / 2,
+			0.0f, gameManager.unitsPerTile / 2);
+
+	float rowFloat = (normalizedPosition.z / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
+	float columnFloat = (normalizedPosition.x / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
+	int row = static_cast<int>(rowFloat);
+	int column = static_cast<int>(columnFloat);
+
+	float rowDifference = rowFloat - row;
+	float columnDifference = columnFloat - column;
+
+	if (0.97f < rowDifference < 1.0f) head.set_position(head.get_position() - glm::vec3(0.0f,0.0f, rowDifference));
+	if (0.97f < columnDifference < 1.0f) head.set_position(head.get_position() - glm::vec3(0.0f, 0.0f, columnDifference));
+}
+//bool is_snappable(Player& player, AppContext appContext) {
+//	GameManager gameManager = appContext.get_game_manager();
+//	SnakeScaleObject& head = player.get_body_cubes().back();
+//	glm::vec3 position = head.get_position();
+//
+//	glm::vec3 normalizedPosition = (glm::vec3(position.x - gameManager.boardCenter.x,
+//		0.0f, position.z - gameManager.boardCenter.z)) - glm::vec3(gameManager.unitsPerTile / 2,
+//			0.0f, gameManager.unitsPerTile / 2);
+//
+//	float rowFloat = (normalizedPosition.z / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
+//	float columnFloat = (normalizedPosition.x / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
+//	int row = static_cast<int>(rowFloat);
+//	int column = static_cast<int>(columnFloat);
+//	
+//	if (rowFloat - row > 0.97) return true;
+//	if (columnFloat - column > 0.97) return true;
+//
+//	return false;
+//}
+//void snap_to_grid(Player& player, AppContext appContext) {
+//	GameManager gameManager = appContext.get_game_manager();
+//	SnakeScaleObject& head = player.get_body_cubes().back();
+//	glm::vec2 backGridPosition = gameManager.vec3_to_grid_position(head.get_position(), false);
+//	glm::vec3 snapPosition = gameManager.board_to_vec3(backGridPosition);
+//
+//    head.set_adjusted_position(snapPosition, appContext);
+//}

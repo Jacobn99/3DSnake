@@ -93,7 +93,7 @@ glm::vec3 GameManager::get_orientation_offset(Direction direction) {
 glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 
 	glm::vec3 normalizedPosition = (glm::vec3(position.x - this->boardCenter.x,
-		0.0f, position.z - this->boardCenter.z)) + glm::vec3(this->unitsPerTile/2, 0.0f, this->unitsPerTile/2);
+		0.0f, position.z - this->boardCenter.z)) - glm::vec3(this->unitsPerTile/2, 0.0f, this->unitsPerTile/2);
 
 
 	float rowFloat = (normalizedPosition.z / this->unitsPerTile) + ((float)this->sizeInTiles / 2);
@@ -101,7 +101,7 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 
 
 	if (isDebug) {
-		float adden1 = (normalizedPosition.x / this->unitsPerTile);
+		/*float adden1 = (normalizedPosition.x / this->unitsPerTile);
 		float adden2 = ((float)this->sizeInTiles / 2);
 		printf("\t\t\t\t\t\t\t\t\tposition: x = %f, z = %f\n", position.x, position.z);
 		printf("\t\t\t\t\t\t\t\t\tnormalized: x = %f, z = %f\n", normalizedPosition.x, normalizedPosition.z);
@@ -109,7 +109,7 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 		printf("\t\t\t\t\t\t\t\t\tsizeInTiles: %d\n", this->sizeInTiles);
 		printf("\t\t\t\t\t\t\t\t\tadden1: %f\n", adden1);
 		printf("\t\t\t\t\t\t\t\t\tadden2: %f\n", adden2);
-		printf("\t\t\t\t\t\t\t\t\tsum: %f\n", adden1 + adden2);
+		printf("\t\t\t\t\t\t\t\t\tsum: %f\n", adden1 + adden2);*/
 		printf("\t\t\t\t\t\t\t\t\tcolumnFloat: %f\n\n", columnFloat);
 	}
 
@@ -127,8 +127,8 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 	row = static_cast<int>(rowFloat);
 	column = static_cast<int>(columnFloat);
 	
-	if (rowFloat - row > 0.97) row++;
-	if (columnFloat - column > 0.97) column++;
+	/*if (rowFloat - row > 0.96) row++;
+	if (columnFloat - column > 0.96) column++;*/
 
 	glm::vec2 result = glm::vec2(row, column);
 

@@ -38,6 +38,7 @@ public:
 
 private:
 	glm::vec2 headGridPosition;
+	//glm::vec2 previousHeadGridPosition;
 	Direction headDirection;
 	Direction tailDirection;
 	int length;
@@ -52,6 +53,8 @@ private:
 	float speed;
 };
 
+bool is_snappable(Player& player, AppContext appContext);
+void snap_to_grid(Player& player, AppContext appContext);
 void update_body_indexes(Player& player, AppContext appContext);
 bool check_collision(Player& player, bool isDebug);
 void turn_snake(Player& player, Direction direction, AppContext appContext);

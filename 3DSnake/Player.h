@@ -54,7 +54,7 @@ private:
 };
 
 bool is_snappable(Player& player, AppContext appContext);
-void snap_to_grid(Player& player, AppContext appContext);
+glm::vec3 get_grid_adjusted_position(Direction direction, glm::vec3 position, AppContext appContext);
 void update_body_indexes(Player& player, AppContext appContext);
 bool check_collision(Player& player, bool isDebug);
 void turn_snake(Player& player, Direction direction, AppContext appContext);

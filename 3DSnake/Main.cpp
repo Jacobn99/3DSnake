@@ -21,6 +21,7 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 GLenum currentKey = GLFW_KEY_UNKNOWN;
+bool isPaused = false;
 
 // camera settings
 glm::vec3 cameraPos;
@@ -110,9 +111,14 @@ void processInput(GLFWwindow* window)
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        if (!keyIsHeld(GLFW_KEY_E)) currentKey = GLFW_KEY_Q;
+        if (!keyIsHeld(GLFW_KEY_Q)) currentKey = GLFW_KEY_Q;
 
         buttonsPressed.insert_or_assign(GLFW_KEY_Q, glfwGetTime());
+    }
+    else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        if (!keyIsHeld(GLFW_KEY_P)) isPaused = !isPaused;
+        buttonsPressed.insert_or_assign(GLFW_KEY_P, glfwGetTime());
+
     }
 	//else currentKey = GLFW_KEY_UNKNOWN; // Reset currentKey if no keys are pressed
 
@@ -274,7 +280,7 @@ int main()
 
         //Input
         processInput(window);
-        player.move_body(deltaTime, appContext);
+        if(!isPaused) player.move_body(deltaTime, appContext);
 
 
         SnakeScaleObject head = player.get_body_cubes().back();

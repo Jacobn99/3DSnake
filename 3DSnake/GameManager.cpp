@@ -110,7 +110,7 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 		printf("\t\t\t\t\t\t\t\t\tadden1: %f\n", adden1);
 		printf("\t\t\t\t\t\t\t\t\tadden2: %f\n", adden2);
 		printf("\t\t\t\t\t\t\t\t\tsum: %f\n", adden1 + adden2);*/
-		printf("\t\t\t\t\t\t\t\t\tcolumnFloat: %f\n\n", columnFloat);
+		//printf("\t\t\t\t\t\t\t\t\tcolumnFloat: %f\n\n", columnFloat);
 	}
 
 

@@ -139,6 +139,8 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 		glm::vec3 oldFrontCenterPosition = edge_to_front_center(oldPosition, head, appContext);
 		glm::vec3 currentFrontCenterPosition = edge_to_front_center(currentPosition, head, appContext);
 
+		currentFrontCenterPosition = get_grid_adjusted_position(this->get_head_direction(), currentFrontCenterPosition, appContext);
+
 		glm::vec2 oldGridPosition = gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition, false);
 		glm::vec2 currentGridPosition = gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, false);
 
@@ -149,39 +151,41 @@ currentCenteredPosition.y, currentCenteredPosition.z);*/
 		/*this->set_head_grid_position(currentGridPosition);*/
 
 		if (oldGridPosition != currentGridPosition) {
-			//this->previousHeadGridPosition = oldGridPosition;
-			this->set_head_grid_position(currentGridPosition);
-			/*
-			
-			WE KNOW:
-			+ currentGridPosition is WRONG
-			+ it is derived from currentFrontCenterPosition which is RIGHT
-			+ so the issue is in vec3_to_length_adjusted_tile
-			
+			/*WHAT I KNOW
+				- EVERYTHING WORKS FINE WHEN MOVE FOWARD
+				- EVERYTHING BREAKS WHEN MOVE BACKWARD
 			*/
 
-			//gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition, true);
+			printf("\t\t\t\t\t\t\t\t\tOLD:\n");
+			gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition, true);
+			/*printf("\n\t\t\t\t\t\t\t\t\tNEW:\n");
+			gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, true);*/
+			printf("\n");
+			//this->previousHeadGridPosition = oldGridPosition;
+			
+			////Could be made into a separate function
+			//glm::vec3 grid_snapped_front_center = get_grid_adjusted_position(currentFrontCenterPosition, appContext);
+			//glm::vec3 grid_snapped_edge = get_grid_adjusted_position(currentPosition, appContext);
+			//glm::vec2 adjusted_grid_position = gameManager.vec3_to_length_adjusted_tile(*this, grid_snapped_front_center, false);
+
+			////NEW CODE
+			//head.set_position(grid_snapped_edge);
+			//this->set_head_grid_position(adjusted_grid_position);
+			 
+			// OLD CODE
+			this->set_head_grid_position(oldGridPosition);
 			
 			//VVVVVVVV WAS USING THIS VVVVVVVV
-			gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, true);
-
-			//printf("\t\t\t\t\t\t\t\t\tcurrentPos | x: %f, z: %f\n", currentPosition.x,
-			//	currentPosition.z);
-			//printf("\t\t\t\t\t\t\t\t\tcurrentFC | x: %f, z: %f\n", currentFrontCenterPosition.x,
-			//	currentFrontCenterPosition.z);
-			//printf("\t\t\t\t\t\t\t\t\tcurrentGr | row: %f, column: %f\n", currentGridPosition.x,
-			//	currentGridPosition.y);
+			//gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, true);
 
 			glm::vec2 difference = currentGridPosition - oldGridPosition;
 			inNewTile = true;
 			
 			if (this->queuedHeadDirection != this->headDirection && !this->isTurning) {
 				turn_snake(*this, this->queuedHeadDirection, appContext);
-				snap_to_grid(*this, appContext);
 			}
 			if (this->isQueuedGrow) {
 				this->add_body_part(appContext, this->get_head_direction(), true, false);
-				snap_to_grid(*this, appContext);
 				this->isQueuedGrow = false;
 			}
 			//printf("\t\t\t\t\t\t\t\t\tcurrent pos | row: %f, col: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
@@ -359,10 +363,13 @@ void update_body_indexes(Player& player, AppContext appContext) {
 	//Update pops
 	if (bodyIndexes.size() > player.get_length()) player.pop_body_index();
 }
-void snap_to_grid(Player& player, AppContext appContext) {
+
+//Snaps to grid if close enough
+glm::vec3 get_grid_adjusted_position(Direction direction, glm::vec3 position, AppContext appContext) {
 	GameManager gameManager = appContext.get_game_manager();
-	SnakeScaleObject& head = player.get_body_cubes().back();
-	glm::vec3 position = head.get_position();
+	glm::vec3 newPosition = position;
+	/*SnakeScaleObject& head = player.get_body_cubes().back();
+	glm::vec3 position = head.get_position();*/
 
 	glm::vec3 normalizedPosition = (glm::vec3(position.x - gameManager.boardCenter.x,
 		0.0f, position.z - gameManager.boardCenter.z)) - glm::vec3(gameManager.unitsPerTile / 2,
@@ -373,11 +380,26 @@ void snap_to_grid(Player& player, AppContext appContext) {
 	int row = static_cast<int>(rowFloat);
 	int column = static_cast<int>(columnFloat);
 
-	float rowDifference = rowFloat - row;
-	float columnDifference = columnFloat - column;
+	float rowDifference = abs(rowFloat - row);
+	float columnDifference = abs(columnFloat - column);
 
-	if (0.97f < rowDifference < 1.0f) head.set_position(head.get_position() - glm::vec3(0.0f,0.0f, rowDifference));
-	if (0.97f < columnDifference < 1.0f) head.set_position(head.get_position() - glm::vec3(0.0f, 0.0f, columnDifference));
+	//printf("\t\t\t\t\t\t\t\t\trowDifference: %f\n", rowDifference);
+	//printf("\t\t\t\t\t\t\t\theadPos | x: %f, z: %f\n", head.get_position().x, head.get_position().z);
+
+	if (direction == FORWARD && 0.97f < rowDifference) { 
+		/*printf("\t\t\t\t\t\t\t\t\trowDifference: %f\n", rowDifference);
+		printf("\t\t\t\t\t\t\t\t\tHERE\n");*/
+		newPosition = position - glm::vec3(0.0f, 0.0f, 1.0f - rowDifference + 0.05);
+	}
+	else if (direction == BACKWARD && rowDifference < 0.05f) {
+		/*printf("\t\t\t\t\t\t\t\t\trowDifference: %f\n", rowDifference);
+		printf("\t\t\t\t\t\t\t\t\tHERE INSTEAD\n");*/
+		newPosition = position + glm::vec3(0.0f, 0.0f, rowDifference + 0.05);
+	}
+	/*if (direction == RIGHT && 0.97f < columnDifference) newPosition = position - glm::vec3(1.0f - columnDifference + 0.05, 0.0f, 0.0f);
+	else if (direction == LEFT && columnDifference < 0.05f) newPosition = position + glm::vec3(columnDifference + 0.05, 0.0f, 0.0f);*/
+	//printf("\t\t\t\t\t\t\t\tnewHeadPos | x: %f, z: %f\n", head.get_position().x, head.get_position().z);
+	return newPosition;
 }
 //bool is_snappable(Player& player, AppContext appContext) {
 //	GameManager gameManager = appContext.get_game_manager();

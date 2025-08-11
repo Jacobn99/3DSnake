@@ -133,67 +133,72 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 	//If snake is a singleton
 	else {
 		glm::vec3 singletonPositionChange = getSingletonPositionChange(*this, deltaTime);
-		glm::vec3 oldPosition = head.get_position();
-		glm::vec3 currentPosition = head.get_position() + singletonPositionChange;
+		glm::vec3 currentPosition = head.get_position();
+		glm::vec3 targetPosition = head.get_position() + singletonPositionChange;
 
-		glm::vec3 oldFrontCenterPosition = edge_to_front_center(oldPosition, head, appContext);
 		glm::vec3 currentFrontCenterPosition = edge_to_front_center(currentPosition, head, appContext);
+		glm::vec3 targetFrontCenterPosition = edge_to_front_center(targetPosition, head, appContext);
 
-		//currentFrontCenterPosition = get_grid_adjusted_position(this->get_head_direction(), currentFrontCenterPosition, appContext);
+		glm::vec3 currentFrontBackPosition = currentPosition + get_scaled_grid_vector(head.get_direction(), head.get_scale(),
+			gameManager.unitsPerTile, gameManager.unitsPerTile);
+		glm::vec3 targetFrontBackPosition = targetPosition + get_scaled_grid_vector(head.get_direction(), head.get_scale(),
+			gameManager.unitsPerTile, gameManager.unitsPerTile);
 
-		glm::vec2 oldGridPosition = gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition, false);
-		glm::vec2 currentGridPosition = gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, false);
+		//PROBABLY DON'T WNAT LENGTH ADJUSTED TILE HERE
+		glm::vec2 currentGridFCPosition = gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, false);
+		glm::vec2 targetGridFCPosition = gameManager.vec3_to_length_adjusted_tile(*this, targetFrontCenterPosition, false);
+		glm::vec2 currentGridFBPosition = gameManager.vec3_to_grid_position(currentFrontBackPosition, false);
+		glm::vec2 targetGridFBPosition = gameManager.vec3_to_grid_position(targetFrontBackPosition, false);
 
 		/*printf("centered pos | x: %f, y: %f, z: %f\n", currentCenteredPosition.x, 
 currentCenteredPosition.y, currentCenteredPosition.z);*/
 
-		//head.set_position(get_grid_adjusted_position(head.get_direction(), currentPosition, true, appContext));
-		head.set_position(currentPosition);
-		/*this->set_head_grid_position(currentGridPosition);*/
+		head.set_position(targetPosition);
+		//this->set_head_grid_position(targetGridFCPosition);
+		this->set_head_grid_position(targetGridFBPosition);
 
-		if (oldGridPosition != currentGridPosition) {
-			/*WHAT I KNOW
-				- EVERYTHING WORKS FINE WHEN MOVE FOWARD
-				- EVERYTHING BREAKS WHEN MOVE BACKWARD
+		if (currentGridFBPosition != targetGridFBPosition) {
+			printf("\t\t\t\t\t\t\t\t\tFront:\n");
+			gameManager.vec3_to_grid_position(targetFrontCenterPosition, true);
+			printf("\n");
+		}
 
-			  IDEAS
-				- Could only do previous grid position when turning
+		if (currentGridFCPosition != targetGridFCPosition) {
+			/*
+			
+			WE KNOW:
+			+ currentGridPosition is WRONG
+			+ it is derived from currentFrontCenterPosition which is RIGHT
+			+ so the issue is in vec3_to_length_adjusted_tile
+			
 			*/
 
-			//printf("\t\t\t\t\t\t\t\t\tOLD:\n");
 			//gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition, true);
-			///*printf("\n\t\t\t\t\t\t\t\t\tNEW:\n");
-			//gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, true);*/
-			//printf("\n");
-		
-			//this->previousHeadGridPosition = oldGridPosition;
-			
-			////Could be made into a separate function
-			//glm::vec3 grid_snapped_front_center = get_grid_adjusted_position(currentFrontCenterPosition, appContext);
-			//glm::vec3 grid_snapped_edge = get_grid_adjusted_position(currentPosition, appContext);
-			//glm::vec2 adjusted_grid_position = gameManager.vec3_to_length_adjusted_tile(*this, grid_snapped_front_center, false);
 
-			////NEW CODE
-			//head.set_position(grid_snapped_edge);
-			//this->set_head_grid_position(adjusted_grid_position);
-			 
-			// OLD CODE
-			this->set_head_grid_position(currentGridPosition);
-			
-			//gameManager.vec3_to_length_adjusted_tile(*this, currentFrontCenterPosition, true);
+			/*printf("\t\t\t\t\t\t\t\t\tFront Center:\n");
+			gameManager.vec3_to_length_adjusted_tile(*this, targetFrontCenterPosition, true);
+			printf("\n");*/
 
-			glm::vec2 difference = currentGridPosition - oldGridPosition;
+			//printf("\t\t\t\t\t\t\t\t\tcurrentPos | x: %f, z: %f\n", currentPosition.x,
+			//	currentPosition.z);
+			//printf("\t\t\t\t\t\t\t\t\tcurrentFC | x: %f, z: %f\n", currentFrontCenterPosition.x,
+			//	currentFrontCenterPosition.z);
+			//printf("\t\t\t\t\t\t\t\t\tcurrentGr | row: %f, column: %f\n", currentGridPosition.x,
+			//	currentGridPosition.y);
+
+
+			/*printf("\t\t\t\t\t\t\t\t\tNEW TILE\n");*/
+			glm::vec2 difference = targetGridFCPosition - currentGridFCPosition;
 			inNewTile = true;
-			
+
 			if (this->queuedHeadDirection != this->headDirection) {
-				this->set_head_grid_position(oldGridPosition);
 				turn_snake(*this, this->queuedHeadDirection, appContext);
 			}
 			if (this->isQueuedGrow) {
 				this->add_body_part(appContext, this->get_head_direction(), true, false);
 				this->isQueuedGrow = false;
 			}
-			printf("\t\t\t\t\t\t\t\t\tcurrent pos | row: %f, col: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
+			//printf("\t\t\t\t\t\t\t\t\tcurrent pos | row: %f, col: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
 		}
 	}
 	/*printf("\t\t\t\t\t\t\t\t\t");
@@ -224,8 +229,7 @@ void Player::add_body_part(AppContext appContext, Direction direction, bool isGr
 	GameManager gameManager = appContext.get_game_manager();
 
 	glm::vec2 boardPosition = get_new_head_position(*this, direction, appContext);
-	SnakeScaleObject newHead = generate_snake_scale(boardPosition, direction, appContext.get_shader(), appContext);
-	
+	SnakeScaleObject newHead = generate_snake_scale(boardPosition, direction, appContext.get_shader(), appContext);	
 	glm::vec3 startLoc = gameManager.board_to_vec3(boardPosition);
 	SnakeScaleObject& oldHead = this->bodyCubes.back();
 	glm::vec3 oldScale = oldHead.get_scale();
@@ -260,29 +264,8 @@ void Player::queue_turn(Direction direction, AppContext appContext) {
 glm::vec2 get_new_head_position(Player& player, Direction direction, AppContext appContext) {
 	GameManager gameManager = appContext.get_game_manager();
 	glm::vec2 tileOffset = gameManager.get_tile_offset(direction);
-	glm::vec2 result;
 
-	float unitsPerTile = gameManager.unitsPerTile;
-	SnakeScaleObject head = player.get_body_cubes().back();
-	//glm::vec3 prevCenteredPosition = edge_to_center_position(head.get_prev_position(), head, appContext);
-	/*glm::vec3 prevCenteredPosition = edge_to_front_center(head.get_prev_position(), head, appContext);
-	glm::vec2 prevGridPosition = gameManager.vec3_to_grid_position(prevCenteredPosition, false);*/
-	glm::vec2 currentPos = player.get_head_grid_position();
-
-	//printf("\t\t\t\t\t\t\t\t\tprevHeadPos | row: %f, col: %f\n", prevGridPosition.x, prevGridPosition.y);
-	printf("\t\t\t\t\t\t\t\t\tcurrentHeadPos | row: %f, col: %f\n", currentPos.x, currentPos.y);
-
-
-	/*if(player.get_length() == 1) result = prevGridPosition + tileOffset;
-	else result = player.get_head_grid_position() + tileOffset;*/
-
-	result = player.get_head_grid_position() + tileOffset;
-
-	//printf("----------------------\n");
-	//printf("headGridPosition | x: %f, y: %f\n", player.get_head_grid_position().x, player.get_head_grid_position().y);
-	//printf("result | x: %f, y: %f\n", result.x, result.y);
-
-	return result;
+	return player.get_head_grid_position() + tileOffset;
 }
 
 void turn_snake(Player& player, Direction direction, AppContext appContext) {
@@ -300,7 +283,7 @@ void turn_snake(Player& player, Direction direction, AppContext appContext) {
 		player.set_head_direction(direction);
 	}
 	glm::vec2 currentGridPosition = player.get_head_grid_position();
-	//printf("\t\t\t\t\t\t\t\t\tregistered | row: %f, col: %f\n", currentGridPosition.x, currentGridPosition.y);
+	printf("\t\t\t\t\t\t\t\t\tregistered | row: %f, col: %f\n", currentGridPosition.x, currentGridPosition.y);
 }
 
 glm::vec3 getSingletonPositionChange(Player player, double deltaTime) {
@@ -368,72 +351,3 @@ void update_body_indexes(Player& player, AppContext appContext) {
 	//Update pops
 	if (bodyIndexes.size() > player.get_length()) player.pop_body_index();
 }
-
-//Snaps to grid if close enough
-glm::vec3 get_grid_adjusted_position(Direction direction, glm::vec3 position, bool isEdge, AppContext appContext) {
-	GameManager gameManager = appContext.get_game_manager();
-	glm::vec3 newPosition = position;
-	glm::vec3 offset_position;
-
-	if (isEdge)offset_position = position - get_directional_offset(direction).operator*=(0.5f);
-	else offset_position = position;
-	/*SnakeScaleObject& head = player.get_body_cubes().back();
-	glm::vec3 position = head.get_position();*/
-
-	glm::vec3 normalizedPosition = (glm::vec3(offset_position.x - gameManager.boardCenter.x,
-		0.0f, offset_position.z - gameManager.boardCenter.z)) - glm::vec3(gameManager.unitsPerTile / 2,
-			0.0f, gameManager.unitsPerTile / 2);
-
-	float rowFloat = (normalizedPosition.z / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
-	float columnFloat = (normalizedPosition.x / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
-	int row = static_cast<int>(rowFloat);
-	int column = static_cast<int>(columnFloat);
-
-	float rowDifference = abs(rowFloat - row);
-	float columnDifference = abs(columnFloat - column);
-
-	//printf("\t\t\t\t\t\t\t\t\trowDifference: %f\n", rowDifference);
-	//printf("\t\t\t\t\t\t\t\theadPos | x: %f, z: %f\n", head.get_position().x, head.get_position().z);
-
-	if (direction == FORWARD && 0.97f < rowDifference) { 
-		/*printf("\t\t\t\t\t\t\t\t\trowDifference: %f\n", rowDifference);
-		printf("\t\t\t\t\t\t\t\t\tHERE\n");*/
-		newPosition = position - glm::vec3(0.0f, 0.0f, 1.0f - rowDifference + 0.05);
-	}
-	else if (direction == BACKWARD && rowDifference < 0.05f) {
-		/*printf("\t\t\t\t\t\t\t\t\trowDifference: %f\n", rowDifference);
-		printf("\t\t\t\t\t\t\t\t\tHERE INSTEAD\n");*/
-		newPosition = position + glm::vec3(0.0f, 0.0f, rowDifference + 0.05);
-	}
-	/*if (direction == RIGHT && 0.97f < columnDifference) newPosition = position - glm::vec3(1.0f - columnDifference + 0.05, 0.0f, 0.0f);
-	else if (direction == LEFT && columnDifference < 0.05f) newPosition = position + glm::vec3(columnDifference + 0.05, 0.0f, 0.0f);*/
-	//printf("\t\t\t\t\t\t\t\tnewHeadPos | x: %f, z: %f\n", head.get_position().x, head.get_position().z);
-	return newPosition;
-}
-//bool is_snappable(Player& player, AppContext appContext) {
-//	GameManager gameManager = appContext.get_game_manager();
-//	SnakeScaleObject& head = player.get_body_cubes().back();
-//	glm::vec3 position = head.get_position();
-//
-//	glm::vec3 normalizedPosition = (glm::vec3(position.x - gameManager.boardCenter.x,
-//		0.0f, position.z - gameManager.boardCenter.z)) - glm::vec3(gameManager.unitsPerTile / 2,
-//			0.0f, gameManager.unitsPerTile / 2);
-//
-//	float rowFloat = (normalizedPosition.z / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
-//	float columnFloat = (normalizedPosition.x / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
-//	int row = static_cast<int>(rowFloat);
-//	int column = static_cast<int>(columnFloat);
-//	
-//	if (rowFloat - row > 0.97) return true;
-//	if (columnFloat - column > 0.97) return true;
-//
-//	return false;
-//}
-//void snap_to_grid(Player& player, AppContext appContext) {
-//	GameManager gameManager = appContext.get_game_manager();
-//	SnakeScaleObject& head = player.get_body_cubes().back();
-//	glm::vec2 backGridPosition = gameManager.vec3_to_grid_position(head.get_position(), false);
-//	glm::vec3 snapPosition = gameManager.board_to_vec3(backGridPosition);
-//
-//    head.set_adjusted_position(snapPosition, appContext);
-//}

@@ -21,7 +21,6 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 GLenum currentKey = GLFW_KEY_UNKNOWN;
-bool isPaused = false;
 
 // camera settings
 glm::vec3 cameraPos;
@@ -33,6 +32,7 @@ glm::vec3 cameraDirection;
 glm::vec3 up;
 glm::vec3 cameraRight;
 GameManager gameManager;
+bool paused = false;
 
 // global variables
 float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -111,14 +111,14 @@ void processInput(GLFWwindow* window)
         buttonsPressed.insert_or_assign(GLFW_KEY_E, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        if (!keyIsHeld(GLFW_KEY_Q)) currentKey = GLFW_KEY_Q;
+        if (!keyIsHeld(GLFW_KEY_E)) currentKey = GLFW_KEY_Q;
 
         buttonsPressed.insert_or_assign(GLFW_KEY_Q, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-        if (!keyIsHeld(GLFW_KEY_P)) isPaused = !isPaused;
-        buttonsPressed.insert_or_assign(GLFW_KEY_P, glfwGetTime());
+        if (!keyIsHeld(GLFW_KEY_P)) paused = !paused;
 
+        buttonsPressed.insert_or_assign(GLFW_KEY_P, glfwGetTime());
     }
 	//else currentKey = GLFW_KEY_UNKNOWN; // Reset currentKey if no keys are pressed
 
@@ -237,6 +237,11 @@ int main()
     generate_prism(test, appContext, -0.2, 0.2,
         -0.5f, 0.6f, -0.2, 0.2, 1.0f);
     test.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
+
+    PrismObject test2 = PrismObject(36, ourShader, appContext);
+    generate_prism(test2, appContext, -0.2, 0.2,
+        -0.5f, 0.6f, -0.2, 0.2, 1.0f);
+    test2.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
     //Don't have to change initial offset if changing to opposite direction
 
     Direction oldDirection = LEFT;
@@ -280,18 +285,27 @@ int main()
 
         //Input
         processInput(window);
-        if(!isPaused) player.move_body(deltaTime, appContext);
+        if(!paused) player.move_body(deltaTime, appContext);
 
 
         SnakeScaleObject head = player.get_body_cubes().back();
         glm::vec3 currentPosition = head.get_position();
         glm::vec3 farthestCenteredPosition = edge_to_front_center(currentPosition, head, appContext);
+        glm::vec3 farthestBackPosition = head.get_position() + get_scaled_grid_vector(head.get_direction(), head.get_scale(),
+            gameManager.unitsPerTile, gameManager.unitsPerTile);
 
         test.delete_object(false);
         PrismObject test = PrismObject(36, ourShader, appContext);
         generate_prism(test, appContext, -0.2, 0.2,
             -0.5f, 0.6f, -0.2, 0.2, 1.0f);
         test.set_position(farthestCenteredPosition);
+
+        test2.delete_object(false);
+        PrismObject test2 = PrismObject(36, ourShader, appContext);
+        generate_prism(test2, appContext, -0.2, 0.2,
+            -0.5f, 0.6f, -0.2, 0.2, 1.0f);
+        test2.set_color(glm::vec3(0.5, 0.2, 0.5));
+        test2.set_position(farthestBackPosition);
 
 
         const float radius = 10.0f;
@@ -317,6 +331,7 @@ int main()
 
         objectManager.draw_prism(prism);
         objectManager.draw_prism(test);
+        objectManager.draw_prism(test2);
         player.draw_body(appContext);
 
         glBindVertexArray(0);

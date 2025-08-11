@@ -291,7 +291,7 @@ int main()
         SnakeScaleObject head = player.get_body_cubes().back();
         glm::vec3 currentPosition = head.get_position();
         glm::vec3 farthestCenteredPosition = edge_to_front_center(currentPosition, head, appContext);
-        glm::vec3 farthestBackPosition = head.get_position() + get_scaled_grid_vector(head.get_direction(), head.get_scale(),
+        glm::vec3 frontBackPosition = head.get_position() + get_scaled_grid_vector(head.get_direction(), head.get_scale(),
             gameManager.unitsPerTile, gameManager.unitsPerTile);
 
         test.delete_object(false);
@@ -305,7 +305,7 @@ int main()
         generate_prism(test2, appContext, -0.2, 0.2,
             -0.5f, 0.6f, -0.2, 0.2, 1.0f);
         test2.set_color(glm::vec3(0.5, 0.2, 0.5));
-        test2.set_position(farthestBackPosition);
+        test2.set_position(frontBackPosition);
 
 
         const float radius = 10.0f;

@@ -19,7 +19,6 @@ public:
 	unsigned int get_length();
 	std::queue<int> get_body_indexes();
 	std::deque<SnakeScaleObject>& get_body_cubes();
-	//void remove_tail();
 	void move_body(float deltaTime, AppContext appContext);
 	void draw_body(AppContext appContext);
 	void add_body_part(SnakeScaleObject prism, unsigned int tableIndex, bool isGrowing);
@@ -33,20 +32,20 @@ public:
 	void pop_body_index();
 	void queue_growth();
 	float get_speed();
-	bool isTurning;
+	bool isQueuedGrow;
+	Direction queuedHeadDirection;
+
 	int i = 0;
 
 private:
 	glm::vec2 headGridPosition;
+	glm::vec2 previousGridPosition;
 	Direction headDirection;
 	Direction tailDirection;
 	int length;
 	std::queue<int> bodyIndexes;
 	std::deque<SnakeScaleObject> bodyCubes;
-	Direction queuedHeadDirection;
-	bool canPopIndexes;
-	bool isQueuedGrow;
-	
+	bool canPopIndexes;	
 	//std::function<void()> queuedActionFunction;
 
 	float speed;

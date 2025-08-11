@@ -99,12 +99,12 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 
 
 	float rowFloat = (normalizedPosition.z / this->unitsPerTile) + ((float)this->sizeInTiles / 2);
-	float columnFloat = (normalizedPosition.x / this->unitsPerTile) + ((float)this->sizeInTiles / 2);
+	float columnFloat = (normalizedPosition.x / this->unitsPerTile) + ((float)this->sizeInTiles / 2) ;
 
 
 	if (isDebug) {
-		float adden1 = (normalizedPosition.x / this->unitsPerTile);
-		float adden2 = ((float)this->sizeInTiles / 2);
+		/*float adden1 = (normalizedPosition.x / this->unitsPerTile);
+		float adden2 = ((float)this->sizeInTiles / 2);*/
 		/*printf("\t\t\t\t\t\t\t\t\tposition: x = %f, z = %f\n", position.x, position.z);
 		printf("\t\t\t\t\t\t\t\t\tnormalized: x = %f, z = %f\n", normalizedPosition.x, normalizedPosition.z);
 		printf("\t\t\t\t\t\t\t\t\tunitsPerTile: %f\n", this->unitsPerTile);
@@ -121,11 +121,12 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 	row = static_cast<int>(rowFloat) - 1;
 	column = static_cast<int>(columnFloat) - 1;
 	
-	/*if (abs(rowFloat - row) < 0.05) row--;
-	if (abs(columnFloat - column < 0.05f)) column--;
+	/*if (abs(rowFloat - row + 1) < 0.01) row--;
+	if (abs(columnFloat - column + 1 < 0.01f)) column--;
+	
 
-	if (abs(rowFloat - row) > 0.95) row++;
-	if (abs(columnFloat - column) > 0.95) column++;*/
+	if (abs(rowFloat - row + 1) > 0.99) row++;
+	if (abs(columnFloat - column + 1) > 0.99) column++;*/
 
 	glm::vec2 result = glm::vec2(row, column);
 
@@ -133,7 +134,7 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 		//printf("\t\t\t\t\t\t\t\t\t-------------------------\n");
 		printf("\t\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f\n",
 		rowFloat, columnFloat);
-		printf("\t\t\t\t\t\t\t\t\trow = %d, col = %d",
+		printf("\t\t\t\t\t\t\t\t\trow = %d, col = %d\n",
 			row, column);
 		/*printf("\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f, row: %d, col: %d\n",
 			rowFloat, columnFloat, row, column);*/

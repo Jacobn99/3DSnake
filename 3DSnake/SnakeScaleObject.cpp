@@ -11,16 +11,12 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\ObjectManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 #include <algorithm>
-//								  V V In row, col order V V
 
-int global_second = 0;
 SnakeScaleObject::SnakeScaleObject(glm::vec2 tileLocation, Direction direction, int vertexCount, Shader& shader, AppContext appContext)
 	: PrismObject(vertexCount, shader, appContext) {
 	GameManager gameManager = appContext.get_game_manager();
-	//this->tileLocation = tileLocation;
 	this->direction = direction;
 	this->currentPosition = gameManager.board_to_vec3(tileLocation);
-	//this->set_color(glm::vec3(30,80,20) / 255.0f);
 	this->set_texture(gameManager.get_generated_texture(GREEN_SQUARE));
 }
 void SnakeScaleObject::set_position(glm::vec3 position) {
@@ -41,7 +37,6 @@ void SnakeScaleObject::set_adjusted_position(glm::vec3 position, AppContext appC
 float SnakeScaleObject::get_largest_dimension()
 {
 	glm::vec3 scale = get_scale();
-	//return 1.0f;
 	return std::max(scale.y, std::max(scale.x, scale.z));
 }
 
@@ -50,13 +45,10 @@ SnakeScaleObject generate_snake_scale(glm::vec2 tileLocation, Direction directio
 	GameManager gameManager = appContext.get_game_manager();
 	SnakeScaleObject snakeScale = SnakeScaleObject(tileLocation, direction, 36, shader, appContext);
 
-	//set_orientation(snakeScale, direction, appContext);
 	std::vector<float>& vertices = appContext.get_object_manager().get_orientation(direction);
 	generate_prism(snakeScale, vertices, appContext);
 	set_orientation(snakeScale, direction, appContext);
 	snakeScale.set_position(snakeScale.get_position() + gameManager.get_orientation_offset(snakeScale.get_direction()));
-
-	//set_orientation_with_offset(snakeScale, direction, appContext);
 
 	return snakeScale;
 }
@@ -76,9 +68,7 @@ void SnakeScaleObject::set_direction(Direction newDirection) {
 	this->direction = newDirection;
 }
 
-void set_snake_orientation_with_offset(SnakeScaleObject& scale, Direction direction, bool wasOffset, AppContext appContext) {
-	//assert(scale.get_scale().x > 0.0f && scale.get_scale().y > 0.0f && scale.get_scale().z > 0.0f);
-	
+void set_snake_orientation_with_offset(SnakeScaleObject& scale, Direction direction, bool wasOffset, AppContext appContext) {	
 	GameManager gameManager = appContext.get_game_manager();
 	Direction oldDirection = scale.get_direction();
 	set_orientation(scale, direction, appContext);
@@ -104,8 +94,6 @@ glm::vec3 edge_to_center_position(glm::vec3 position, SnakeScaleObject head, App
 
 glm::vec3 edge_to_front_center(glm::vec3 position, SnakeScaleObject head, AppContext appContext) {
 	double time = glfwGetTime();
-	int second = (int)(time);
-
 
 	GameManager gameManager = appContext.get_game_manager();
 	float length = head.get_largest_dimension();
@@ -113,13 +101,5 @@ glm::vec3 edge_to_front_center(glm::vec3 position, SnakeScaleObject head, AppCon
 	glm::vec3 centeredPosition = position + get_scaled_grid_vector(head.get_direction(),
 		head.get_scale(), gameManager.unitsPerTile, 0).operator*=((length) / (length + 1));
 
-	//printf("time: %f, second: %d\n", time, second);
-	/*if (second % 2 == 0 && second != global_second) {
-		glm::vec3 scaled = get_scaled_grid_vector(head.get_direction(), head.get_scale(), gameManager.unitsPerTile, 0);
-		printf("\t\t\t\t\t\t\t\t\edge - position | x: %f, z: %f\n", position.x, position.z);
-		printf("\t\t\t\t\t\t\t\t\edge - scaled | x: %f, z: %f\n", scaled.x, scaled.z);
-	}*/
-
-	global_second = second;
 	return centeredPosition;
 }

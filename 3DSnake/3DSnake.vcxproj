@@ -148,6 +148,7 @@
     <ClCompile Include="AppContext.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="PlayerMovement.cpp" />
     <ClCompile Include="PrismObject.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />

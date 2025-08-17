@@ -65,7 +65,6 @@ unsigned int GameManager::index_to_column(unsigned int index) {
 	return index % this->sizeInTiles;
 }
 unsigned int GameManager::row_col_to_index(unsigned int row, unsigned int column) {
-	//assert(row < this->sizeInTiles && column < this->sizeInTiles);
 	return row * this->sizeInTiles + column;
 }
 glm::vec3 GameManager::board_to_vec3(glm::vec2 boardLoc) {
@@ -92,33 +91,15 @@ glm::vec3 GameManager::get_orientation_offset(Direction direction) {
 		return this->rightPositionOffset;
 		break;
 	}
-
 }
 
 glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
-	//Based on the direction of the snake, I could choose which half of the tile must be cross to count as a new tile
-	//Could make a separate function that checks if a snake is able to turn (as soon as snake touches edge it changes tile
-
 	glm::vec3 normalizedPosition = (glm::vec3(position.x - this->boardCenter.x,
 		0.0f, position.z - this->boardCenter.z)) + glm::vec3(this->unitsPerTile/2, 0.0f, this->unitsPerTile/2);
 
 
 	float rowFloat = (normalizedPosition.z / this->unitsPerTile) + ((float)this->sizeInTiles / 2);
 	float columnFloat = (normalizedPosition.x / this->unitsPerTile) + ((float)this->sizeInTiles / 2) ;
-
-
-	if (isDebug) {
-		/*float adden1 = (normalizedPosition.x / this->unitsPerTile);
-		float adden2 = ((float)this->sizeInTiles / 2);*/
-		/*printf("\t\t\t\t\t\t\t\t\tposition: x = %f, z = %f\n", position.x, position.z);
-		printf("\t\t\t\t\t\t\t\t\tnormalized: x = %f, z = %f\n", normalizedPosition.x, normalizedPosition.z);
-		printf("\t\t\t\t\t\t\t\t\tunitsPerTile: %f\n", this->unitsPerTile);
-		printf("\t\t\t\t\t\t\t\t\tsizeInTiles: %d\n", this->sizeInTiles);
-		printf("\t\t\t\t\t\t\t\t\tadden1: %f\n", adden1);
-		printf("\t\t\t\t\t\t\t\t\tadden2: %f\n", adden2);
-		printf("\t\t\t\t\t\t\t\t\tsum: %f\n", adden1 + adden2);
-		printf("\t\t\t\t\t\t\t\t\tcolumnFloat: %f\n\n", columnFloat);*/
-	}
 
 	int row;
 	int column;
@@ -129,23 +110,12 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 	glm::vec2 result = glm::vec2(row, column);
 
 	if (isDebug) {
-		//printf("\t\t\t\t\t\t\t\t\t-------------------------\n");
 		printf("\t\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f\n",
 		rowFloat, columnFloat);
 		printf("\t\t\t\t\t\t\t\t\trow = %d, col = %d\n",
 			row, column);
-		/*printf("\t\t\t\t\t\t\t\trowFloat = %f, colFloat = %f, row: %d, col: %d\n",
-			rowFloat, columnFloat, row, column);*/
+
 	}
-
-
-	/*assert(result.x >= 0 && result.x < this->sizeInTiles);
-	assert(result.y >= 0 && result.y < this->sizeInTiles);*/
-	//printf("FIX MIDDLE BEING SKIPPED!!!!!\n");
-	//printf("-----------------------\n");
-	/*printf("row = %f, col = %f, (int) row: %d, (int) col: %d,\n", normalizedPosition.z / this->unitsPerTile + this->sizeInTiles / 2,
-		normalizedPosition.x / this->unitsPerTile + this->sizeInTiles / 2, row, column);
-	printf("result | x: %f, z: %f\n", result.x, result.y);*/
 	return result;
 }
 
@@ -154,7 +124,6 @@ glm::vec2 GameManager::vec3_to_length_adjusted_tile(Player& player, glm::vec3 og
 		glm::vec2 gridPos = vec3_to_grid_position(og_position, isDebug);
 		glm::vec2 result = gridPos + get_tile_offset(
 			player.get_head_direction()).operator*=(player.get_length() - 1);
-		//printf("result | x: %f, z: %f\n", result.x, result.y);
 		return result;
 	}
 	else return vec3_to_grid_position(og_position, isDebug);
@@ -234,10 +203,7 @@ const char* direction_to_string(Direction direction) {
 }
 
 glm::vec3 get_scaled_grid_vector(Direction direction, glm::vec3 scale, float tileSize, int lengthOffset) {
-	//assert(scale.x > 0.0f && scale.y > 0.0f && scale.z > 0.0f);
-
 	glm::vec3 vect;
-	//glm::vec3 adjustedScale = scale;
 
 	switch (direction) {
 	case LEFT:

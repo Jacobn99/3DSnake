@@ -55,7 +55,6 @@ bool keyIsHeld(GLenum key) {
     else {
         assert(glfwGetTime() > buttonsPressed.at(key));
         double timeDifference = glfwGetTime() - buttonsPressed.at(key);
-        //if(timeDifference >= minButtonDelay) printf("\t\t\t\t\t\t\t\t\tcurrentTime: %f, buttonTime: %f, timeDifference: %f\n", glfwGetTime(), buttonsPressed.at(key), timeDifference);
         return timeDifference < minButtonDelay;
     }
 }
@@ -84,23 +83,23 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS/* && player.get_head_direction() != FORWARD*/) {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         if (!keyIsHeld(GLFW_KEY_UP)) player.queue_turn(FORWARD, appContext);
         currentKey = GLFW_KEY_UP;
 
         buttonsPressed.insert_or_assign(GLFW_KEY_UP, glfwGetTime());
     }
-    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS/* && player.get_head_direction() != BACKWARD*/) {
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         if (!keyIsHeld(GLFW_KEY_DOWN)) player.queue_turn(BACKWARD, appContext);
         currentKey = GLFW_KEY_DOWN;
         buttonsPressed.insert_or_assign(GLFW_KEY_DOWN, glfwGetTime());
     }
-    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS/* && player.get_head_direction() != LEFT*/) {
+    else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
         if (!keyIsHeld(GLFW_KEY_LEFT)) player.queue_turn(LEFT, appContext);
         currentKey = GLFW_KEY_LEFT;
         buttonsPressed.insert_or_assign(GLFW_KEY_LEFT, glfwGetTime());
     }
-    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS/* && player.get_head_direction() != RIGHT*/) {
+    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
         if (!keyIsHeld(GLFW_KEY_RIGHT)) player.queue_turn(RIGHT, appContext);
         currentKey = GLFW_KEY_RIGHT;
         buttonsPressed.insert_or_assign(GLFW_KEY_RIGHT, glfwGetTime());
@@ -119,7 +118,6 @@ void processInput(GLFWwindow* window)
 
         buttonsPressed.insert_or_assign(GLFW_KEY_P, glfwGetTime());
     }
-	//else currentKey = GLFW_KEY_UNKNOWN; // Reset currentKey if no keys are pressed
 
     //Debug
     if (currentKey != GLFW_KEY_UNKNOWN && !keyIsHeld(currentKey)) {
@@ -160,17 +158,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 int main()
 {
-    //unsigned int texture1, texture2;    
-    unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,   // first triangle
-    3, 2, 1    // second triangle
-    };
-    float texCoords[] = {
-    0.0f, 0.0f,  // lower-left corner  
-    1.0f, 0.0f,  // lower-right corner
-    0.5f, 1.0f   // top-center corner
-    };
-
     int width, height, nrChannels;
     unsigned char* data;
     int sizeInTiles = 7;
@@ -245,10 +232,6 @@ int main()
     generate_prism(test2, appContext, -0.2, 0.2,
         -0.5f, 0.6f, -0.2, 0.2, 1.0f);
     test2.set_position(gameManager.boardCenter - glm::vec3(0.0f, 1.01f, 0.0f));
-    //Don't have to change initial offset if changing to opposite direction
-
-    Direction oldDirection = LEFT;
-    Direction newDirection = RIGHT;
  
     //Player creation
     player = Player(appContext);
@@ -290,27 +273,6 @@ int main()
         processInput(window);
         if(!gameManager.isPaused) player.move_body(deltaTime, appContext);
 
-
-        SnakeScaleObject head = player.get_body_cubes().back();
-        glm::vec3 currentPosition = head.get_position();
-        glm::vec3 farthestCenteredPosition = edge_to_front_center(currentPosition, head, appContext);
-        glm::vec3 frontBackPosition = head.get_position() + get_scaled_grid_vector(head.get_direction(), head.get_scale(),
-            gameManager.unitsPerTile, gameManager.unitsPerTile);
-
-        test.delete_object(false);
-        PrismObject test = PrismObject(36, ourShader, appContext);
-        generate_prism(test, appContext, -0.2, 0.2,
-            -0.5f, 0.6f, -0.2, 0.2, 1.0f);
-        test.set_position(farthestCenteredPosition);
-
-        test2.delete_object(false);
-        PrismObject test2 = PrismObject(36, ourShader, appContext);
-        generate_prism(test2, appContext, -0.2, 0.2,
-            -0.5f, 0.6f, -0.2, 0.2, 1.0f);
-        test2.set_color(glm::vec3(0.5, 0.2, 0.5));
-        test2.set_position(frontBackPosition);
-
-
         const float radius = 10.0f;
         float camX = sin(glfwGetTime()) * radius;
         float camZ = cos(glfwGetTime()) * radius;
@@ -333,8 +295,6 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         objectManager.draw_prism(prism);
-        /*objectManager.draw_prism(test);
-        objectManager.draw_prism(test2);*/
         objectManager.draw_object(gameManager.appleObject);
         player.draw_body(appContext);
 

@@ -5,12 +5,6 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Texture.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\TextureManager.h"
 
-//Texture::Texture(TextureManager manager, const char* file_path, GLenum wrapType, GLenum filterType) {
-//	manager.generate_texture_2D(*this, file_path, wrapType, filterType);
-//	this->ID = manager.get_next_location();
-//	manager.set_next_location(manager.get_next_location() + 1);
-//	this->is_generated = false;
-//}
 Texture::Texture() {
 	this->is_generated = false;
 	this->ID = 0;

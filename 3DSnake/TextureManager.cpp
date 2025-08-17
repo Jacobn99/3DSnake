@@ -51,8 +51,6 @@ Texture TextureManager::generate_texture_2D(const char* file_path, GLenum imageD
     //Frees texture from memory
     stbi_image_free(data);
 
-    /*glActiveTexture(GL_TEXTURE0 + texture.get_texture_loc());
-    glBindTexture(GL_TEXTURE_2D, texture.get_ID());*/
     texture.set_is_generated(true);
     return texture;
 }

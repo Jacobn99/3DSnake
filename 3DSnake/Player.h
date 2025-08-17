@@ -24,6 +24,7 @@ public:
 	void add_body_part(SnakeScaleObject prism, unsigned int tableIndex, bool isGrowing);
 	void add_body_part(AppContext appContext, Direction direction, bool isGrowing, bool startAsPlane);
 	void queue_turn(Direction direction, AppContext appContext);
+	Direction get_queued_head_direction();
 	Direction get_head_direction();
 	void set_head_direction(Direction newDirection);
 	glm::vec2 get_head_grid_position();
@@ -32,11 +33,10 @@ public:
 	void pop_body_index();
 	void queue_growth();
 	float get_speed();
+	glm::vec2 get_previous_grid_position();
+	bool inNewTile;
 	bool isQueuedGrow;
 	Direction queuedHeadDirection;
-
-	int i = 0;
-
 private:
 	glm::vec2 headGridPosition;
 	glm::vec2 previousGridPosition;
@@ -46,11 +46,14 @@ private:
 	std::queue<int> bodyIndexes;
 	std::deque<SnakeScaleObject> bodyCubes;
 	bool canPopIndexes;	
-	//std::function<void()> queuedActionFunction;
-
 	float speed;
 };
 
+//Player movement functions
+void move_singleton(Player& player, double deltaTime, AppContext appContext);
+void move_multi_segment(Player& player, double deltaTime, AppContext appContext);
+
+//Other helper functions
 void update_body_indexes(Player& player, AppContext appContext);
 bool check_collision(Player& player, bool isDebug);
 void turn_snake(Player& player, Direction direction, AppContext appContext);

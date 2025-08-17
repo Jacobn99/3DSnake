@@ -11,7 +11,8 @@ class SnakeScaleObject;
 
 enum GeneratedTextures {
 	FLOOR,
-	GREEN_SQUARE
+	GREEN_SQUARE,
+	APPLE
 };
 
 class GameManager {
@@ -29,7 +30,9 @@ public:
 	Direction get_opposite_direction(Direction direction);
 	Texture get_generated_texture(GeneratedTextures texture);
 	void set_generated_texture(GeneratedTextures gen, Texture texture);
-	//const char* direction_to_string(Direction direction);
+	void spawn_apple(AppContext appContext);
+	void relocate_apple(AppContext appContext);
+	void end_game();
 	unsigned int startIndex;
 	unsigned int sizeInTiles;
 	float sizeInUnits;
@@ -37,9 +40,13 @@ public:
 	glm::vec3 boardTopLeft;
 	float unitsPerTile;
 	Direction defaultDirection;
+	Object appleObject;
+	bool isPaused;
+	glm::vec2 applePosition;
 private:
 	Texture floorTexture;
 	Texture greenSquareTexture;
+	Texture appleTexture;
 	glm::vec3 frontPositionOffset;
 	glm::vec3 backPositionOffset;
 	glm::vec3 leftPositionOffset;

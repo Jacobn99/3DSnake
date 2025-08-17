@@ -32,7 +32,6 @@ glm::vec3 cameraDirection;
 glm::vec3 up;
 glm::vec3 cameraRight;
 GameManager gameManager;
-bool paused = false;
 
 // global variables
 float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -116,7 +115,7 @@ void processInput(GLFWwindow* window)
         buttonsPressed.insert_or_assign(GLFW_KEY_Q, glfwGetTime());
     }
     else if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-        if (!keyIsHeld(GLFW_KEY_P)) paused = !paused;
+        if (!keyIsHeld(GLFW_KEY_P)) gameManager.isPaused = !gameManager.isPaused;
 
         buttonsPressed.insert_or_assign(GLFW_KEY_P, glfwGetTime());
     }
@@ -207,7 +206,9 @@ int main()
     glViewport(0, 0, 800, 600);
     
     TextureManager textureManager = TextureManager();
-    Texture snakeTexture = textureManager.generate_texture_2D("C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_tile.png", 
+    Texture snakeTexture = textureManager.generate_texture_2D("C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\green_tile.png", 
+        GL_RGBA, GL_REPEAT, GL_LINEAR);
+    Texture appleTexture = textureManager.generate_texture_2D("C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_tile.png",
         GL_RGBA, GL_REPEAT, GL_LINEAR);
 
     //Shaders
@@ -218,15 +219,17 @@ int main()
 
     gameManager = GameManager(sizeInUnits, sizeInTiles);
     Texture tileTexture = textureManager.generate_texture_2D(
-        "C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
+        "C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_tile_og.png",
         GL_RGBA, GL_REPEAT, GL_LINEAR);
 
     gameManager.set_generated_texture(FLOOR, tileTexture);
     gameManager.set_generated_texture(GREEN_SQUARE, snakeTexture);
+    gameManager.set_generated_texture(APPLE, appleTexture);
 	appContext = AppContext(&gameManager, &textureManager, &ourShader, &objectManager);
     objectManager.generate_default_vertices(appContext);
 
     //Object creation
+    gameManager.spawn_apple(appContext);
 	PrismObject prism = PrismObject(36, ourShader, appContext);
 	generate_prism(prism, appContext, -(sizeInUnits/2), (sizeInUnits / 2), 
         -0.5f, 0.5f, -(sizeInUnits / 2), (sizeInUnits / 2), gameManager.sizeInTiles);
@@ -285,7 +288,7 @@ int main()
 
         //Input
         processInput(window);
-        if(!paused) player.move_body(deltaTime, appContext);
+        if(!gameManager.isPaused) player.move_body(deltaTime, appContext);
 
 
         SnakeScaleObject head = player.get_body_cubes().back();
@@ -330,8 +333,9 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         objectManager.draw_prism(prism);
-        objectManager.draw_prism(test);
-        objectManager.draw_prism(test2);
+        /*objectManager.draw_prism(test);
+        objectManager.draw_prism(test2);*/
+        objectManager.draw_object(gameManager.appleObject);
         player.draw_body(appContext);
 
         glBindVertexArray(0);

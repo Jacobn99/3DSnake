@@ -38,7 +38,7 @@ Player::Player(AppContext appContext) {
 	this->bodyIndexes = std::queue<int>();
 	this->bodyCubes = std::deque<SnakeScaleObject>();
 	this->length = 0;
-	this->speed = 0.5f; // units per second
+	this->speed = 1.0f; // units per second
 	this->headDirection = appContext.get_game_manager().defaultDirection;
 	this->queuedHeadDirection = this->headDirection;
 	this->isQueuedGrow = false;
@@ -80,7 +80,12 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 	SnakeScaleObject& tail = this->bodyCubes.front();
 	bool inNewTile = false;
 	GameManager& gameManager = appContext.get_game_manager();
+	//glm::vec2 appleGridPosition = gameManager.vec3_to_grid_position(gameManager.appleObject.get_position(), false);
+	glm::vec2 gridPosition = this->get_head_grid_position();
 	update_body_indexes(*this, appContext);
+
+	if (gridPosition.x < 0 || gridPosition.x >= gameManager.sizeInTiles ||
+		gridPosition.y < 0 || gridPosition.y >= gameManager.sizeInTiles) gameManager.end_game();
 
 	//If snake has multiple scales
 	if (this->length > 1 && this->bodyCubes.size() > 1) { 
@@ -109,7 +114,10 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 		tailGridPosition = gameManager.vec3_to_grid_position(tail.get_position(), false);
 
 		//Checks if snake head is touching tail
-		if (this->get_head_grid_position() == tailGridPosition && this->length > 2) printf("\t\t\t\t\t\t\t\t\tHIT!!!\n");
+		if (this->get_head_grid_position() == tailGridPosition && this->length > 2) { 
+			printf("\t\t\t\t\t\t\t\t\tHIT!!!\n");
+			gameManager.end_game();
+		}
 
 		//Checks if current tail is gone
 		if (newTailScale.x < 0 || newTailScale.z < 0) {
@@ -121,14 +129,17 @@ void Player::move_body(float deltaTime, AppContext appContext) {
 		if (hasRowChanged || hasColumnChanged) {
 			inNewTile = true;
 			bool isTurning = this->queuedHeadDirection != this->headDirection;
-			//this->push_body_index(this->get_head_grid_position(), appContext);
-			//this->try_pop_body_index();
 
-			if (this->isQueuedGrow) {
+			if (isTurning) turn_snake(*this, this->queuedHeadDirection, appContext);
+			else if (this->isQueuedGrow) {
 				this->add_body_part(appContext, this->get_head_direction(), true, false);
 				this->isQueuedGrow = false;
 			}
-			else if (isTurning) turn_snake(*this, this->queuedHeadDirection, appContext);
+			else if(/*this->get_head_grid_position() + gameManager.get_tile_offset(this->get_head_direction()) == appleGridPosition ||*/
+				(this->get_head_grid_position() == gameManager.applePosition)) {
+				add_body_part(appContext, this->get_head_direction(), true, false);
+				gameManager.relocate_apple(appContext);
+			}
 			else set_head_grid_position(get_head_grid_position() + appContext.get_game_manager().get_tile_offset(this->headDirection));
 		}
 	}
@@ -172,55 +183,6 @@ currentCenteredPosition.y, currentCenteredPosition.z);*/
 		}
 
 		if (currentGridFCPosition != targetGridFCPosition) {
-			/*glm::vec3 position = targetFrontCenterPosition;
-			glm::vec3 normalizedPosition = (glm::vec3(position.x - gameManager.boardCenter.x,
-				0.0f, position.z - gameManager.boardCenter.z)) + glm::vec3(gameManager.unitsPerTile / 2, 0.0f, gameManager.unitsPerTile / 2);
-			Direction currentDirection = head.get_direction();
-
-
-			float rowFloat = (normalizedPosition.z / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
-			float columnFloat = (normalizedPosition.x / gameManager.unitsPerTile) + ((float)gameManager.sizeInTiles / 2);
-			float dRow = 0.0f;
-			float dColumn = 0.0f;
-
-			int row = static_cast<int>(rowFloat) - 1;
-			int column = static_cast<int>(columnFloat) - 1;
-
-			float rowDifference = abs(rowFloat - row + 1);
-			float columnDifference = abs(columnFloat - column + 1);
-
-			printf("\t\t\t\t\t\t\t\t\tCENTER OF TILE REACHED:\n");
-			printf("\t\t\t\t\t\t\t\t\trowFloat: %f, columnFloat: %f\n\n", rowFloat, columnFloat);*/
-			/*if (canSnap) {
-				Direction direction = head.get_direction();
-				head.set_position(gameManager.board_to_vec3(this->get_head_grid_position()));
-				set_snake_orientation_with_offset(head, this->get_head_direction(), false, appContext);
-				canSnap = false;
-			}*/
-			/*
-			
-			WE KNOW:
-			+ currentGridPosition is WRONG
-			+ it is derived from currentFrontCenterPosition which is RIGHT
-			+ so the issue is in vec3_to_length_adjusted_tile
-			
-			*/
-
-			//gameManager.vec3_to_length_adjusted_tile(*this, oldFrontCenterPosition, true);
-
-			/*printf("\t\t\t\t\t\t\t\t\tFront Center:\n");
-			gameManager.vec3_to_length_adjusted_tile(*this, targetFrontCenterPosition, true);
-			printf("\n");*/
-
-			//printf("\t\t\t\t\t\t\t\t\tcurrentPos | x: %f, z: %f\n", currentPosition.x,
-			//	currentPosition.z);
-			//printf("\t\t\t\t\t\t\t\t\tcurrentFC | x: %f, z: %f\n", currentFrontCenterPosition.x,
-			//	currentFrontCenterPosition.z);
-			//printf("\t\t\t\t\t\t\t\t\tcurrentGr | row: %f, column: %f\n", currentGridPosition.x,
-			//	currentGridPosition.y);
-
-
-			/*printf("\t\t\t\t\t\t\t\t\tNEW TILE\n");*/
 			glm::vec2 difference = targetGridFCPosition - currentGridFCPosition;
 			inNewTile = true;
 
@@ -235,16 +197,19 @@ currentCenteredPosition.y, currentCenteredPosition.z);*/
 				this->add_body_part(appContext, this->get_head_direction(), true, false);
 				this->isQueuedGrow = false;
 			}
+			if (this->get_head_grid_position() + gameManager.get_tile_offset(this->get_head_direction()) == gameManager.applePosition ||
+				(this->get_head_grid_position() == gameManager.applePosition)) {
+				add_body_part(appContext, this->get_head_direction(), true, false);
+				gameManager.relocate_apple(appContext);
+			}
 			//printf("\t\t\t\t\t\t\t\t\tcurrent pos | row: %f, col: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
 		}
 	}
-	/*printf("\t\t\t\t\t\t\t\t\t");
-	check_collision(*this, true);
-	printf("\n");*/
 	if (inNewTile && check_collision(*this, false)) {
 		printf("\t\t\t\t\t\t\t\t\tTriggered at | row: %f, col: %f\n", this->get_head_grid_position().x, this->get_head_grid_position().y);
 		printf("\t\t\t\t\t\t\t\t\t");
 		printf("\t\t\t\t\t\t\t\t\t----------------------------\n");
+		gameManager.end_game();
 	}
 	this->i += 1;
 }

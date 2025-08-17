@@ -18,6 +18,7 @@ enum Direction { FORWARD, BACKWARD, LEFT, RIGHT}; // Define the Direction enum
 class Object 
 {
 public:
+	Object() = default;
 	Object(int vertexCount, Shader& shader, AppContext appContext);
 	Object(unsigned int VBO, unsigned int VAO, int vertexCount, Shader& shader, AppContext appContext);
 	void set_EBO(unsigned int EBO);

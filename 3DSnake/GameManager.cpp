@@ -3,9 +3,11 @@
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\TextureManager.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Shader.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Object.h"
+#include "C:\Users\jacob\source\repos\3DSnake\3DSnake\PrismObject.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\Player.h"
 #include "C:\Users\jacob\source\repos\3DSnake\3DSnake\AppContext.h"
 #include <cmath>
+#include <random>
 
 
 
@@ -22,9 +24,7 @@ GameManager::GameManager(float sizeInUnits, unsigned int sizeInTiles) {
 	this->frontPositionOffset = glm::vec3(0.0f, 0.0f, this->unitsPerTile / 2);
 	this->backPositionOffset = glm::vec3(0.0f, 0.0f, -(float)((this->unitsPerTile / 2)));
 	this->defaultDirection = FORWARD;
-	/*this->snakeTexture = appContext.get_texture_manager().generate_texture_2D(
-		"C:\\Users\\jacob\\source\\repos\\3DSnake\\3DSnake\\Textures\\snake_scale.png",
-		GL_RGBA, GL_REPEAT, GL_LINEAR);*/
+	this->isPaused = false;
 }
 Texture GameManager::get_generated_texture(GeneratedTextures texture) {
 	switch (texture) {
@@ -32,6 +32,8 @@ Texture GameManager::get_generated_texture(GeneratedTextures texture) {
 		return this->floorTexture;
 	case GREEN_SQUARE:
 		return this->greenSquareTexture;
+	case APPLE:
+		return this->appleTexture;
 	default:
 		printf("ERROR: GeneratedTextures enum bigger than switch statement 1\n");
 		Texture texture = Texture();
@@ -46,6 +48,9 @@ void GameManager::set_generated_texture(GeneratedTextures gen, Texture texture) 
 	case GREEN_SQUARE:
 		this->greenSquareTexture = texture;
 		break;	
+	case APPLE:
+		this->appleTexture = texture;
+		break;
 	default:
 		printf("ERROR: GeneratedTextures enum bigger than switch statement 2\n");
 	}
@@ -120,13 +125,6 @@ glm::vec2 GameManager::vec3_to_grid_position(glm::vec3 position, bool isDebug) {
 	
 	row = static_cast<int>(rowFloat) - 1;
 	column = static_cast<int>(columnFloat) - 1;
-	
-	/*if (abs(rowFloat - row + 1) < 0.01) row--;
-	if (abs(columnFloat - column + 1 < 0.01f)) column--;
-	
-
-	if (abs(rowFloat - row + 1) > 0.99) row++;
-	if (abs(columnFloat - column + 1) > 0.99) column++;*/
 
 	glm::vec2 result = glm::vec2(row, column);
 
@@ -186,6 +184,32 @@ Direction GameManager::get_opposite_direction(Direction direction) {
 	case RIGHT:
 		return LEFT;
 	}
+}
+void GameManager::spawn_apple(AppContext appContext) {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> distr(2, this->sizeInTiles - 3);
+	int row = distr(gen);
+	int col = distr(gen);
+
+	Texture tileTexture = get_generated_texture(APPLE);
+	PrismObject prism = PrismObject(36, appContext.get_shader(), appContext);
+	glm::vec3 position = this->board_to_vec3(glm::vec2((float)row, (float)col));
+	float appleSize = this->unitsPerTile - 0.2f;
+
+	generate_prism(prism, appContext, -(appleSize / 2), (appleSize / 2),
+		-(appleSize / 2), (appleSize / 2), -(appleSize / 2), (appleSize / 2), 1.0f);
+	prism.set_position(position);
+	prism.set_texture(tileTexture);
+	this->appleObject = prism;
+	this->applePosition = glm::vec2((float)row, (float)col);
+}
+void GameManager::relocate_apple(AppContext appContext) {
+	this->appleObject.delete_object(false);
+	spawn_apple(appContext);
+}
+void GameManager::end_game() {
+	this->isPaused = true;
 }
 const char* direction_to_string(Direction direction) {
 	const char* result = "UNKNOWN DIRECTION";

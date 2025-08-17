@@ -11,6 +11,7 @@
 class PrismObject : public Object {
 public:
 	using Object::Object;
+	PrismObject() = default;
 	PrismObject(int vertexCount, Shader& shader, AppContext appContext);
 	std::vector<float>* vertices;
 	bool orientationChanged;
